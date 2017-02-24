@@ -1,0 +1,67 @@
+<!DOCTYPE html>
+<div class="margin-tb-2 padding-tb-3 padding-lr-2 page" md-whiteframe="5">
+    <h2>Add Event</h2>
+    <form class="al-add-event-page margin-top-2" layout-gt-xs="row" layout-xs="column"
+      name="myEvent" layout-wrap>
+        <div layout="column" flex="100">
+            <md-input-container>
+              <label>Event Name</label>
+              <input name="eventName" required="" md-maxlength="100"
+                ng-model="aec.myEvent.eventName">
+              <div ng-messages="myEvent.eventName.$error">
+                <div ng-message="required">This Field Is Required.</div>
+                <div ng-message="md-maxlength">The event name has to be less than 100 characters long.</div>
+              </div>
+            </md-input-container>
+            <md-input-container>
+              <label>Event Short Code</label>
+              <input required="" ng-model="aec.myEvent.eventCode" name="eventCode">
+              <div ng-messages="myEvent.eventCode.$error">
+                <div ng-message="required">This Field Is Required.</div>
+              </div>
+            </md-input-container>
+            <md-input-container>
+              <label>Event Section</label>
+              <md-select ng-model="aec.myEvent.eventSection" name="eventSection" required="">
+                <md-option value="ce">Computer</md-option>
+                <md-option value="it">IT</md-option>
+              </md-select>
+              <div ng-messages="myEvent.eventSection.$error">
+                <div ng-message="required">This Field Is Required.</div>
+              </div>
+            </md-input-container>
+            <md-input-container>
+              <label>Team Leader Name</label>
+              <input required="" ng-model="aec.myEvent.leaderName" name="leaderName">
+              <div ng-messages="myEvent.leaderName.$error">
+                <div ng-message="required">This Field Is Required.</div>
+              </div>
+            </md-input-container>
+            <div layout="row" layout-align="space-between" layout-wrap>
+              <md-input-container flex-gt-xs="50">
+                <label>Email</label>
+                <input required="" ng-model="aec.myEvent.email" name="email">
+                <div ng-messages="myEvent.email.$error">
+                  <div ng-message="required">This Field Is Required.</div>
+                  <div ng-message="email">Please Enter Valid Email Address.</div>
+                </div>
+              </md-input-container>
+              <md-input-container flex-gt-xs="50">
+                <label>Contact Number</label>
+                <input required="" ng-model="aec.myEvent.contactNumber"
+                  ng-pattern="/^[(][0-9]{3}[)] [0-9]{3}-[0-9]{4}$/" name="contactNumber">
+                <div ng-messages="myEvent.contactNumber.$error">
+                  <div ng-message="required">This Field Is Required.</div>
+                  <div ng-message="pattern">Please Enter Valid Phone Number.</div>
+                </div>
+              </md-input-container>
+            </div>
+        </div>
+        <div layout="column" flex="100">
+          <h3>Rules, Details and Regulation</h3>
+          <div id="editor">
+      		</div>
+        </div>
+        <md-button class="md-primary md-raised">{{ aec.myEvent.event }}</md-button>
+    </form>
+</div>

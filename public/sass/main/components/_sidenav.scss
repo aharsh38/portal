@@ -1,0 +1,54 @@
+.al-sidenav{
+
+    min-width: 256px;
+
+    .al-subOption-selected{
+        background-color: rgba(250,250,250,0.45);
+        border-left: 2px solid $secondary-dark;
+        color: $blue-grey-900;
+        font-weight: 600;
+    }
+
+    .md-button{
+        text-align: left;
+    }
+}
+
+.sidenav-container{
+    .container-title{
+        padding: 10px 5px;
+        background: rgba(0,10,20,0.2);
+        letter-spacing: 1.3px;
+
+        .title-icon{
+            fill:white;
+            height:20px;
+        }
+    }
+
+    .md-button.md-icon-button{
+        padding: 0;
+        width: 20px;
+        height: 20px;
+        min-height: 20px;
+        line-height: 12px;
+        border: 1px solid white;
+        border-radius: 50%;
+        fill: white;
+
+        ng-md-icon{
+            height: 16px;
+        }
+    }
+
+    .md-icon-button.md-button:not([disabled]):hover{
+        background-color : white;
+        fill : rgba(0,0,0,1);
+    }
+
+    .md-button{
+        min-height: 0;
+        height: 40px;
+        line-height: 12px;
+    }
+}

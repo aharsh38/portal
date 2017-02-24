@@ -1,0 +1,143 @@
+<!DOCTYPE html>
+<div class="margin-tb-2 padding-tb-3 padding-lr-2 page" md-whiteframe="5">
+  <h2 class="text-center">Register</h2>
+  <form class="al-add-event-page margin-top-2" layout="column" name="myParticipant" layout-wrap>
+    <div layout="column" flex="100">
+      <div layout="row" layout-align="space-between" class="padding-2" layout-wrap>
+        <md-input-container flex="30" class="margin-right-2">
+          <label>Event Section</label>
+          <md-select ng-model="prc.myParticipant.eventSection" name="eventSection"
+            ng-change="prc.esflag = true" required="" class="paddin-left-2">
+            <md-option value="1">Computer</md-option>
+            <md-option value="2">IT</md-option>
+          </md-select>
+          <div ng-messages="myParticipant.eventSection.$error">
+            <div ng-message="required">This Field Is Required.</div>
+          </div>
+        </md-input-container>
+        <md-input-container flex="30" class="margin-right-2">
+          <label>Event Name</label>
+          <md-select ng-model="prc.myParticipant.eventName" name="eventName" ng-disabled="!prc.esflag"
+            ng-change="prc.enflag = true" required>
+            <md-option value="1">Treasure Hunt</md-option>
+            <md-option value="2">Neural Network</md-option>
+          </md-select>
+          <div ng-messages="myParticipant.eventName.$error">
+            <div ng-message="required">This Field Is Required.</div>
+          </div>
+        </md-input-container>
+        <md-input-container flex="30" class="margin-right-2">
+          <label>Number Of Participants</label>
+          <md-select ng-model="prc.myParticipant.numberOfParticipant" name="eventName"
+            ng-disabled="!prc.enflag" required=""
+            ng-change="prc.openParticipantModule(prc.myParticipant.numberOfParticipant);">
+            <md-option value="1">1</md-option>
+            <md-option value="2">2</md-option>
+            <md-option value="3">3</md-option>
+            <md-option value="4">4</md-option>
+          </md-select>
+          <div ng-messages="myParticipant.eventName.$error">
+            <div ng-message="required">This Field Is Required.</div>
+          </div>
+        </md-input-container>
+      </div>
+      <div ng-show="prc.enflag">
+        <div class="padding-2">
+          <h3>Rules</h3>
+          <p>Lorem Ipsum is simply dummy text of the printing and typesetting industry. Lorem Ipsum has been the industry's standard dummy text ever since the 1500s, when an unknown printer took a galley of type and scrambled it to make a type specimen book. It has survived not only five centuries, but also the leap into electronic typesetting, remaining essentially unchanged. It was popularised in the 1960s with the release of Letraset sheets containing Lorem Ipsum passages, and more recently with desktop publishing software like Aldus PageMaker including versions of Lorem Ipsum</p>
+        </div>
+        <div class="padding-2">
+        <div ng-repeat="each in prc.otherParticipants">
+          <div layout="row">
+            <h3>{{ each.title }} {{ (each.leaderFlag) ? "" : $index }}</h3>
+          </div>
+          <div layout="row" layout-align="space-between" layout-wrap>
+            <md-input-container flex-gt-xs="50" class="padding-right-2">
+              <label>Name</label>
+              <input required="" ng-model="prc.myParticipant.participant.name" name="name">
+              <div ng-messages="myParticipant.name.$error">
+                <div ng-message="required">This Field Is Required.</div>
+                <div ng-message="email">Please Enter Valid Email Address.</div>
+              </div>
+            </md-input-container>
+            <md-input-container flex-gt-xs="50" class="padding-right-2">
+              <label>Enrollment Number</label>
+              <input required="" ng-model="prc.myParticipant.teamLeader.enrollment"
+                name="enrollment" pattern="^[1-9][0-9]{14}">
+              <div ng-messages="myParticipant.enrollment.$error">
+                <div ng-message="required">This Field Is Required.</div>
+                <div ng-message="pattern">Please Enter Valid Enrollment Number.</div>
+              </div>
+            </md-input-container>
+          </div>
+          <div layout="row" layout-align="space-between" layout-wrap>
+            <md-input-container flex-gt-xs="50" class="padding-right-2">
+              <label>Email</label>
+              <input required="" ng-model="prc.myParticipant.teamLeader.email" name="email">
+              <div ng-messages="myParticipant.email.$error">
+                <div ng-message="required">This Field Is Required.</div>
+                <div ng-message="email">Please Enter Valid Email Address.</div>
+              </div>
+            </md-input-container>
+            <md-input-container flex-gt-xs="50" class="padding-right-2">
+              <label>Mobile</label>
+              <input required="" ng-model="prc.myParticipant.teamLeader.mobileno"
+                name="enrollment" pattern="^[1-9][0-9]{14}">
+              <div ng-messages="myParticipant.mobile.$error">
+                <div ng-message="required">This Field Is Required.</div>
+                <div ng-message="pattern">Please Enter Valid Enrollment Number.</div>
+              </div>
+            </md-input-container>
+          </div>
+          <div layout="row" layout-align="space-between" layout-wrap>
+            <md-input-container flex-gt-xs="40" class="padding-right-2">
+              <label>College</label>
+              <md-select ng-model="prc.myParticipant.teamLeader.college" name="college"
+                required="">
+                <md-option value="1">LD College</md-option>
+                <md-option value="2">GTU</md-option>
+              </md-select>
+              <div ng-messages="myParticipant.college.$error">
+                <div ng-message="required">This Field Is Required.</div>
+              </div>
+            </md-input-container>
+            <md-input-container flex-gt-xs="40" class="padding-right-2">
+              <label>Branch</label>
+              <md-select ng-model="prc.myParticipant.teamLeader.branch" name="branch"
+                required="">
+                <md-option value="1">Computer</md-option>
+                <md-option value="2">IT</md-option>
+              </md-select>
+              <div ng-messages="myParticipant.branch.$error">
+                <div ng-message="required">This Field Is Required.</div>
+              </div>
+            </md-input-container>
+            <md-input-container flex-gt-xs="20" class="padding-right-2">
+              <label>Semester</label>
+              <md-select ng-model="prc.myParticipant.teamLeader.semester" name="semester"
+                required="">
+                <md-option value="1">1<sup>st</sup></md-option>
+                <md-option value="2">2<sup>nd</sup></md-option>
+                <md-option value="3">3<sup>rd</sup></md-option>
+                <md-option value="4">4<sup>th</sup></md-option>
+                <md-option value="5">5<sup>th</sup></md-option>
+                <md-option value="6">6<sup>th</sup></md-option>
+                <md-option value="7">7<sup>th</sup></md-option>
+                <md-option value="8">8<sup>th</sup></md-option>
+              </md-select>
+              <div ng-messages="myParticipant.semester.$error">
+                <div ng-message="required">This Field Is Required.</div>
+              </div>
+            </md-input-container>
+          </div>
+        </div>
+        <h3 class="text-right">Total Payment:  &#8377; {{ prc.eventPrice * prc.getParticipantLength() }}/-</h3>
+      </div>
+      </div>
+    </div>
+    <div layout="row" layout-align="center center">
+      <md-button class="md-primary md-raised" ng-disabled="myParticipant.$invalid" type="submit"
+        ng-click="prc.register()">Register</md-button>
+    </div>
+  </form>
+</div>

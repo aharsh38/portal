@@ -1,0 +1,322 @@
+@for $i from 0 through 5 {
+  .padding-#{$i} { padding: 10px * $i; }
+  .padding-top-#{$i} { padding-top: 10px * $i; }
+  .padding-bottom-#{$i} { padding-bottom: 10px * $i; }
+  .padding-left-#{$i} { padding-left: 10px * $i; }
+  .padding-right-#{$i} { padding-right: 10px * $i; }
+  .padding-lr-#{$i} { padding-left: 10px * $i; padding-right: 10px * $i; }
+  .padding-tb-#{$i} { padding-top: 10px * $i; padding-bottom: 10px * $i; }
+
+  .margin-#{$i} { margin: 10px * $i; }
+  .margin-top-#{$i} { margin-top: 10px * $i; }
+  .margin-bottom-#{$i} { margin-bottom: 10px * $i; }
+  .margin-left-#{$i} { margin-left: 10px * $i; }
+  .margin-right-#{$i} { margin-right: 10px * $i; }
+  .margin-lr-#{$i} { margin-left: 10px * $i; margin-right: 10px * $i; }
+  .margin-tb-#{$i} { margin-top: 10px * $i; margin-bottom: 10px * $i; }
+
+    .padding-gt-xs-#{$i} {
+        @media screen and (min-width: 600px){
+             padding: 10px * $i;
+        }
+    }
+    .padding-top-gt-xs-#{$i} {
+        @media screen and (min-width: 600px){
+             padding-top: 10px * $i;
+        }
+    }
+    .padding-bottom-gt-xs-#{$i} {
+        @media screen and (min-width: 600px){
+             padding-bottom: 10px * $i;
+        }
+    }
+    .padding-left-gt-xs-#{$i} {
+        @media screen and (min-width: 600px){
+             padding-left: 10px * $i;
+        }
+    }
+    .padding-right-gt-xs-#{$i} {
+        @media screen and (min-width: 600px){
+             padding-right: 10px * $i;
+        }
+    }
+    .padding-lr-gt-xs-#{$i} {
+        @media screen and (min-width: 600px){
+             padding-left: 10px * $i; padding-right: 10px * $i;
+        }
+    }
+    .padding-tb-gt-xs-#{$i} {
+        @media screen and (min-width: 600px){
+             padding-top: 10px * $i; padding-bottom: 10px * $i;
+        }
+    }
+
+    .margin-gt-xs-#{$i} {
+        @media screen and (min-width: 600px){
+             margin: 10px * $i;
+        }
+    }
+    .margin-top-gt-xs-#{$i} {
+        @media screen and (min-width: 600px){
+             margin-top: 10px * $i;
+        }
+    }
+    .margin-bottom-gt-xs-#{$i} {
+        @media screen and (min-width: 600px){
+             margin-bottom: 10px * $i;
+        }
+    }
+    .margin-left-gt-xs-#{$i} {
+        @media screen and (min-width: 600px){
+             margin-left: 10px * $i;
+        }
+    }
+    .margin-right-gt-xs-#{$i} {
+        @media screen and (min-width: 600px){
+             margin-right: 10px * $i;
+        }
+    }
+    .margin-lr-gt-xs-#{$i} {
+        @media screen and (min-width: 600px){
+             margin-left: 10px * $i; margin-right: 10px * $i;
+        }
+    }
+    .margin-tb-gt-xs-#{$i} {
+        @media screen and (min-width: 600px){
+             margin-top: 10px * $i; margin-bottom: 10px * $i;
+        }
+    }
+
+    //xs
+
+    .padding-xs-#{$i} {
+        @media screen and (max-width: 600px){
+             padding: 10px * $i;
+        }
+    }
+    .padding-top-xs-#{$i} {
+        @media screen and (max-width: 600px){
+             padding-top: 10px * $i;
+        }
+    }
+    .padding-bottom-xs-#{$i} {
+        @media screen and (max-width: 600px){
+             padding-bottom: 10px * $i;
+        }
+    }
+    .padding-left-xs-#{$i} {
+        @media screen and (max-width: 600px){
+             padding-left: 10px * $i;
+        }
+    }
+    .padding-right-xs-#{$i} {
+        @media screen and (max-width: 600px){
+             padding-right: 10px * $i;
+        }
+    }
+    .padding-lr-xs-#{$i} {
+        @media screen and (max-width: 600px){
+             padding-left: 10px * $i; padding-right: 10px * $i;
+        }
+    }
+    .padding-tb-xs-#{$i} {
+        @media screen and (max-width: 600px){
+             padding-top: 10px * $i; padding-bottom: 10px * $i;
+        }
+    }
+
+    .margin-xs-#{$i} {
+        @media screen and (max-width: 600px){
+             margin: 10px * $i;
+        }
+    }
+    .margin-top-xs-#{$i} {
+        @media screen and (max-width: 600px){
+             margin-top: 10px * $i;
+        }
+    }
+    .margin-bottom-xs-#{$i} {
+        @media screen and (max-width: 600px){
+             margin-bottom: 10px * $i;
+        }
+    }
+    .margin-left-xs-#{$i} {
+        @media screen and (max-width: 600px){
+             margin-left: 10px * $i;
+        }
+    }
+    .margin-right-xs-#{$i} {
+        @media screen and (max-width: 600px){
+             margin-right: 10px * $i;
+        }
+    }
+    .margin-lr-xs-#{$i} {
+        @media screen and (max-width: 600px){
+             margin-left: 10px * $i; margin-right: 10px * $i;
+        }
+    }
+    .margin-tb-xs-#{$i} {
+        @media screen and (max-width: 600px){
+             margin-top: 10px * $i; margin-bottom: 10px * $i;
+        }
+    }
+}
+
+.gh-checkbox-label{
+    color: rgba(0,0,0,0.26);
+    transform: translate3d(0, 6px, 0) scale(.75);
+}
+
+@mixin scrollbars($size, $foreground-color, $background-color: mix($foreground-color, white,  50%)) {
+  // For Google Chrome
+  ::-webkit-scrollbar {
+      width:  $size;
+      height: $size;
+  }
+
+  ::-webkit-scrollbar-thumb {
+      background: $foreground-color;
+  }
+
+  ::-webkit-scrollbar-track {
+      background: $background-color;
+  }
+
+  // For Internet Explorer
+  body {
+    scrollbar-face-color: $foreground-color;
+    scrollbar-track-color: $background-color;
+  }
+}
+
+@mixin roundButton ($color, $color-inverse, $border-radius:20px, $border-size:2px){
+    border: $border-size solid $color;
+    border-radius: $border-radius;
+    color: $color;
+    fill : $color;
+
+    &:not([disabled]):hover{
+        background-color: $color;
+        color: $color-inverse;
+        fill: $color-inverse;
+    }
+}
+
+@mixin roundButtonInverse ($color, $color-inverse, $border-radius:20px, $border-size:2px, $secondary-color:$color,$nohover:false){
+    border: $border-size solid $color;
+    border-radius: $border-radius;
+    background-color: $color;
+    color: $color-inverse;
+    fill: $color-inverse;
+
+    &:not([disabled]):hover{
+        background-color: transparent;
+        border: $border-size solid $secondary-color;
+        color: $secondary-color;
+        fill : $secondary-color;
+    }
+
+    @if($nohover : true){
+        &:not([disabled]):hover{
+            background-color: $color;
+            border: $border-size solid $color;
+            color: $color-inverse;
+            fill : $color-inverse;
+        }
+    }
+}
+
+.md-button.md-success.md-raised, .md-button.md-success.md-raised:not([disabled]), .md-button.md-success{
+    background-color: $green-500;
+    color: lighten($black,20);
+
+    &:hover{
+        background-color: $green-600;
+        color: $black;
+    }
+}
+
+.md-button.md-success.md-raised.md-hue-2, .md-button.md-success.md-hue-2.md-raised:not([disabled]), .md-button.md-success.md-hue-2{
+    background-color: $green-700;
+    color: $white;
+
+    &:hover{
+        background-color: darken($green-300, 8);
+        color: $white;
+    }
+}
+
+.md-button.md-create-button.md-raised, .md-button.md-create-button.md-raised:not([disabled]), .md-button.md-create-button{
+    background-color: $blue-grey-300;
+    color: lighten($black,20);
+
+    &:hover{
+        background-color: $blue-grey-500;
+        color: $black;
+    }
+}
+
+md-progress-circular.md-default-theme.md-white, md-progress-circular.md-white{
+     path{
+         stroke: $white;
+         stroke-width : 3px !important;
+     }
+
+    &.mini{
+        path{
+            stroke-width : 2px !important;
+        }
+    }
+}
+
+md-progress-circular.md-default-theme.md-black , md-progress-circular.md-black {
+    path{
+        stroke: #333;
+        stroke-width : 3px !important;
+    }
+
+    &:hover{
+        path{
+            stroke:$black;
+        }
+    }
+
+    &.mini{
+        path{
+            stroke-width : 2px !important;
+        }
+    }
+}
+
+md-progress-circular.md-default-theme.md-blue-big path, md-progress-circular.md-blue-big path{
+    stroke: $light-blue-700;
+    stroke-width : 4px !important;
+}
+
+
+.md-button.md-big{
+    min-width: 220px !important;
+}
+
+.md-cancel-theme{
+    .md-button.md-default-theme.md-primary.md-confirm-button, .md-button.md-primary.md-confirm-button{
+        color: $red-700;
+    }
+}
+
+.md-normal-theme{
+    .md-button.md-default-theme.md-primary.md-cancel-button, .md-button.md-primary.md-cancel-button{
+        color: $red-700;
+    }
+}
+
+.md-success-theme{
+    @extend .md-normal-theme;
+    h2{
+        color: $green-700;
+    }
+}
+
+.border-primary{
+    border: 1px solid $primary;
+}

@@ -1,0 +1,13 @@
+<div class="main-container" layout="column">
+    <md-toolbar md-scroll-shrink ng-if="true" class="al-header" md-whiteframe="3">
+        <div ng-include src="'/templates/components/in_fc_header.html'"></div>
+    </md-toolbar>
+    <div class="page-container" layout="row" flex>
+        <md-sidenav flex-xs="80" flex-gt-xs="20" class="al-sidenav" md-component-id="left" md-is-locked-open="$mdMedia('gt-sm')" md-disable-backdrop md-whiteframe="2">
+            <div ng-include src="'/templates/components/in_fc_sidenav.html'"></div>
+        </md-sidenav>
+        <md-content flex class="main-content">
+            <ui-view></ui-view>
+        </md-content>
+    </div>
+</div>

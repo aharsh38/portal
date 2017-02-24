@@ -1,0 +1,56 @@
+<!DOCTYPE html>
+<md-dialog aria-label="Download Details" md-theme="default" flex="90">
+  <form ng-cloak>
+    <md-toolbar>
+      <div class="md-toolbar-tools">
+        <h2 style="color:white">Download Details</h2>
+      </div>
+    </md-toolbar>
+    <md-dialog-content>
+      <form class="md-dialog-content padding-2" name="mySlip" layout-wrap>
+        <div layout="column" flex="96">
+          <md-input-container class="margin-2">
+            <label>Team Leader Id</label>
+            <input name="teamLeaderId" required="" ng-model="aec.mySlip.teamLeaderId">
+            <div ng-messages="mySlip.teamLeaderId.$error">
+              <div ng-message="required">This Field Is Required.</div>
+            </div>
+          </md-input-container>
+          <md-input-container class="margin-2">
+            <label>Mobile</label>
+            <input required="" ng-model="aec.mySlip.mobile" name="mobile">
+            <div ng-messages="mySlip.mobile.$error">
+              <div ng-message="required">This Field Is Required.</div>
+            </div>
+          </md-input-container>
+          <md-input-container class="margin-2">
+            <label>Email</label>
+            <input required="" ng-model="aec.mySlip.email" name="email">
+            <div ng-messages="mySlip.email.$error">
+              <div ng-message="required">This Field Is Required.</div>
+            </div>
+          </md-input-container>
+          <md-input-container class="margin-2">
+            <label>Name</label>
+            <input required="" ng-model="aec.mySlip.name" name="name">
+            <div ng-messages="mySlip.name.$error">
+              <div ng-message="required">This Field Is Required.</div>
+            </div>
+          </md-input-container>
+          <md-input-container class="margin-2">
+            <label>Enrollment Number</label>
+            <input required="" ng-model="aec.mySlip.enrollment" name="enrollment">
+            <div ng-messages="mySlip.enrollment.$error">
+              <div ng-message="required">This Field Is Required.</div>
+            </div>
+          </md-input-container>
+        </div>
+      </form>
+    </md-dialog-content>
+    <md-dialog-actions layout="row">
+      <md-button ng-click="modalReturn('Download')" class="md-primary md-raised">
+       Download
+      </md-button>
+    </md-dialog-actions>
+  </form>
+</md-dialog>

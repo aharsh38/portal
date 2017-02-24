@@ -1,0 +1,114 @@
+body{
+    img{
+        max-width: 100%;
+        max-height: 100%;
+    }
+
+    *:focus{
+        outline-color: transparent;
+    }
+
+    md-input-container.md-input-invalid.md-input-focused label,
+    md-input-container.md-input-invalid [ng-message],
+    md-input-container.md-input-invalid label,
+    md-input-container.md-input-invalid .md-char-counter{
+        color: $input-dark-warn-color;
+    }
+
+    md-input-container.md-default-theme label.md-required:after, md-input-container label.md-required:after{
+        color: $primary;
+    }
+
+    md-input-container.md-input-invalid.md-default-theme label.md-required:after, md-input-container.md-input-invalid label.md-required:after{
+        color: $input-dark-warn-color;
+    }
+
+
+    md-input-container.md-input-invalid .md-input{
+        border-color:  $input-dark-warn-color;
+    }
+
+    @include scrollbars(0.5rem, $grey-600);
+}
+
+.main-container{
+    position: fixed;
+    top: 0;
+    left: 0;
+    bottom: 0;
+    right: 0;
+
+    overflow-x: hidden;
+    overflow-y: hidden;
+
+
+    .al-sidenav{
+        height: 100%;
+        max-width: 256px;
+        background: $sidenav-in;
+        color: #ECEFF1;
+        .md-button{
+            border-radius: 0;
+        }
+    }
+
+    md-toolbar{
+        ng-md-icon{
+            fill :  $header-color;
+        }
+        .md-button{
+            color : $header-color;
+        }
+
+        .md-button.md-default-theme[disabled], .md-button[disabled]{
+            color: $blue-grey-200;
+            ng-md-icon{
+                fill :  $blue-grey-200;
+            }
+        }
+    }
+
+    md-toolbar.md-default-theme:not(.md-menu-toolbar) .md-button:not(.md-raised), md-toolbar:not(.md-menu-toolbar) .md-button:not(.md-raised){
+        font-weight: 600;
+    }
+
+
+
+
+    .al-header{
+        min-height: 50px;
+        background: #fff;
+    }
+
+    .al-header-out{
+        min-height: 50px;
+        background: #fff;
+    }
+
+    .al-main-content-out{
+        background-color: $background-in;
+    }
+
+    .al-main-content{
+            @extend .al-main-content-out;
+            padding: 5px;
+            @media screen and (min-width: 600px){
+                padding: 30px 50px;
+            }
+
+            .md-whiteframe-5dp{
+                background: #fff;
+            }
+    }
+
+    .al-out-content{
+        @media screen and (min-width: 600px){
+            padding: 30px 50px;
+        }
+
+        @media screen and (max-width: 600px){
+            padding: 0;
+        }
+
+    }
+}
