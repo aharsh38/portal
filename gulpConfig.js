@@ -31,7 +31,8 @@ module.exports = {
 			'ng-file-upload.min.js',
 			'angular-validation-match.min.js',
 			'angular-material-icons.min.js',
-			'angular-moment.min.js'
+			'angular-moment.min.js',
+			'ckeditor.js'
 		]
 	},
 	"sass": {

@@ -5,8 +5,10 @@
     .al-subOption-selected{
         background-color: rgba(250,250,250,0.45);
         border-left: 2px solid $secondary-dark;
-        color: $blue-grey-900;
-        font-weight: 600;
+        color: #fff;
+        p{
+          font-weight: bold;
+        }
     }
 
     .md-button{

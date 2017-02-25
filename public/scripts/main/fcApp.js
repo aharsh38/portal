@@ -9,6 +9,16 @@
 	'use strict';
 
 	angular
+		.module('fct_app', [
+			'fct.api',
+			'fct.core'
+		]);
+})();
+
+(function () {
+	'use strict';
+
+	angular
 		.module('fct.core', [
 			'ngAnimate',
 			'ngMessages',
@@ -55,16 +65,6 @@
 	// 		}, 2000);
 	// 	}
 	// }
-})();
-
-(function () {
-	'use strict';
-
-	angular
-		.module('fct_app', [
-			'fct.api',
-			'fct.core'
-		]);
 })();
 
 (function () {
@@ -130,7 +130,9 @@
 				})
 				.state('in_tc.addEvent', {
 					url: '/team/addEvent',
-					templateUrl: '/templates/pages/in/addEvent.html'
+					templateUrl: '/templates/pages/in/addEvent.html',
+					controller: 'AddEventController',
+					controllerAs: 'aec'
 				});
 		}
 	}
@@ -241,6 +243,78 @@
 
 
 (function () {
+    'use strict';
+
+    angular
+      .module('fct.core')
+      .controller('AddEventController', AddEventController);
+
+    AddEventController.$inject = ['$stateParams'];
+    function AddEventController(stateParams) {
+        var vm = this;
+        vm.myEvent = [];
+
+        activate();
+
+        function activate() {
+          initializeCKEditor();
+        }
+
+        function initializeCKEditor() {
+          if(stateParams.editData !== undefined &&
+              stateParams.editData !== null) {
+            vm.myEvent = stateParams.editData;
+            vm.myEvent.event = "Insert";
+          } else {
+            vm.myEvent.event = "Update";
+          }
+
+          if ( CKEDITOR.env.ie && CKEDITOR.env.version < 9 )
+          	CKEDITOR.tools.enableHtml5Elements( document );
+
+          // The trick to keep the editor in the sample quite small
+          // unless user specified own height.
+          CKEDITOR.config.height = 150;
+          CKEDITOR.config.width = 'auto';
+
+          var initSample = ( function() {
+          	var wysiwygareaAvailable = isWysiwygareaAvailable();
+
+          	return function() {
+          		var editorElement = CKEDITOR.document.getById( 'editor' );
+
+          		// Depending on the wysiwygare plugin availability initialize classic or inline editor.
+          		if ( wysiwygareaAvailable ) {
+          			CKEDITOR.replace( 'editor' );
+          		} else {
+          			editorElement.setAttribute( 'contenteditable', 'true' );
+          			CKEDITOR.inline( 'editor' );
+
+          			// TODO we can consider displaying some info box that
+          			// without wysiwygarea the classic editor may not work.
+          		}
+
+          		//CKEDITOR.instances["editor"].getData()
+          		//to get the data
+          	};
+
+          	function isWysiwygareaAvailable() {
+          		// If in development mode, then the wysiwygarea must be available.
+          		// Split REV into two strings so builder does not replace it :D.
+          		if ( CKEDITOR.revision == ( '%RE' + 'V%' ) ) {
+          			return true;
+          		}
+
+          		return !!CKEDITOR.plugins.get( 'wysiwygarea' );
+          	}
+          } )();
+          initSample();
+        }
+    }
+})();
+
+
+(function () {
 	'use strict';
 
 	angular
@@ -329,4 +403,3 @@
 		}
 	}
 })();
-
