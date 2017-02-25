@@ -1,0 +1,119 @@
+.al-add-event-page{
+    .image-upload{
+        position: relative;
+        min-width: 200px;
+        min-height: 240px;
+
+        max-width: 480px;
+        max-height: 600px;
+        cursor: pointer;
+        background-color: $blue-grey-100;
+        border: 1px solid $blue-grey-900;
+
+        @media screen and (min-width: 600px){
+            width:  300px;
+            height: 360px;
+        }
+
+        .image-preview{
+            min-width: 200px;
+            min-height: 240px;
+        }
+
+        span{
+            text-align: center;
+            font-weight: 600;
+            color: $h1-color;
+        }
+
+        .onHover{
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            height: 100%;
+            width: 100%;
+            background-color: rgba($blue-grey-600,0.75);
+            z-index: 1000;
+            display: none;
+
+            .detail{
+                height: 100%;
+                width: 100%;
+            }
+        }
+    }
+
+    .image-upload:hover{
+        background-color: rgba($blue-grey-600,0.7);
+        span{
+            color: $white;
+            font-weight: 600;
+        }
+        .onHover{
+            display: block;
+        }
+    }
+
+    md-input-container{
+        margin-bottom: 5px;
+    }
+
+    .md-button.md-icon-button{
+        margin: 0 6px;
+        min-height: 20px;
+        height: 24px;
+        min-width: 0;
+        line-height: 10px;
+        padding: 0px;
+        width: 24px;
+        border-radius: 50%;
+    }
+
+    md-input-container .md-input, .md-text{
+        color: $blue-grey-500;
+    }
+
+    md-select .md-select-value.md-select-placeholder, md-input-container label, md-input-container:not(.md-input-invalid).md-input-has-value label{
+        color: $grey-700;
+    }
+
+    md-select .md-select-value, md-input-container .md-input{
+        border-color: $grey-700;
+    }
+
+    md-input-container.without-errorspace .md-errors-spacer {
+        min-height: 0px;
+        height: 1px;
+    }
+
+    .feature-row{
+        height: 46px;
+
+        .md-button.md-hue-2.md-primary.md-raised{
+            min-height: 20px;
+            height: 24px;
+            line-height: 24px;
+            span{
+                font-size: 12px;
+            }
+        }
+    }
+
+
+    .md-text{
+        text-transform: capitalize;
+    }
+
+    .baseline-md{
+        p{
+            margin-top: 28px;
+            line-height: 20px;
+        }
+
+        .md-button{
+            margin-top: 18px;
+        }
+    }
+}

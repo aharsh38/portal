@@ -1,4 +1,5 @@
-<div class="margin-tb-2 padding-tb-3 padding-lr-2 page" md-whiteframe="5">
+<!DOCTYPE html>
+<div class="margin-tb-gt-xs-4 margin-lr-gt-xs-2 bg-white margin-xs-1 padding-tb-3 padding-lr-2 page" md-whiteframe="5">
     <h2>Add Event</h2>
     <form class="al-add-event-page margin-top-2" layout-gt-xs="row" layout-xs="column"
       name="myEvent" layout-wrap>
@@ -6,10 +7,34 @@
             <md-input-container>
               <label>Event Name</label>
               <input name="eventName" required="" md-maxlength="100"
-                ng-model="aec.myEvent.eventName">
+                ng-model="aec.myEvent.name">
               <div ng-messages="myEvent.eventName.$error">
                 <div ng-message="required">This Field Is Required.</div>
                 <div ng-message="md-maxlength">The event name has to be less than 100 characters long.</div>
+              </div>
+            </md-input-container>
+            <md-input-container>
+              <label>Tag Line</label>
+              <input name="tagLine" required="" md-maxlength="200"
+                ng-model="aec.myEvent.tagline">
+              <div ng-messages="myEvent.tagLine.$error">
+                <div ng-message="required">This Field Is Required.</div>
+                <div ng-message="md-maxlength">The event name has to be less than 100 characters long.</div>
+              </div>
+            </md-input-container>
+            <md-input-container class="md-block">
+              <label>Description</label>
+              <textarea name="description" ng-model="aec.myEvent.description" md-maxlength="1000" rows="5"></textarea>
+              <div ng-messages="myEvent.description.$error">
+                <div ng-message="required">This Field Is Required.</div>
+                <div ng-message="md-maxlength">The event name has to be less than 100 characters long.</div>
+              </div>
+            </md-input-container>
+            <md-input-container>
+              <label>Problem Statement</label>
+              <input required="" ng-model="aec.myEvent.problemStatement" name="problemStatement">
+              <div ng-messages="myEvent.problemStatement.$error">
+                <div ng-message="required">This Field Is Required.</div>
               </div>
             </md-input-container>
             <md-input-container>
@@ -17,6 +42,14 @@
               <input required="" ng-model="aec.myEvent.eventCode" name="eventCode">
               <div ng-messages="myEvent.eventCode.$error">
                 <div ng-message="required">This Field Is Required.</div>
+              </div>
+            </md-input-container>
+            <md-input-container>
+              <label>Fees</label>
+              <input required="" ng-model="aec.myEvent.fee" name="fee">
+              <div ng-messages="myEvent.fee.$error">
+                <div ng-message="required">This Field Is Required.</div>
+                <div ng-message="number">Please Enter A Valid Amount.</div>
               </div>
             </md-input-container>
             <md-input-container>
@@ -57,10 +90,20 @@
             </div>
         </div>
         <div layout="column" flex="100">
-          <h3>Rules, Details and Regulation</h3>
-          <div id="editor">
+          <h3>Rules</h3>
+          <div id="editorRules">
       		</div>
         </div>
-        <md-button class="md-primary md-raised">{{ aec.myEvent.event }}</md-button>
+        <div layout="column" flex="100">
+          <h3>Specification</h3>
+          <div id="editorSpecification">
+      		</div>
+        </div>
+        <div layout="column" flex="100">
+          <h3>Judging Criteria</h3>
+          <div id="editorJudgingCriteria">
+      		</div>
+        </div>
+        <md-button class="md-primary md-raised" type="submit" ng-click="aec.register()">{{ aec.myEvent.event }}</md-button>
     </form>
 </div>

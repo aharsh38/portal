@@ -14,10 +14,10 @@
 			'angularMoment'
 		]);
 
-	// angular
-	// 	.module('fct.core')
-	// 	.constant('TweenMax', TweenMax)
-	// 	.constant('TimelineMax', TimelineMax);
+	angular
+		.module('fct.core')
+		.constant('TweenMax', TweenMax)
+		.constant('TimelineMax', TimelineMax);
 	//
 	// angular
 	// 	.module('fct.core')

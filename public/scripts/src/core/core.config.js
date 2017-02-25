@@ -66,7 +66,16 @@
 				})
 				.state('in_tc.addEvent', {
 					url: '/team/addEvent',
-					templateUrl: '/templates/pages/in/addEvent.html'
+					templateUrl: '/templates/pages/in/addEvent.html',
+					controller: 'AddEventController',
+					controllerAs: 'aec',
+					params : { editData: null, }
+				})
+				.state('in_tc.showEvent', {
+					url: '/team/showEvent',
+					templateUrl: '/templates/pages/in/showEvent.html',
+					controller: 'ShowEventController',
+					controllerAs: 'sec'
 				});
 		}
 	}
