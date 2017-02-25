@@ -59,6 +59,11 @@
 					url: '/team/login',
 					templateUrl: '/templates/pages/out/login.html'
 				})
+				.state('in_tc.verifyCoordinator', {
+					url: '/verifyCoordinator',
+					templateUrl: '/templates/pages/in/verifyCoordinator.html',
+					controller: 'VerifyCoordinatorController'
+				})
 				.state('in_tc.addEvent', {
 					url: '/team/addEvent',
 					templateUrl: '/templates/pages/in/addEvent.html'
