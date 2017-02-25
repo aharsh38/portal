@@ -8,7 +8,7 @@ var passport = require('passport');
 var config = require('./api/config/config');
 require('./api/config/passport');
 
-var dbURI = 'mongodb://localhost/gtutechfest1';
+var dbURI = 'mongodb://gtutest:gtutechfestldce17@ds161039.mlab.com:61039/gtutechfesttest';
 
 mongoose.Promise = global.Promise;
 

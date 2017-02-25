@@ -59,7 +59,6 @@
 				$rootScope.user.mobileno = payload.mobileno;
 				$rootScope.user.name = payload.name;
 				$rootScope.user.id = payload._id;
-				// console.log($rootScope.user);
 				return (payload.exp > Date.now() / 1000);
 			} else {
 				return false;
