@@ -133,6 +133,14 @@
 					templateUrl: '/templates/pages/in/verifyCoordinator.html',
 					controller: 'VerifyCoordinatorController'
 				})
+				.state('in_tc.collegeList', {
+					url: '/collegeList',
+					templateUrl: '/templates/pages/in/collegeList.html'
+				})
+				.state('in_tc.eventRegistration', {
+					url: '/eventRegistration',
+					templateUrl: '/templates/pages/in/eventRegistration.html'
+				})
 				.state('in_tc.addEvent', {
 					url: '/team/addEvent',
 					templateUrl: '/templates/pages/in/addEvent.html',
