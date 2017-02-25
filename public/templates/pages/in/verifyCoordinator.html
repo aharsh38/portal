@@ -1,0 +1,23 @@
+     <div ng-controller="VerifyCoordinatorController">
+       <ng-md-icon class="md-default-theme" icon="search" style="float:right;margin-right:10px;"></ng-md-icon>
+      <input type="text" name="search" ng-model="search" style="float:right;margin-right:10px;margin-top:10px;">
+        <h1 style="margin-left:140px;margin-top:50px;">Faculty Coordinators</h1>
+      <div layout="row"  ng-repeat="detail in details">
+        <div class="md-parents" layout="column" layout-align="center-center" layout-margin flex>
+   <md-whiteframe class="md-whiteframe-9dp" layout-align="center center" style="width:80%">
+     <md-content layout-padding>
+    <div flex style="float:left">
+      <label>  Name :  </label><span>{{detail.name}}</span><br>
+    <label>  Mobile No:</label><span>{{detail.mobileno}}</span><br>
+    <label>  City:</label><span>{{detail.city}}</span><br>
+   </div>
+    <div flex style="float:right;">
+      <label>  College Name:</label><span>{{detail.collegename}}</span><br>
+      <label>E-mail:</label><span>{{detail.email}}</span><br>
+      <label>Verified:</label><span>{{detail.verified}}</span><br>
+    </div>
+   </md-content>
+    </md-whiteframe>
+  </div>
+  </div>
+  </div>
