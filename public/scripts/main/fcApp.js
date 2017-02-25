@@ -9,16 +9,6 @@
 	'use strict';
 
 	angular
-		.module('fct_app', [
-			'fct.api',
-			'fct.core'
-		]);
-})();
-
-(function () {
-	'use strict';
-
-	angular
 		.module('fct.core', [
 			'ngAnimate',
 			'ngMessages',
@@ -65,6 +55,16 @@
 	// 		}, 2000);
 	// 	}
 	// }
+})();
+
+(function () {
+	'use strict';
+
+	angular
+		.module('fct_app', [
+			'fct.api',
+			'fct.core'
+		]);
 })();
 
 (function () {
@@ -553,12 +553,18 @@
 		.module('fct.core')
 		.controller('FacultyRegistrationController', FacultyRegistrationController);
 
-	FacultyRegistrationController.$inject = ['authService', '$scope', 'asToast', '$rootScope', '$state'];
 
-	function FacultyRegistrationController(authService, $scope, asToast, $rootScope, $state) {
+	FacultyRegistrationController.$inject = ['authService', '$scope', 'fctToast', '$rootScope', '$state','$timeout','$q'];
+
+	function FacultyRegistrationController(authService, $scope, fctToast, $rootScope, $state, $timeout, $q) {
 		var vm = this;
 		vm.user = {};
 		vm.registerButtonClicked = false;
+
+	 vm.states       = loadAll();
+	 vm.selectedItem  = null;
+	 vm.searchText    = null;
+	 vm.querySearch   = querySearch;
 
 		angular.extend(vm, {
 			register: register
@@ -602,5 +608,36 @@
 			$scope.registerForm.$setPristine();
 			$scope.registerForm.$setUntouched();
 		}
+
+		function querySearch (query) {
+		 var results = query ? vm.states.filter( createFilterFor(query) ) : vm.states;
+		 var deferred = $q.defer();
+		 $timeout(function () { deferred.resolve( results ); }, Math.random() * 1000, false);
+		 return deferred.promise;
+	 }
+	 function loadAll() {
+	      var allStates = 'Alabama, Alaska, Arizona, Arkansas, California, Colorado, Connecticut, Delaware,\
+	              Florida, Georgia, Hawaii, Idaho, Illinois, Indiana, Iowa, Kansas, Kentucky, Louisiana,\
+	            ';
+
+	      return allStates.split(/, +/g).map( function (state) {
+	        return {
+	          value: state.toLowerCase(),
+	          display: state
+	        };
+	      });
+	    }
+
+	    /**
+	     * Create filter function for a query string
+	     */
+	    function createFilterFor(query) {
+	      var lowercaseQuery = angular.lowercase(query);
+
+	      return function filterFn(state) {
+	        return (state.value.indexOf(lowercaseQuery) === 0);
+	      };
+
+	    }
 	}
 })();
