@@ -1,0 +1,10 @@
+<div class="main-container" layout="column">
+    <md-toolbar md-scroll-shrink ng-if="true" class="al-header out" md-whiteframe="3">
+        <div ng-include src="'/templates/components/out_header.html'"></div>
+    </md-toolbar>
+    <div class="page-container" layout="row" flex>
+        <md-content flex class="main-content">
+            <ui-view></ui-view>
+        </md-content>
+    </div>
+</div>

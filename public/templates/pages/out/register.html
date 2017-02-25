@@ -1,0 +1,78 @@
+<div class="md-parents" layout="row" layout-align="center-center" flex>
+    <div class="md-whiteframe-9dp bg-white margin-tb-gt-xs-3 padding-gt-xs-3 padding-xs-1" flex-xs="100" flex-gt-xs="50" layout-align="center center">
+        <h2 class="text-center margin-bottom-2">FACULTY COORDINATORS REGISTRATION</h2>
+        <form name="registerForm" layout="column">
+            <md-input-container>
+                <label>Name</label>
+                <input required type="text" name="username" ng-model="frc.user.name" ng-pattern="text" />
+                <div ng-messages="registerForm.username.$error" role="alert">
+                    <div ng-message="required">
+                        Enter full name
+                    </div>
+                </div>
+            </md-input-container>
+            <md-input-container>
+
+                <label for="phonenum">Phone no:</label>
+                <input requireds name="phno" ng-model="frc.user.mobileno" minlength="10" maxlength="11" ng-pattern="/^[0-9]{10}$/" />
+                <div ng-messages="registerForm.phno.$error" role="alert">
+                    <div ng-message-exp="['required', 'minlength', 'maxlength', 'pattern']">
+                        Enter valid phone no.
+                    </div>
+                </div>
+            </md-input-container>
+            <md-input-container>
+
+                <label>Email</label>
+                <input required type="email" name="userEmail" ng-model="frc.user.email" minlength="10" maxlength="100" ng-pattern="/^.+@.+\..+$/" />
+                <div ng-messages="registerForm.userEmail.$error" role="alert">
+                    <div ng-message-exp="['required', 'minlength', 'maxlength', 'pattern']">
+                        It should be a valid email address.
+                    </div>
+                </div>
+            </md-input-container>
+            <md-input-container>
+
+                <label>Password</label>
+                <input required type="password" name="password" ng-model="frc.user.password" minlength="5" maxlength="15" />
+                <div ng-messages="registerForm.userPassword.$error" role="alert">
+                    <div ng-message="required">
+                        Required
+                    </div>
+                    <div ng-message="minlength">
+                        Minimum length should be 5
+                    </div>
+                </div>
+            </md-input-container>
+            <md-input-container>
+                <label>Confirm Password</label>
+                <input required type="password" name="confirmPassword" match="frc.user.password" ng-model="frc.user.confirmPassword" minlength="6" maxlength="15" />
+                <div ng-messages="registerForm.confirmPassword.$error" role="alert">
+                    <div ng-message="required">Required</div>
+                    <div ng-message="minlength">Password should be of minimum 6 characters</div>
+                    <div ng-message="match">Passwords must match</div>
+                </div>
+            </md-input-container>
+            <!-- <md-input-container>
+                <label>College name</label>
+                <input required type="text" name="clgname" ng-model="user.clgname" minlength="5" maxlength="20" />
+                <div ng-messages="registerForm.clgname.$error" role="alert">
+                    <div ng-message="required">
+                        Required
+                    </div>
+                </div>
+            </md-input-container> -->
+            <md-input-container layout="row" layout-align="center center">
+                <md-button flex="40" class="md-raised md-primary" layout="row" layout-align="center center" ng-disabled="registerForm.$invalid" type="submit" ng-click="frc.register($event)">
+                    <b ng-show="!frc.registerButtonClicked">Register</b>
+                    <md-progress-circular ng-show="frc.registerButtonClicked" ng-disabled="registerForm.$invalid" class="md-black mini" md-diameter="20px"></md-progress-circular>
+                </md-button>
+            </md-input-container>
+
+            <div layout="row" layout-align="center center">
+                <p>Already have an account?</p>
+                <md-button class="md-primary" ui-sref="^.login">Login</md-button>
+            </div>
+        </form>
+    </div>
+</div>

@@ -1,6 +1,33 @@
-<div class"md-whiteframe-2 margin-gt-xs-5 margin-xs-1 padding-gt-xs-4 padding-xs-0">
-    <md-input-container>
-        <label>Username</label>
-        <input type="text" ng-model="lc.user.name">
-    </md-input-container>
+<div class="md-parents" layout="row" layout-align="center center" layout-margin flex>
+    <div class="md-whiteframe-9dp bg-white padding-gt-xs-4 padding-xs-" flex-gt-xs="30"  layout-align="center center">
+        <form name="projectForm" layout="column" >
+            <h2>Login </h2>
+            <md-input-container>
+                <label>Email</label>
+                <input required type="email" name="userEmail" ng-model="project.userEmail" minlength="10" maxlength="100" ng-pattern="/^.+@.+\..+$/" />
+                <div ng-messages="projectForm.userEmail.$error" role="alert">
+                    <div ng-message-exp="['required', 'minlength', 'maxlength', 'pattern']">
+                        It should be a valid email address.
+                    </div>
+                </div>
+            </md-input-container>
+            <md-input-container>
+                <!-- <md-icon class="md-default-theme" md-svg-icon="pen.svg"></md-icon> -->
+                <label>Password</label>
+                <input required type="password" name="password" ng-model="project.userPassword" minlength="5" maxlength="15" />
+                <div ng-messages="projectForm.userPassword.$error" role="alert">
+                    <div ng-message-exp="['required', 'minlength', 'maxlength']">
+                        Not a valid length.
+                    </div>
+                </div>
+            </md-input-container>
+            <md-input-container layout="row" layout-align="center center">
+                <md-button flex="50" class="md-raised md-primary">Login</md-button>
+            </md-input-container>
+            <div class="margin-top-2" layout="row" layout-align="space-between center">
+                <md-button class="md-primary" ui-sref="^.register">Register</md-button>
+                <md-button class="md-warn" ui-sref="^.forgot">Forgot Password?</md-button>
+            </div>
+        </form>
+    </div>
 </div>

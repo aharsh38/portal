@@ -9,7 +9,7 @@
 
 	function configName($mdThemingProvider, $stateProvider, $urlRouterProvider, $locationProvider) {
 		var themePalette = {
-			primary: "light-blue",
+			primary: "blue",
 			accent: "amber",
 			warn: "red"
 		};
@@ -43,17 +43,26 @@
 				.state('in_tc', {
 					templateUrl: '/templates/layouts/in_tc.html'
 				})
-				.state('in_fc.login', {
+				.state('out.login', {
 					url: '/login',
 					templateUrl: '/templates/pages/out/login.html'
 					// controller: 'LoginController',
 					// controllerAs: 'lc'
 				})
-				.state('in_tc.login', {
+				.state('out.register', {
+					url: '/register',
+					templateUrl: '/templates/pages/out/register.html',
+					controller: 'FacultyRegistrationController',
+					controllerAs: 'frc'
+				})
+				.state('in_tc.verifyFaculty', {
 					url: '/team/login',
 					templateUrl: '/templates/pages/out/login.html'
 				})
-				.state('');
+				.state('in_tc.addEvent', {
+					url: '/team/addEvent',
+					templateUrl: '/templates/pages/in/addEvent.html'
+				});
 		}
 	}
 })();

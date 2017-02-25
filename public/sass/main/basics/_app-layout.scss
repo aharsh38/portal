@@ -1,3 +1,7 @@
+.bg-white{
+        background: #fff;
+}
+
 body{
     img{
         max-width: 100%;
@@ -52,7 +56,12 @@ body{
         }
     }
 
-    md-toolbar{
+
+    md-toolbar:not(.md-menu-toolbar).in{
+        color: #000;
+    }
+
+    md-toolbar.in{
         ng-md-icon{
             fill :  $header-color;
         }
@@ -77,7 +86,9 @@ body{
 
     .al-header{
         min-height: 50px;
-        background: #fff;
+        &.in{
+            background: #fff;
+        }
     }
 
     .al-header-out{

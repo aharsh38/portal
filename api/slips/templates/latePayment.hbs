@@ -1,0 +1,17 @@
+Team Id : {{teamId}}
+Team Leader:
+Name : {{team_leader.name}}
+email : {{team_leader.email}}
+branch : {{team_leader.branch}}
+college Name : {{team_leader.college_name}}
+<br>
+participants: {{other_participants.length}}
+<ul>
+  {{#other_participants}}
+    <li>name: {{name}}
+        email: {{email}}
+        branch: {{branch}}
+        college Name : {{college_name}}
+    </li>
+  {{/other_participants}}
+</ul>

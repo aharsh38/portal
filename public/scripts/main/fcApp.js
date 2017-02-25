@@ -78,7 +78,7 @@
 
 	function configName($mdThemingProvider, $stateProvider, $urlRouterProvider, $locationProvider) {
 		var themePalette = {
-			primary: "light-blue",
+			primary: "blue",
 			accent: "amber",
 			warn: "red"
 		};
@@ -112,11 +112,25 @@
 				.state('in_tc', {
 					templateUrl: '/templates/layouts/in_tc.html'
 				})
-				.state('in_fc.login', {
+				.state('out.login', {
 					url: '/login',
 					templateUrl: '/templates/pages/out/login.html'
 					// controller: 'LoginController',
 					// controllerAs: 'lc'
+				})
+				.state('out.register', {
+					url: '/register',
+					templateUrl: '/templates/pages/out/register.html',
+					controller: 'FacultyRegistrationController',
+					controllerAs: 'frc'
+				})
+				.state('in_tc.verifyFaculty', {
+					url: '/team/login',
+					templateUrl: '/templates/pages/out/login.html'
+				})
+				.state('in_tc.addEvent', {
+					url: '/team/addEvent',
+					templateUrl: '/templates/pages/in/addEvent.html'
 				});
 		}
 	}
@@ -130,23 +144,27 @@
 		.module('fct.api')
 		.factory('authService', authService);
 
+	authService.$inject = ['$http'];
+
 	function authService($http) {
 		var service = {
-			login: login,
-            register: register
+			facultyLogin: facultyLogin,
+			facultyRegister: facultyRegister
 		};
 
 		return service;
 
-		function login(user) {
-			return $http.post('techfest.ldce.ac.in/api/auth/login', user)
+		function facultyLogin(user) {
+			return $http.post('/api/auth/faculty/login', user)
 				.then(resolveFunc)
 				.catch(rejectFunc);
 		}
 
-        function register() {
-
-        }
+		function facultyRegister(user) {
+			return $http.post('/api/auth/faculty/register', user)
+				.then(resolveFunc)
+				.catch(rejectFunc);
+		}
 
 		function resolveFunc(response) {
 			return response;
@@ -154,6 +172,37 @@
 
 		function rejectFunc(error) {
 			return error;
+		}
+
+		function saveToken(token) {
+			$window.localStorage['auth-token'] = token;
+		}
+
+		function getToken() {
+			return $window.localStorage['auth-token'];
+		}
+
+		function removeToken() {
+			$window.localStorage.removeItem('auth-token');
+		}
+
+		function checkLoggedIn() {
+			var token = getToken();
+			var payload;
+			if (token) {
+				payload = token.split('.')[1];
+				payload = $window.atob(payload);
+				payload = JSON.parse(payload);
+				$rootScope.user = {};
+				$rootScope.user.email = payload.email;
+				$rootScope.user.mobileno = payload.mobileno;
+				$rootScope.user.name = payload.name;
+				$rootScope.user.id = payload._id;
+				// console.log($rootScope.user);
+				return (payload.exp > Date.now() / 1000);
+			} else {
+				return false;
+			}
 		}
 	}
 })();
@@ -224,3 +273,61 @@
 	}
 })();
 
+(function () {
+	'use strict';
+
+	angular
+		.module('fct.core')
+		.controller('FacultyRegistrationController', FacultyRegistrationController);
+
+	FacultyRegistrationController.$inject = ['authService', '$scope', 'asToast', '$rootScope', '$state'];
+
+	function FacultyRegistrationController(authService, $scope, asToast, $rootScope, $state) {
+		var vm = this;
+		vm.user = {};
+		vm.registerButtonClicked = false;
+
+		angular.extend(vm, {
+			register: register
+		});
+
+		activate();
+
+		function activate() {
+
+		}
+
+		function register() {
+			if (vm.registerButtonClicked) {
+				event.preventDefault();
+			} else {
+				vm.registerButtonClicked = true;
+			}
+			var newUser = angular.copy(vm.user);
+			authService.register(newUser);
+		}
+
+		$rootScope.$on('SuccessRegister', registerSuccess);
+		$rootScope.$on('ErrorRegister', registerFailure);
+
+		function registerSuccess(event) {
+			asToast.showToast("Succefully Registered", true);
+			vm.registerButtonClicked = false;
+			resetForm();
+			$state.go('inapp.orders');
+		}
+
+		function registerFailure(event, error) {
+			var msg = error.data.errMsg.toString();
+			vm.registerButtonClicked = false;
+			asToast.showToast(msg);
+			resetForm();
+		}
+
+		function resetForm() {
+			vm.user = {};
+			$scope.registerForm.$setPristine();
+			$scope.registerForm.$setUntouched();
+		}
+	}
+})();
