@@ -5,15 +5,36 @@
       .module('fct.core')
       .controller('AddEventController', AddEventController);
 
-    AddEventController.$inject = ['$stateParams'];
-    function AddEventController(stateParams) {
+    AddEventController.$inject = ['$stateParams', 'eventService', '$rootScope'];
+
+    function AddEventController(stateParams, eventService, $rootScope) {
         var vm = this;
-        vm.myEvent = [];
+        vm.myEvent = {};
+
+        angular.extend(vm, {
+            register: register
+        });
 
         activate();
 
         function activate() {
           initializeCKEditor();
+        }
+
+        function register() {alert(JSON.stringify(vm.myEvent));
+          //eventService.addEvent(vm.myEvent);
+        }
+
+    		$rootScope.$on('registerSuccess', registerSuccess);
+        $rootScope.$on('registerFailure', registerFailure);
+
+    		function registerSuccess(event) {
+            asToast.showToast("Registered",true);
+
+        }
+
+        function registerFailure(event, error) {
+            asToast.showToast(error.data.message);
         }
 
         function initializeCKEditor() {
@@ -41,10 +62,14 @@
 
           		// Depending on the wysiwygare plugin availability initialize classic or inline editor.
           		if ( wysiwygareaAvailable ) {
-          			CKEDITOR.replace( 'editor' );
+          			CKEDITOR.replace( 'editorRules' );
+          			CKEDITOR.replace( 'editorSpecification' );
+          			CKEDITOR.replace( 'editorJudgingCriteria' );
           		} else {
           			editorElement.setAttribute( 'contenteditable', 'true' );
-          			CKEDITOR.inline( 'editor' );
+          			CKEDITOR.inline( 'editorRules' );
+          			CKEDITOR.inline( 'editorSpecification' );
+          			CKEDITOR.inline( 'editorJudgingCriteria' );
 
           			// TODO we can consider displaying some info box that
           			// without wysiwygarea the classic editor may not work.

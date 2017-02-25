@@ -31,10 +31,10 @@
 			'angularMoment'
 		]);
 
-	// angular
-	// 	.module('fct.core')
-	// 	.constant('TweenMax', TweenMax)
-	// 	.constant('TimelineMax', TimelineMax);
+	angular
+		.module('fct.core')
+		.constant('TweenMax', TweenMax)
+		.constant('TimelineMax', TimelineMax);
 	//
 	// angular
 	// 	.module('fct.core')
@@ -132,7 +132,14 @@
 					url: '/team/addEvent',
 					templateUrl: '/templates/pages/in/addEvent.html',
 					controller: 'AddEventController',
-					controllerAs: 'aec'
+					controllerAs: 'aec',
+					params : { editData: null, }
+				})
+				.state('in_tc.showEvent', {
+					url: '/team/showEvent',
+					templateUrl: '/templates/pages/in/showEvent.html',
+					controller: 'ShowEventController',
+					controllerAs: 'sec'
 				});
 		}
 	}
@@ -212,6 +219,39 @@
 	'use strict';
 
 	angular
+	  .module('fct.core')
+	  .factory('eventService', eventService);
+
+	eventService.$inject = ['$http'];
+
+	function eventService($http) {
+	  var service = {
+	    addEvent: addEvent
+	  };
+
+	  return service;
+
+	  function addEvent(event) {
+			alert(JSON.stringify(event));
+			// return $http.post('/api/event/events', event)
+			// 	.then(resolveFunc)
+			// 	.catch(rejectFunc);
+	  }
+
+		function resolveFunc(response) {
+			return response;
+		}
+
+		function rejectFunc(error) {
+			return error;
+		}
+	}
+})();
+
+(function () {
+	'use strict';
+
+	angular
 		.module('fct.core')
 		.factory('fctToast', fctToast);
 
@@ -241,6 +281,61 @@
 	}
 })();
 
+(function () {
+  'use strict';
+
+  angular
+    .module('fct.core')
+    .directive('eventCard', eventCard);
+
+  eventCard.$inject = [];
+  
+  function eventCard() {
+    var directive = {
+          restrict: 'E',
+          templateUrl: '/templates/components/cards/eventCard.html',
+          link: linkFunc,
+          scope: {
+              eventdata : '='
+          },
+          controller: 'EventCardController',
+          controllerAs: 'ecc'
+      };
+
+      return directive;
+
+      function linkFunc($scope, $element, $attributes) {
+          $scope.openCard = false;
+          $scope.caret = 'expand_less';
+          $scope.toggleCard = toggleCard;
+          console.log($scope.userdata);
+
+          function toggleCard() {
+              $scope.openCard = !($scope.openCard);
+
+              if($scope.openCard === true){
+                  $scope.caret = 'expand_more';
+              }
+              else {
+                  $scope.caret = 'expand_less';
+              }
+          }
+      }
+
+  }
+
+	angular
+    .module('fct.core')
+    .controller('EventCardController', EventCardController);
+
+  EventCardController.$inject = ['$scope'];
+
+  function EventCardController($scope) {
+
+  }
+
+})();
+
 
 (function () {
     'use strict';
@@ -249,15 +344,36 @@
       .module('fct.core')
       .controller('AddEventController', AddEventController);
 
-    AddEventController.$inject = ['$stateParams'];
-    function AddEventController(stateParams) {
+    AddEventController.$inject = ['$stateParams', 'eventService', '$rootScope'];
+
+    function AddEventController(stateParams, eventService, $rootScope) {
         var vm = this;
-        vm.myEvent = [];
+        vm.myEvent = {};
+
+        angular.extend(vm, {
+            register: register
+        });
 
         activate();
 
         function activate() {
           initializeCKEditor();
+        }
+
+        function register() {alert(JSON.stringify(vm.myEvent));
+          //eventService.addEvent(vm.myEvent);
+        }
+
+    		$rootScope.$on('registerSuccess', registerSuccess);
+        $rootScope.$on('registerFailure', registerFailure);
+
+    		function registerSuccess(event) {
+            asToast.showToast("Registered",true);
+
+        }
+
+        function registerFailure(event, error) {
+            asToast.showToast(error.data.message);
         }
 
         function initializeCKEditor() {
@@ -285,10 +401,14 @@
 
           		// Depending on the wysiwygare plugin availability initialize classic or inline editor.
           		if ( wysiwygareaAvailable ) {
-          			CKEDITOR.replace( 'editor' );
+          			CKEDITOR.replace( 'editorRules' );
+          			CKEDITOR.replace( 'editorSpecification' );
+          			CKEDITOR.replace( 'editorJudgingCriteria' );
           		} else {
           			editorElement.setAttribute( 'contenteditable', 'true' );
-          			CKEDITOR.inline( 'editor' );
+          			CKEDITOR.inline( 'editorRules' );
+          			CKEDITOR.inline( 'editorSpecification' );
+          			CKEDITOR.inline( 'editorJudgingCriteria' );
 
           			// TODO we can consider displaying some info box that
           			// without wysiwygarea the classic editor may not work.
@@ -309,6 +429,64 @@
           	}
           } )();
           initSample();
+        }
+    }
+})();
+
+(function () {
+    'use strict';
+
+    angular
+      .module('fct.core')
+      .controller('ShowEventController', ShowEventController);
+
+    ShowEventController.$inject = [];
+    
+    function ShowEventController() {
+        var vm = this;
+
+        activate();
+        var joinedDate = "ab";
+
+        function activate() {
+
+          vm.dummyEvents = [{
+            teamId: '32049',
+            teamName: 'Mona Lisa',
+            leaderName: 'Monit',
+            contactNumber: '9329239499',
+            eventName: 'Scrabble+',
+            email: 'abc@123.com',
+            eventSection: 'IT Department'
+          },
+          {
+            teamId: '32048',
+            teamName: 'Mango',
+            leaderName: 'Monit',
+            contactNumber: '9329239499',
+            eventName: 'Scrabble+',
+            email: 'abc@123.com',
+            eventSection: 'IT Department'
+          },
+          {
+            teamId: '32047',
+            teamName: 'Rascals',
+            leaderName: 'Monit',
+            contactNumber: '9329239499',
+            eventName: 'Scrabble+',
+            email: 'abc@123.com',
+            eventSection: 'IT Department'
+          },
+          {
+            teamId: '32046',
+            teamName: 'Rockerstar',
+            leaderName: 'Monit',
+            contactNumber: '9329239499',
+            eventName: 'Scrabble+',
+            email: 'abc@123.com',
+            eventSection: 'IT Department'
+          },];
+
         }
     }
 })();
@@ -402,4 +580,44 @@
 			$scope.registerForm.$setUntouched();
 		}
 	}
+})();
+
+(function() {
+
+    angular.module('fct.core')
+    .animation('.slide-vertical', slideVertical);
+
+    slideVertical.$inject = ['TweenMax'];
+
+    function slideVertical(TweenMax) {
+        return {
+            addClass: addHideClass,
+            removeClass: removeHideClass
+        };
+    }
+
+    function addHideClass(element, className, done) {
+      if (className == 'ng-hide') {
+        // var timeline = new TimelineMax();
+        TweenMax.set(element,{height:"auto", opacity:0});
+        TweenMax.from(element, 0.3, {opacity: 1, ease: Power0.easeNone});
+        TweenMax.to(element, 0.4, {height:0, ease:  Power2.easeOut, onComplete: done}).delay(0.25);
+      }
+      else {
+        done();
+      }
+
+    }
+
+    function removeHideClass(element, className, done) {
+      if (className == 'ng-hide') {
+        element.removeClass('ng-hide');
+        TweenMax.set(element,{height:"auto", opacity:0});
+        TweenMax.from(element, 0.4, {height:0, ease: Power2.easeIn});
+        TweenMax.to(element, 0.3, {opacity: 1, ease: Power2.easeIn, onComplete:done}).delay(0.35);
+      }
+      else {
+        done();
+      }
+    }
 })();

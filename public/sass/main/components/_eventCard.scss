@@ -1,0 +1,100 @@
+.al-user-card{
+    border-radius: 10px;
+    background: $blue-grey-100;
+
+    @media screen and (min-height : 0px) and (max-height : 600px){
+        .padding-1{
+            padding: 5px;
+        }
+    }
+
+    a{
+        color: $blue-grey-800;
+        text-decoration: none;
+        &:hover{
+            color: $blue-grey-900;
+            text-decoration: underline;
+        }
+    }
+
+    .header{
+        border-top-left-radius: 10px;
+        border-top-right-radius: 10px;
+        min-height: 36px;
+        background: $blue-grey-700;
+        color: $grey-50;
+
+        @media screen and (min-width:  600px){
+            height: 56px;
+        }
+        
+        .width-space{
+            min-height: 10px;
+            // @media screen and (min-width: 600px){
+            //     min-height: 10px;
+            // }
+        }
+        .user-img{
+            // border: 1px solid $blue-grey-700;
+
+            border-radius: 50%;
+            height: 24px;
+            width: 24px;
+            padding: 5px;
+            background-color: $grey-50;
+            fill : $blue-grey-500;
+        }
+
+        // &.request{
+        //         background: $blue-grey-500;
+        //
+        //     .user-img{
+        //
+        //     }
+        // }
+        //
+        // &.customer{
+        //
+        // }
+        //
+        // &.reseller{
+        //     background: $blue-700;
+        // }
+
+        &.round-borders{
+            border-bottom-left-radius: 10px;
+            border-bottom-right-radius: 10px;
+        }
+    }
+
+
+
+    .md-button{
+        margin-top: 0px;
+        margin-bottom: 0px;
+    }
+
+    .expand-button.md-button{
+        min-height: 24px;
+        height: 24px;
+        padding: 0px;
+        @include roundButtonInverse($blue-grey-100, $blue-grey-700, 20px, 2px);
+    }
+
+    .order-button.md-button{
+        @include roundButtonInverse($grey-50, $grey-900, 20px, 2px,$grey-50,true);
+    }
+
+    .reseller-button.md-button{
+        @include roundButtonInverse($yellow-200, $grey-900,20px,2px, $yellow-200, true);
+    }
+
+    .accept-button.md-button{
+        @include roundButtonInverse($green-300, $grey-900, 20px, 2px, $green-100, true);
+    }
+
+    .decline-button.md-button{
+        @include roundButtonInverse($red-300, $grey-900, 20px, 2px, $red-100, true);
+    }
+
+}
