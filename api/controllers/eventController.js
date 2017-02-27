@@ -1,3 +1,5 @@
+var eventSections = require('../config/eventList').event_sections;
+
 var eventController = function (Event) {
 
 	function throwError(response, errorFor, error) {
@@ -27,6 +29,26 @@ var eventController = function (Event) {
 		var i = 0;
 		var event_classification = [];
 
+		// Event.find().exec(function (error, events) {
+		// 	if (error) {
+		// 		throwError(response, "Finding All Events", error);
+		// 	} else {
+		// 		if (events.length !== 0) {
+		// 			var objToSend = [];
+		// 			_.each(eventSections, function (el) {
+		// 				objToSend.push({
+		// 					"section": el,
+		// 					"events": []
+		// 				});
+		// 			});
+		//
+		// 			_.each(events, function (element, index, list) {
+		//
+		// 			});
+		// 		}
+		// 	}
+		// });
+
 		Event.aggregate(
 			[{
 				$group: {
@@ -43,7 +65,7 @@ var eventController = function (Event) {
 
 				for (var j = 0; j < data.length; j++) {
 					for (var k = 0; k < data[j]['events'].length; k++) {
-						classification.push({
+						event_classification.push({
 							section_name: data[j]['_id'],
 							event_name: data[j]['events'][k]
 						});
@@ -78,7 +100,7 @@ var eventController = function (Event) {
 	}
 
 	function updateEvent(request, response) {
-		request.event = request.body.event;
+		request.event = request.body;
 		request.event.save(function (error) {
 			if (error) {
 				throwError(response, "Updating Event", error);

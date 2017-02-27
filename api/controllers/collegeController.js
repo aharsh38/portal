@@ -1,30 +1,74 @@
 var express = require('express');
+var node_xj = require("xls-to-json");
+var _ = require("underscore");
 
-var collegeController = function(College) {
+var collegeController = function (College) {
 
-    function importCollege() {
+	function throwError(response, error, status, message, errorFor) {
+		response.status(status);
+		response.json({
+			"error": {
+				"message": message,
+				"for": errorFor,
+				"original": error
+			}
+		});
+	}
 
-    }
+	function importCollege(request, response) {
+		// var college = new College();
+		// mongoose.connection.collections['collectionName'].drop( function(err) {
+		//     console.log('collection dropped');
+		// });
+		node_xj({
+			input: "data.xlsx", // input xls
+			output: "output.json" // output json
+		}, function (error, result) {
+			if (error) {
+				throwError(response, error, 500, "Internal Server Error", "failed");
+			} else {
+				_.each(result, function (element, index, list) {
+					var college = new College(element);
+					college.save(function (error) {
+						if (error) {
+							throwError(response, error, 500, "Internal server error", "Failed");
+						} else {
+							if (index == result.length) {
+								response.status(200);
+								response.json({
+									"message": "Done"
+								});
+							}
+						}
+					});
+				});
+			}
+		});
+	}
 
-    function getAllCollege() {
-      College.find().exec(function(error, college){
-        if (error) {
-          throwError(response, error, 500, 'Internal Server Error', 'College Fetch Failed');
-          return;
-        }
-        if (!college) {
-            throwError(response, error, 404, 'Not Found', 'College not found');
-        } else {
-          response.status(200);
-          response.json(college);
-        }
-      });
-    }
+	function getAllCollege(request, response) {
+		var q = {};
+		if (request.query) {
 
-    var mc = {};
-    mc.importCollege = importCollege;
-    mc.getAllCollege = getAllCollege;
-    return mc;
+		}
+		College.find().exec(function (error, college) {
+			if (error) {
+				throwError(response, error, 500, 'Internal Server Error', 'College Fetch Failed');
+				return;
+			}
+			if (!college) {
+				throwError(response, error, 404, 'Not Found', 'College not found');
+			} else {
+				response.status(200);
+				response.json(college);
+			}
+		});
+	}
+
+	var mc = {};
+	mc.importCollege = importCollege;
+	mc.getAllCollege = getAllCollege;
+	return mc;
 };
 
 module.exports = collegeController;

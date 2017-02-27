@@ -1,0 +1,46 @@
+<div class="margin-tb-gt-xs-4 margin-lr-gt-xs-2 bg-white margin-xs-1 padding-tb-3 padding-lr-2 page" md-whiteframe="5">
+    <h2>Settings</h2>
+
+    <hr>
+
+
+
+    <h3 class="margin-top-3">Change Password</h3>
+    <form name="changePasswordForm" ng-model="changePasswordForm" layout-gt-xs="row" class="margin-top-3" layout-wrap>
+        <div flex-gt-xs="50" layout="column">
+            <md-input-container>
+                <label>Current Password</label>
+                <input type="password" required minlength="6" name="oldPassword" ng-model="fsc.user.currentPassword">
+                <div ng-messages="changePasswordForm.oldPassword.$error">
+                    <div ng-message="required">This is required.</div>
+                    <div ng-message="minlength">Password must be atleast 6 characters long.</div>
+                </div>
+            </md-input-container>
+
+            <md-input-container>
+                <label>New Password</label>
+                <input required minlength="6" name="password"  type="password" ng-model="fsc.user.newPassword">
+                <div ng-messages="changePasswordForm.password.$error">
+                    <div ng-message="required">This is required.</div>
+                    <div ng-message="minlength">Password must be atleast 6 characters long.</div>
+                </div>
+            </md-input-container>
+
+            <md-input-container>
+                <label>Confirm Password</label>
+                <input required minlength="6" match="fsc.user.newPassword" name="confirmPassword" type="password" ng-model="fsc.user.confirmPassword">
+                <div ng-messages="changePasswordForm.confirmPassword.$error">
+                    <div ng-message="required">This is required.</div>
+                    <div ng-message="minlength">Password must be atleast 6 characters long.</div>
+                    <div ng-message="match">Passwords must match</div>
+                </div>
+            </md-input-container>
+        </div>
+        <div flex-offset-gt-xs="5" layout="column" class="padding-lr-2">
+            <md-button ng-click="fsc.changePassword()" class="md-raised md-primary md-hue-1 md-big" ng-disabled="changePasswordForm.$invalid" aria-label="edit" layout="column" layout-align="center center">
+                <b ng-show="!fsc.updateInfo">Change Password</b>
+                <md-progress-circular ng-show="fsc.updateInfo" ng-disabled="!fsc.updateInfo" class="md-white" md-diameter="20px"></md-progress-circular>
+            </md-button>
+        </div>
+    </form>
+</div>

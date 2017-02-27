@@ -320,3 +320,25 @@ md-progress-circular.md-default-theme.md-blue-big path, md-progress-circular.md-
 .border-primary{
     border: 1px solid $primary;
 }
+
+md-toast{
+    margin: 10px 40px;
+}
+
+
+// md-toast.md-default-theme.md-toast-warn .md-toast-content, md-toast.md-toast-warn .md-toast-content{
+//     color: $red-300;
+//     font-weight: 600;
+// }
+
+md-toast.md-default-theme.md-toast-warn .md-toast-content, md-toast.md-toast-warn .md-toast-content{
+    color: $white;
+    background-color: $red-700;
+    font-weight: 600;
+}
+
+md-toast.md-default-theme.md-toast-success .md-toast-content, md-toast.md-toast-success .md-toast-content{
+    color: $white;
+    background-color: $green-700;
+    font-weight: 600;
+}

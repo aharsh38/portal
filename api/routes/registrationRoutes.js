@@ -12,7 +12,7 @@ var registrationRoutes = function (Registration) {
 	registrationRouter.get('/exportRegistration', registrationController.exportRegistration);
 	registrationRouter.get('/getAllRegistrationData', registrationController.getAllRegistrationData);
 	registrationRouter.post('/register', registrationController.register);
-  registrationRouter.get('/downloadSlip/:teamId', registrationController.downloadSlip);
+    registrationRouter.get('/downloadSlip/:teamId', registrationController.downloadSlip);
 	//registrationAuthRouter.patch('/oneTimeEdit/:teamId', registrationController.oneTimeEdit);
 	//export Registration
 	return registrationRouter;

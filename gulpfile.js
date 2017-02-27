@@ -91,4 +91,19 @@ gulp.task('watch', ['scripts::build', 'sass::build'], function () {
 		.pipe(watchFilter);
 });
 
+gulp.task('node', function () {
+	plugins.nodemon({
+			script: 'server.js',
+			ext: 'js',
+			watch: './api',
+			ignore: ['./node_modules/**']
+		})
+		.on('start', ['watch'])
+		.on('change', ['watch'])
+		.on('restart', function () {
+			console.log('Restarting');
+		});
+});
+
+
 gulp.task('default', ['watch']);

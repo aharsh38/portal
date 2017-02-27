@@ -1,10 +1,11 @@
 <div class="md-parents" layout="row" layout-align="center-center" flex>
     <div class="md-whiteframe-9dp bg-white margin-tb-gt-xs-3 padding-gt-xs-3 padding-xs-1" flex-xs="100" flex-gt-xs="50" layout-align="center center">
-        <h2 class="text-center margin-bottom-2">FACULTY COORDINATORS REGISTRATION</h2>
+        <h2 class="text-center margin-bottom-2">TEAM MEMBERS REGISTRATION</h2>
         <form name="registerForm" layout="column" ng-submit="$event.preventDefault()">
+
             <md-input-container>
                 <label>Name</label>
-                <input required type="text" name="username" ng-model="frc.user.name" ng-pattern="text" />
+                <input required type="text" name="username" ng-model="mrc.user.name" ng-pattern="text" />
                 <div ng-messages="registerForm.username.$error" role="alert">
                     <div ng-message="required">
                         Enter full name
@@ -13,9 +14,8 @@
             </md-input-container>
 
             <md-input-container>
-
                 <label>Email</label>
-                <input required type="email" name="userEmail" ng-model="frc.user.email" minlength="10" maxlength="100" ng-pattern="/^.+@.+\..+$/" />
+                <input required type="email" name="userEmail" ng-model="mrc.user.email" minlength="10" maxlength="100" ng-pattern="/^.+@.+\..+$/" />
                 <div ng-messages="registerForm.userEmail.$error" role="alert">
                   <div ng-message="required">This is required.</div>
                   <div ng-message="email">Invalid e-mail address.</div>
@@ -23,28 +23,27 @@
             </md-input-container>
 
             <md-input-container>
-
                 <label>Mobile no:</label>
-                <input required name="phno" ng-model="frc.user.mobileno" minlength="10" maxlength="11" ng-pattern="/^[0-9]{10}$/" />
+                <input required name="phno" ng-model="mrc.user.mobileno" minlength="10" maxlength="10" ng-pattern="/^[0-9]{10}$/" />
                 <div ng-messages="registerForm.phno.$error" role="alert">
                   <div ng-message="required">This is required.</div>
                     <div ng-message="maxlength">Invalid Phone No.</div>
-
                 </div>
             </md-input-container>
 
             <md-input-container>
                 <label>Password</label>
-                <input required type="password" name="password" ng-model="frc.user.password" minlength="6" maxlength="15" />
+                <input required type="password" name="password" ng-model="mrc.user.password" minlength="6" maxlength="15" />
                 <div ng-messages="registerForm.password.$error" role="alert">
                     <div ng-message="required">Required</div>
                     <div ng-message="minlength">Password should be of minimum 6 characters</div>
 
                 </div>
             </md-input-container>
+
             <md-input-container>
                 <label>Confirm Password</label>
-                <input required type="password" name="confirmPassword" match="frc.user.password" ng-model="frc.user.confirmPassword" minlength="6" maxlength="15" />
+                <input required type="password" name="confirmPassword" match="mrc.user.password" ng-model="mrc.user.confirmPassword" minlength="6" maxlength="15" />
                 <div ng-messages="registerForm.confirmPassword.$error" role="alert">
                     <div ng-message="required">Required</div>
                     <div ng-message="minlength">Password should be of minimum 6 characters</div>
@@ -52,38 +51,24 @@
                 </div>
             </md-input-container>
 
-            <md-autocomplete flex required
-            md-input-name="autocompleteField"
-            md-input-minlength="2"
-            md-input-maxlength="18"
-            md-no-cache="frc.noCache"
-            md-selected-item="frc.user.college"
-            md-search-text="frc.searchText"
-            md-items="item in frc.querySearch(frc.searchText)"
-            md-item-text="item.display"
-            md-require-match
-            md-floating-label="College">
-          <md-item-template>
-            <span md-highlight-text="frc.searchText">{{item.display}}</span>
-          </md-item-template>
-          <div ng-messages="registerForm.autocompleteField.$error" ng-if="registerForm.autocompleteField.$touched">
-            <div ng-message="required">You must select one college.</div>
-            <div ng-message="md-require-match">Please select an existing college.</div>
-            <div ng-message="minlength">Your entry is not long enough.</div>
-            <div ng-message="maxlength">Your entry is too long.</div>
-          </div>
-        </md-autocomplete>
+            <md-input-container>
+                <label>Secret</label>
+                <input required type="password" name="secret" ng-model="mrc.user.secret" />
+                <div ng-messages="registerForm.secret.$error" role="alert">
+                    <div ng-message="required">Required</div>
+                </div>
+            </md-input-container>
 
             <md-input-container layout="row" layout-align="center center">
-                <md-button flex="40" class="md-raised md-primary" layout="row" layout-align="center center" ng-disabled="registerForm.$invalid" type="submit" ng-click="frc.register($event)">
-                    <b ng-show="!frc.registerButtonClicked">Register</b>
-                    <md-progress-circular ng-show="frc.registerButtonClicked" ng-disabled="registerForm.$invalid" class="md-black mini" md-diameter="20px"></md-progress-circular>
+                <md-button flex="40" class="md-raised md-primary" layout="row" layout-align="center center" ng-disabled="registerForm.$invalid" type="submit" ng-click="mrc.register($event)">
+                    <b ng-show="!mrc.registerButtonClicked">Register</b>
+                    <md-progress-circular ng-show="mrc.registerButtonClicked" ng-disabled="registerForm.$invalid" class="md-black mini" md-diameter="20px"></md-progress-circular>
                 </md-button>
             </md-input-container>
 
             <div layout="row" layout-align="center center">
                 <p>Already have an account?</p>
-                <md-button class="md-primary" ui-sref="^.login">Login</md-button>
+                <md-button class="md-primary" ui-sref="^.member_login">Login</md-button>
             </div>
         </form>
     </div>

@@ -43,7 +43,7 @@ app.use(bodyParser.json());
 
 app.use(passport.initialize());
 
-// var authenticate = require('./api/middlewares/authenticate')(config);
+var authenticate = require('./api/middlewares/authenticate')(config);
 var College = require('./api/models/collegeModel');
 var Events = require('./api/models/eventModel');
 var Member = require('./api/models/memberModel');
@@ -54,26 +54,27 @@ var Registration = require('./api/models/registrationModel');
 // registrationController.generatePDFTest();
 
 var authRouter = require('./api/routes/authRoutes')(Faculty, Member);
-app.use('/api/auth/', authRouter);
+app.use('/api/auth', authRouter);
 
-var collegeRouter = require('./api/routes/collegeRoutes')(College);
-app.use('/api/college', collegeRouter);
+// var collegeRouter = require('./api/routes/collegeRoutes')(College);
+// app.use('/api/college', collegeRouter);
+//
+// var eventRouter = require('./api/routes/eventRoutes')(Events);
+// app.use('/api/event', eventRouter);
 
-var eventRouter = require('./api/routes/eventRoutes')(Events);
-app.use('/api/event', eventRouter);
-
-// var memberRouter = require('./api/routes/memberRoutes')(Faculty, Member);
-// app.use('/api/member', memberRouter);
-
-var facultyRouter = require('./api/routes/facultyRoutes')(Faculty, Registration);
-app.use('/api/faculty', facultyRouter);
-
-var registrationRouter = require('./api/routes/registrationRoutes')(Registration);
-app.use('/api/registration', registrationRouter);
+// var memberRouter = require('./api/routes/memberRoutes')(Faculty, Member, Registration, College, Events);
+// app.use('/api/members', memberRouter);
+//
+// var facultyRouter = require('./api/routes/facultyRoutes')(Faculty, Registration);
+// app.use('/api/faculty', facultyRouter);
+//
+// var registrationRouter = require('./api/routes/registrationRoutes')(Registration);
+// app.use('/api/registration', registrationRouter);
 
 // app.listen(port, function () {
 // 	console.log("Now Running on port " + port);
 // });
+
 
 
 

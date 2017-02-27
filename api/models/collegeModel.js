@@ -24,10 +24,6 @@ var collegeModel = new Schema({
 		type: String,
 		required: true
 	},
-	gtu_affiliate: {
-		type: String,
-		required: true
-	},
 	faculty_assigned: {
 		type: Boolean,
 		default: false

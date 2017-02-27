@@ -1,0 +1,27 @@
+<md-dialog class="contact-dialog" aria-label="Mango (Fruit)">
+  <form ng-cloak>
+    <md-toolbar>
+      <div class="md-toolbar-tools">
+        <h2 style="color:#fff">Contact Us</h2>
+        <span flex></span>
+        <md-button class="md-icon-button" ng-click="cancel()">
+          <ng-md-icon style="fill:#fff" icon="close" class="title-icon" size="24"></ng-md-icon>
+        </md-button>
+      </div>
+    </md-toolbar>
+
+    <md-dialog-content>
+      <div class="md-dialog-content" layout-gt-xs="row" layout-padding layout-align-gt-xs="space-around center" layout-xs="column">
+            <div class="" flex-gt-xs="40" flex-xs="100" layout="column" layout-align="center center">
+                <ng-md-icon style="fill:#2196F3"  icon="call" class="title-icon md-primary" size="50"></ng-md-icon>
+                <md-button class="md-primary" style="width:100%" href="tel:+91-8141804855"><p>+91-8141804855</p></md-button>
+            </div>
+
+            <div class="" flex-gt-xs="50" flex-xs="100" layout="column" layout-align="center center">
+                <ng-md-icon style="fill:#2196F3" icon="email" class="title-icon" size="50"></ng-md-icon>
+                <md-button class="md-primary" style="width:100%" href="mailto:gtutechfest@gtu.edu.in"><p>gtutechfest@gtu.edu.in</p></md-button>
+            </div>
+      </div>
+    </md-dialog-content>
+  </form>
+</md-dialog>

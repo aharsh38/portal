@@ -21,7 +21,7 @@ var memberModel = new Schema({
 		type: String,
 		required: true
 	},
-	forgot_password : {
+	forgot_password: {
 		type: Boolean,
 		default: false
 	},
@@ -32,8 +32,7 @@ var memberModel = new Schema({
 
 	password: String,
 	salt: String
-},
-{
+}, {
 	minimize: false,
 	timestamps: true
 });
@@ -48,18 +47,6 @@ memberModel.methods.checkValidPassword = function (pwd) {
 	return this.password === password;
 };
 
-memberModel.methods.forgotPasswordApply = function () {
-	this.forgot_password = true;
-	var expiry = new Date();
-	expiry.setDate(expiry.getDate() + 1);
-
-	return jwt.sign({
-			_id: this._id,
-			email: email,
-			exp: parseInt(expiry.getTime() / 1000),
-		}, config.secrets.reset);
-};
-
 memberModel.methods.generateJwt = function () {
 	var expiry = new Date();
 	expiry.setDate(expiry.getDate() + 2);
@@ -69,9 +56,7 @@ memberModel.methods.generateJwt = function () {
 		email: this.email,
 		name: this.name,
 		mobileno: this.mobileno,
-		verified: this.verified,
-		rejected: this.rejected,
-		faculty_cord: this.faculty_cord,
+		forgot_password: this.forgot_password,
 		exp: parseInt(expiry.getTime() / 1000),
 	}, config.secrets.member);
 };

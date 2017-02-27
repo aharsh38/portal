@@ -33,6 +33,10 @@ var facultyModel = new Schema({
 		// required: true
 	},
 
+	city: {
+		type: String
+	},
+
 	rejected: {
 		type: Boolean,
 		default: false
@@ -75,7 +79,7 @@ facultyModel.methods.generateJwt = function () {
 		mobileno: this.mobileno,
 		verified: this.verified,
 		rejected: this.rejected,
-		faculty_cord: this.faculty_cord,
+		forgot_password: this.forgot_password,
 		exp: parseInt(expiry.getTime() / 1000),
 	}, config.secrets.faculty);
 };

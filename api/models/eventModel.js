@@ -53,4 +53,4 @@ var eventModel = new Schema({
 	timestamps: true
 });
 
-module.exports = mongoose.model('Event', eventModel);
+module.exports = mongoose.model('Events', eventModel);

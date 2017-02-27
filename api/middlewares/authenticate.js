@@ -11,20 +11,36 @@ var authenticate = function (config) {
 		userProperty: 'payload'
 	});
 
-	function facultyAuthReset(request, response, next) {
-		if (!request.payload.admin) {
-			response.status(401).send({
-				"message": "User not an admin"
+	function generalFaculty(request, response, next) {
+		if (!request.payload.verified) {
+			response.status(401);
+			response.json({
+				"message": "Unauthorized",
+				"for": "Faculty is not verified"
+			});
+		} else if (request.payload.rejected) {
+			response.status(403);
+			response.json({
+				"message": "Forbidden",
+				"for": "Faculty has been rejected"
+			});
+		} else if (request.payload.forgot_password) {
+			response.status(409);
+			response.json({
+				"message": "Conflict",
+				"for": "Faculty has requested for forgot password"
 			});
 		} else {
 			next();
 		}
 	}
 
-	function resellerAuth(request, response, next) {
-		if (!request.payload.reseller) {
-			response.status(401).send({
-				"message": "User not a reseller"
+	function generalMember(request, response, next) {
+		if (request.payload.forgot_password) {
+			response.status(409);
+			response.json({
+				"message": "Conflict",
+				"for": "Member has requested for forgot password"
 			});
 		} else {
 			next();
@@ -32,9 +48,10 @@ var authenticate = function (config) {
 	}
 
 	return {
-		generalAuth: generalAuth,
-		adminAuth: adminAuth,
-		resellerAuth: resellerAuth
+		facultyAuth: facultyAuth,
+		memberAuth: memberAuth,
+		generalFaculty: generalFaculty,
+		generalMember: generalMember
 	};
 };
 

@@ -1,10 +1,10 @@
-<div class="md-parents" layout="row" layout-align="center center" layout-margin flex>
-    <div class="md-whiteframe-9dp bg-white padding-gt-xs-4 padding-xs-1 margin-top-xs-2 margin-top-gt-xs-5" flex-xs="90" flex-gt-xs="30"  layout-align="center center">
+<div class="md-parents" layout="row" layout-align="center center" flex>
+    <div class="md-whiteframe-9dp bg-white padding-gt-xs-4 padding-xs-1 margin-top-xs-2 margin-top-gt-xs-5" flex-xs="100" flex-gt-xs="30"  layout-align="center center">
         <form name="loginForm" ng-model="loginForm" layout="column" ng-submit="$event.preventDefault()">
-            <h2 class="margin-bottom-2">Login </h2>
+            <h2 class="margin-bottom-2">Member Login </h2>
             <md-input-container>
                 <label>Email</label>
-                <input required type="email" name="email" ng-model="flc.user.email" minlength="10" maxlength="100"
+                <input required type="email" name="email" ng-model="mlc.user.email" minlength="10" maxlength="100"
                 ng-pattern="/^.+@.+\..+$/" />
                 <div ng-messages="loginForm.email.$error" >
                     <div ng-message="not_registered">E-mail address not registered.</div>
@@ -14,7 +14,7 @@
             </md-input-container>
             <md-input-container>
                 <label>Password</label>
-                <input required type="password" name="password" ng-model="flc.user.password" minlength="6" maxlength="15" />
+                <input required type="password" name="password" ng-model="mlc.user.password" minlength="6" maxlength="15" />
                 <div ng-messages="loginForm.password.$error" role="alert">
                     <div ng-message="incorrect">Password is incorrect</div>
                     <div ng-message="required">Required</div>
@@ -23,14 +23,14 @@
                 </div>
             </md-input-container>
             <md-input-container layout="row" layout-align="center center">
-                <md-button flex="40" class="md-raised md-primary" layout="row" layout-align="center center" ng-disabled="loginForm.$invalid" type="submit" ng-click="flc.login($event)">
-                    <b ng-show="!flc.loginButtonClicked">Login</b>
-                    <md-progress-circular ng-show="flc.loginButtonClicked" ng-disabled="loginForm.$invalid" class="md-black mini" md-diameter="20px"></md-progress-circular>
+                <md-button flex="40" class="md-raised md-primary" layout="row" layout-align="center center" ng-disabled="loginForm.$invalid" type="submit" ng-click="mlc.login($event)">
+                    <b ng-show="!mlc.loginButtonClicked">Login</b>
+                    <md-progress-circular ng-show="mlc.loginButtonClicked" ng-disabled="loginForm.$invalid" class="md-black mini" md-diameter="20px"></md-progress-circular>
                 </md-button>
             </md-input-container>
             <div class="margin-top-2" layout="row" layout-align="space-between center">
-                <md-button class="md-primary" ui-sref="^.register">Register</md-button>
-                <md-button class="md-warn" ui-sref="^.forgotPasswordApply">Forgot Password?</md-button>
+                <md-button class="md-primary" ui-sref="^.member_register">Register</md-button>
+                <md-button class="md-warn" ui-sref="^.member_forgot">Forgot Password?</md-button>
             </div>
         </form>
     </div>
