@@ -5,7 +5,7 @@ module.exports = {
 		"distPath": "./public/scripts/dist",
 		"name": "fct_app.min.js",
 		"watch_src": ['./public/scripts/src/**/*.js', './**/*.html', './public/sass/**/*.scss'],
-		"angular_files_order": ['module', 'config', 'service', 'factory', 'filter', 'directive', 'controller']
+		"angular_files_order": ['module', 'config', 'service', 'factory', 'filter', 'directive', 'controller', 'animation']
 	},
 	"vendors": {
 		"vendorPath": "./public/scripts/vendors",

@@ -50,8 +50,8 @@
 					}
 				})
 				.state('in_tc', {
-					controller: 'TeamLayoutController',
-					controllerAs: 'tlac',
+					// controller: 'TeamLayoutController',
+					// controllerAs: 'tlac',
 					templateUrl: '/templates/layouts/in_tc.html'
 				})
 				.state('out.login', {
@@ -117,6 +117,15 @@
 					templateUrl: '/templates/pages/in/showEvent.html',
 					controller: 'ShowEventController',
 					controllerAs: 'sec'
+				})
+				.state('in_tc.eachEvent', {
+					url: '/team/eachEvent',
+					templateUrl: '/templates/pages/in/eachEvent.html',
+					controller: 'EachEventController',
+					controllerAs: 'eec',
+					params: {
+						showData: null,
+					}
 				})
 				.state('in_fc.guidelines', {
 					url: '/guidelines',

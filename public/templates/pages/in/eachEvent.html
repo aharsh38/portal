@@ -1,0 +1,82 @@
+<!DOCTYPE html>
+<div class="margin-tb-gt-xs-4 margin-lr-gt-xs-2 bg-white margin-xs-1 padding-tb-3 padding-lr-2 page" md-whiteframe="5">
+  <div layout="row">
+    <md-button class="md-icon-button md-raised md-primary" ui-sref="in_tc.showEvent" md-no-ink="true">
+        <ng-md-icon icon="arrow_back" size="20">
+        </ng-md-icon>
+    </md-button>
+    <h2>{{ aec.myEvent.event }} Event Details</h2>
+  </div>
+  <form class="al-add-event-page margin-top-2" layout-gt-xs="row" layout-xs="column"
+    name="myEvent" layout-wrap>
+    <div layout="column" flex="100">
+      <div layout="row" class="margin-1" flex>
+        <label>Event Name:&nbsp;&nbsp;&nbsp;&nbsp;</label>
+        {{ eec.myEvent.name }}
+      </div>
+      <div layout="row" class="margin-1" flex>
+        <label>Tag Line:&nbsp;&nbsp;&nbsp;&nbsp;</label>
+        {{ eec.myEvent.tagline }}
+      </div>
+      <div layout="row" class="margin-1" flex>
+        <label>Description:&nbsp;&nbsp;&nbsp;&nbsp;</label>
+        {{ eec.myEvent.description }}
+      </div>
+      <div layout="row" class="margin-1" flex>
+        <label>Problem Statement:&nbsp;&nbsp;&nbsp;&nbsp;</label>
+        {{ eec.myEvent.problem_statement }}
+      </div>
+      <div layout="row" class="margin-1" flex>
+        <label>Short Code:&nbsp;&nbsp;&nbsp;&nbsp;</label>
+        {{ eec.myEvent.shortcode }}
+      </div>
+      <div layout="row" class="margin-1" flex>
+        <label>Fees:&nbsp;&nbsp;&nbsp;&nbsp;</label>
+        {{ eec.myEvent.fees }}
+      </div>
+      <div layout="row" class="margin-1" flex>
+        <label>Fees Type:&nbsp;&nbsp;&nbsp;&nbsp;</label>
+        {{ eec.myEvent.fee_type }}
+      </div>
+      <div layout="row" class="margin-1" flex>
+        <label>Do Payment:&nbsp;&nbsp;&nbsp;&nbsp;</label>
+        {{ eec.myEvent.do_payment }}
+      </div>
+      <div layout="row" class="margin-1" flex>
+        <label>Event Section:&nbsp;&nbsp;&nbsp;&nbsp;</label>
+        {{ eec.myEvent.section }}
+      </div>
+      <div layout="row" flex class="margin-1">
+        <label>Rules:&nbsp;&nbsp;&nbsp;&nbsp;</label>
+        {{ eec.myEvent.rules }}
+      </div>
+      <div layout="row" flex class="margin-1">
+        <label>Specification:&nbsp;&nbsp;&nbsp;&nbsp;</label>
+        {{ eec.myEvent.specification }}
+      </div>
+      <div layout="row" flex class="margin-1">
+        <label>Rules:&nbsp;&nbsp;&nbsp;&nbsp;</label>
+        {{ eec.myEvent.judging_criteria }}
+      </div>
+      <div layout="column" flex ng-repeat="each in eec.myEvent.managers">
+        <div layout="row" class="margin-1">
+          <label>Event Manager {{ $index + 1 }}</label>
+        </div>
+        <div layout="row" flex>
+          <div layout="row" flex="30" class="margin-1">
+             <label>Name</label>
+             {{ each.manager_name }}
+          </div>
+          <div layout="row" flex="30" class="margin-1">
+             <label>Email</label>
+             {{ each.email_id }}
+          </div>
+          <div layout="row" flex="30" class="margin-1">
+             <label>Mobile</label>
+             {{ each.contact_number }}
+          </div>
+        </div>
+      </div>
+    </div>
+  </form>
+</div>

@@ -119,8 +119,8 @@
 					}
 				})
 				.state('in_tc', {
-					controller: 'TeamLayoutController',
-					controllerAs: 'tlac',
+					// controller: 'TeamLayoutController',
+					// controllerAs: 'tlac',
 					templateUrl: '/templates/layouts/in_tc.html'
 				})
 				.state('out.login', {
@@ -186,6 +186,15 @@
 					templateUrl: '/templates/pages/in/showEvent.html',
 					controller: 'ShowEventController',
 					controllerAs: 'sec'
+				})
+				.state('in_tc.eachEvent', {
+					url: '/team/eachEvent',
+					templateUrl: '/templates/pages/in/eachEvent.html',
+					controller: 'EachEventController',
+					controllerAs: 'eec',
+					params: {
+						showData: null,
+					}
 				})
 				.state('in_fc.guidelines', {
 					url: '/guidelines',
@@ -309,16 +318,28 @@
 
 	function eventService($http) {
 	  var service = {
-	    addEvent: addEvent
+	    addEvent: addEvent,
+			getEvent: getEvent,
 	  };
 
 	  return service;
 
-	  function addEvent(event) {
-			alert(JSON.stringify(event));
-			// return $http.post('/api/event/events', event)
-			// 	.then(resolveFunc)
-			// 	.catch(rejectFunc);
+	  function addEvent(eventData) {
+			return $http.post('/api/event/events', eventData)
+				.then(resolveFunc)
+				.catch(rejectFunc);
+	  }
+
+	  function getEvent() {
+			return $http.get('/api/event/events')
+				.then(resolveFunc)
+				.catch(rejectFunc);
+	  }
+
+	  function updateEvent(eventData) {
+			return $http.put('/api/event/events/' + eventData.id, eventData)
+				.then(resolveFunc)
+				.catch(rejectFunc);
 	  }
 
 		function resolveFunc(response) {
@@ -681,6 +702,88 @@
 	'use strict';
 
 	angular
+	.module('fct.core')
+	.directive('ngFileModel', fileUpload);
+
+	fileUpload.$inject = ['$parse'];
+
+	function fileUpload($parse) {
+
+		var directive = {
+			restrict: 'A',
+			scope: {
+			  filesdata : '='
+			},
+			link: linkFunc,
+		};
+
+		return directive;
+
+		function linkFunc ($scope, $element, $attributes) {
+			var model = $parse($attributes.ngFileModel);
+			var isMultiple = $attributes.multiple;
+			var modelSetter = model.assign;
+			var values = [];
+			var i = 0;
+			$element.bind('change', function () {//console.log($scope.filesdata);
+				angular.forEach($element[0].files, function (item) {
+					var value = {
+						name: item.name,
+						progress: 0,
+						response: item,
+					};
+					values.push(value);
+					if (isMultiple) {
+						modelSetter($scope, values);
+					} else {
+						modelSetter($scope, values[0]);
+					}
+					var fd = new FormData();
+					fd.append("uploaded_file", item);
+					var xhr = new XMLHttpRequest();
+					(function(i) {
+						xhr.upload.onprogress = function (event) {
+							$scope.$apply(function(){
+								if (event.lengthComputable) {
+									$scope.files[i].progress = Math.round(event.loaded * 100 / event.total);
+								} else {
+									$scope.files[i].progress = 'unable to compute';
+								}
+							});
+						};
+						xhr.onload = function (event) {
+							if(!angular.isNumber(event.target.responseText)) {
+								$scope.images.push(event.target.responseText);
+							}
+						};
+						xhr.onabort = function (event) {
+							$scope.$apply(function(){
+								$scope.progressVisible = false;
+							});
+							alert('canceled');
+						};
+						xhr.onerror = function (event) {
+							$scope.$apply(function(){
+								$scope.progressVisible = false;
+							});
+							alert('failed');
+						};
+					})(i);
+					xhr.open("POST", "/api/event/events", true);
+					$scope.progressVisible = true;
+					xhr.send(fd);
+					i++;
+				});
+			});
+		}
+	}
+
+})();
+
+(function () {
+	'use strict';
+
+	angular
 		.module('fct.core')
 		.controller('FacultySettingsController', FacultySettingsController);
 
@@ -768,83 +871,92 @@
 
     function AddEventController(stateParams, eventService, $rootScope) {
         var vm = this;
-        vm.myEvent = {};
+        vm.myEvent = {
+          'managers':[],
+        };
+        vm.files = [];
+        vm.images = [];
 
         angular.extend(vm, {
-            register: register
+            register: register,
+            openManagersModal: openManagersModal,
         });
 
         activate();
 
         function activate() {
           initializeCKEditor();
+          checkEventData();
         }
 
-        function register() {alert(JSON.stringify(vm.myEvent));
-          //eventService.addEvent(vm.myEvent);
+        function checkEventData() {
+          if(stateParams.editData !== undefined && stateParams.editData !== null) {
+            vm.myEvent = stateParams.editData;
+            vm.myEvent.event = "Update";
+			vm.myEvent.isUpdate = true;
+            CKEDITOR.document.getById("editorRules").setHtml(vm.myEvent.rules);
+            CKEDITOR.document.getById("editorSpecification").setHtml(vm.myEvent.specification);
+            CKEDITOR.document.getById("editorJudgingCriteria").setHtml(vm.myEvent.judging_criteria);
+          } else {
+            vm.myEvent.event = "Insert";
+			vm.myEvent.isUpdate = false;
+          }
         }
 
-    		$rootScope.$on('registerSuccess', registerSuccess);
-        $rootScope.$on('registerFailure', registerFailure);
-
-    		function registerSuccess(event) {
-            asToast.showToast("Registered",true);
-
+        function register() {
+          console.log(JSON.stringify(vm.myEvent));
+          vm.myEvent.rules = CKEDITOR.instances["editorRules"].getData();
+          vm.myEvent.specification = CKEDITOR.instances["editorSpecification"].getData();
+          vm.myEvent.judging_criteria = CKEDITOR.instances["editorJudgingCriteria"].getData();
+		  if(vm.myEvent.update) {
+			return eventService.updateEvent(vm.myEvent).then(onRegisterSuccess).catch(onRegisterFailure);
+		  } else {
+			return eventService.addEvent(vm.myEvent).then(onRegisterSuccess).catch(onRegisterFailure);
+		  }
         }
 
-        function registerFailure(event, error) {
-            asToast.showToast(error.data.message);
+        function onRegisterSuccess(response) {
+          console.log(response);
+        }
+
+        function onRegisterFailure(error) {
+          console.log(error);
+        }
+
+        function openManagersModal(total) {
+          vm.myEvent.managers = [];
+          while(total > 0) {
+            var each = {"index":1};
+            vm.myEvent.managers.push(each);
+            total--;
+          }
         }
 
         function initializeCKEditor() {
-          if(stateParams.editData !== undefined &&
-              stateParams.editData !== null) {
-            vm.myEvent = stateParams.editData;
-            vm.myEvent.event = "Insert";
-          } else {
-            vm.myEvent.event = "Update";
-          }
-
           if ( CKEDITOR.env.ie && CKEDITOR.env.version < 9 )
           	CKEDITOR.tools.enableHtml5Elements( document );
-
-          // The trick to keep the editor in the sample quite small
-          // unless user specified own height.
-          CKEDITOR.config.height = 150;
-          CKEDITOR.config.width = 'auto';
-
-          var initSample = ( function() {
-          	var wysiwygareaAvailable = isWysiwygareaAvailable();
-
-          	return function() {
-          		var editorElement = CKEDITOR.document.getById( 'editor' );
-
-          		// Depending on the wysiwygare plugin availability initialize classic or inline editor.
-          		if ( wysiwygareaAvailable ) {
-          			CKEDITOR.replace( 'editorRules' );
-          			CKEDITOR.replace( 'editorSpecification' );
-          			CKEDITOR.replace( 'editorJudgingCriteria' );
-          		} else {
-          			editorElement.setAttribute( 'contenteditable', 'true' );
-          			CKEDITOR.inline( 'editorRules' );
-          			CKEDITOR.inline( 'editorSpecification' );
-          			CKEDITOR.inline( 'editorJudgingCriteria' );
-
-          			// TODO we can consider displaying some info box that
-          			// without wysiwygarea the classic editor may not work.
-          		}
-
-          		//CKEDITOR.instances["editor"].getData()
-          		//to get the data
-          	};
+            CKEDITOR.config.height = 150;
+            CKEDITOR.config.width = 'auto';
+            var initSample = ( function() {
+            	var wysiwygareaAvailable = isWysiwygareaAvailable();
+            	return function() {
+            		var editorElement = CKEDITOR.document.getById( 'editor' );
+            		if ( wysiwygareaAvailable ) {
+            			CKEDITOR.replace( 'editorRules' );
+            			CKEDITOR.replace( 'editorSpecification' );
+            			CKEDITOR.replace( 'editorJudgingCriteria' );
+            		} else {
+            			editorElement.setAttribute( 'contenteditable', 'true' );
+            			CKEDITOR.inline( 'editorRules' );
+            			CKEDITOR.inline( 'editorSpecification' );
+            			CKEDITOR.inline( 'editorJudgingCriteria' );
+            		}
+            	};
 
           	function isWysiwygareaAvailable() {
-          		// If in development mode, then the wysiwygarea must be available.
-          		// Split REV into two strings so builder does not replace it :D.
           		if ( CKEDITOR.revision == ( '%RE' + 'V%' ) ) {
           			return true;
           		}
-
           		return !!CKEDITOR.plugins.get( 'wysiwygarea' );
           	}
           } )();
@@ -858,139 +970,57 @@
 
     angular
       .module('fct.core')
+      .controller('EachEventController', EachEventController);
+
+    EachEventController.$inject = ['$stateParams'];
+
+    function EachEventController(stateParams) {
+        var vm = this;
+
+        activate();
+
+        function activate() {
+          vm.myEvent = (stateParams.showData !== undefined && stateParams.showData !== null) ?
+            stateParams.showData
+            : false;
+		    }
+    }
+})();
+
+(function () {
+    'use strict';
+
+    angular
+      .module('fct.core')
       .controller('ShowEventController', ShowEventController);
 
-    ShowEventController.$inject = [];
-    
-    function ShowEventController() {
+    ShowEventController.$inject = ['eventService'];
+
+    function ShowEventController(eventService) {
         var vm = this;
 
         activate();
         var joinedDate = "ab";
 
         function activate() {
+          getEvents();
+        }
 
-          vm.dummyEvents = [{
-            teamId: '32049',
-            teamName: 'Mona Lisa',
-            leaderName: 'Monit',
-            contactNumber: '9329239499',
-            eventName: 'Scrabble+',
-            email: 'abc@123.com',
-            eventSection: 'IT Department'
-          },
-          {
-            teamId: '32048',
-            teamName: 'Mango',
-            leaderName: 'Monit',
-            contactNumber: '9329239499',
-            eventName: 'Scrabble+',
-            email: 'abc@123.com',
-            eventSection: 'IT Department'
-          },
-          {
-            teamId: '32047',
-            teamName: 'Rascals',
-            leaderName: 'Monit',
-            contactNumber: '9329239499',
-            eventName: 'Scrabble+',
-            email: 'abc@123.com',
-            eventSection: 'IT Department'
-          },
-          {
-            teamId: '32046',
-            teamName: 'Rockerstar',
-            leaderName: 'Monit',
-            contactNumber: '9329239499',
-            eventName: 'Scrabble+',
-            email: 'abc@123.com',
-            eventSection: 'IT Department'
-          },];
+        function getEvents() {
+            return eventService.getEvent().then(getEventSuccess).catch(getEventFailure);
+        }
 
+        function getEventSuccess(response) {
+          console.log(response);
+          vm.dummyEvents = response.data;
+        }
+
+        function getEventFailure(error) {
+          console.log(error);
         }
     }
 })();
 
-
-(function () {
-	'use strict';
-
-	angular
-		.module('fct.core')
-		.controller('FacultyLayoutController', FacultyLayoutController)
-		.controller('ContactDialogController', ContactDialogController);
-
-	FacultyLayoutController.$inject = ['facultyAuthService', '$mdSidenav', '$rootScope', 'fctToast', '$state', '$mdDialog', '$mdMedia', '$scope'];
-
-	function FacultyLayoutController(facultyAuthService, $mdSidenav, $rootScope, fctToast, $state, $mdDialog, $mdMedia, $scope) {
-		var vm = this;
-
-		$scope.$watch(function () {
-			return $mdMedia('xs') || $mdMedia('sm');
-		});
-
-		angular.extend(vm, {
-			logout: logout,
-			openLeftSidenav: openLeftSidenav,
-			isOpenLeftSidenav: isOpenLeftSidenav,
-			closeLeftSidenav: closeLeftSidenav,
-			contact: contact
-		});
-
-		activate();
-
-		function activate() {
-
-		}
-
-		function logout() {
-			facultyAuthService.logout();
-		}
-
-		$rootScope.$on('logoutSuccessful', logoutSuccessful);
-
-		function logoutSuccessful(event) {
-			fctToast.showToast("Succesfully Logged out", true);
-			$state.go('out.login');
-		}
-
-		function openLeftSidenav() {
-			$mdSidenav('left').open();
-		}
-
-		function isOpenLeftSidenav() {
-			return $mdSidenav('left').isOpen();
-		}
-
-		function closeLeftSidenav() {
-			$mdSidenav('left').close();
-		}
-
-		function contact(ev) {
-			var useFullScreen = $mdMedia('sm') || $mdMedia('xs');
-			$mdDialog.show({
-				controller: 'ContactDialogController',
-				templateUrl: '/templates/components/dialogs/contact.html',
-				parent: angular.element(document.body),
-				targetEvent: ev,
-				clickOutsideToClose: true,
-				fullscreen: useFullScreen // Only for -xs, -sm breakpoints.
-			});
-		}
-	}
-
-	ContactDialogController.$inject = ['$scope', '$mdDialog'];
-
-	function ContactDialogController($scope, $mdDialog) {
-		$scope.cancel = function () {
-			$mdDialog.cancel();
-		};
-
-		$scope.hide = function () {
-			$mdDialog.hide();
-		};
-	}
-})();
 
 (function () {
 	'use strict';
@@ -1407,4 +1437,124 @@
 			$scope.registerForm.$setUntouched();
 		}
 	}
+})();
+
+(function () {
+	'use strict';
+
+	angular
+		.module('fct.core')
+		.controller('FacultyLayoutController', FacultyLayoutController)
+		.controller('ContactDialogController', ContactDialogController);
+
+	FacultyLayoutController.$inject = ['facultyAuthService', '$mdSidenav', '$rootScope', 'fctToast', '$state', '$mdDialog', '$mdMedia', '$scope'];
+
+	function FacultyLayoutController(facultyAuthService, $mdSidenav, $rootScope, fctToast, $state, $mdDialog, $mdMedia, $scope) {
+		var vm = this;
+
+		$scope.$watch(function () {
+			return $mdMedia('xs') || $mdMedia('sm');
+		});
+
+		angular.extend(vm, {
+			logout: logout,
+			openLeftSidenav: openLeftSidenav,
+			isOpenLeftSidenav: isOpenLeftSidenav,
+			closeLeftSidenav: closeLeftSidenav,
+			contact: contact
+		});
+
+		activate();
+
+		function activate() {
+
+		}
+
+		function logout() {
+			facultyAuthService.logout();
+		}
+
+		$rootScope.$on('logoutSuccessful', logoutSuccessful);
+
+		function logoutSuccessful(event) {
+			fctToast.showToast("Succesfully Logged out", true);
+			$state.go('out.login');
+		}
+
+		function openLeftSidenav() {
+			$mdSidenav('left').open();
+		}
+
+		function isOpenLeftSidenav() {
+			return $mdSidenav('left').isOpen();
+		}
+
+		function closeLeftSidenav() {
+			$mdSidenav('left').close();
+		}
+
+		function contact(ev) {
+			var useFullScreen = $mdMedia('sm') || $mdMedia('xs');
+			$mdDialog.show({
+				controller: 'ContactDialogController',
+				templateUrl: '/templates/components/dialogs/contact.html',
+				parent: angular.element(document.body),
+				targetEvent: ev,
+				clickOutsideToClose: true,
+				fullscreen: useFullScreen // Only for -xs, -sm breakpoints.
+			});
+		}
+	}
+
+	ContactDialogController.$inject = ['$scope', '$mdDialog'];
+
+	function ContactDialogController($scope, $mdDialog) {
+		$scope.cancel = function () {
+			$mdDialog.cancel();
+		};
+
+		$scope.hide = function () {
+			$mdDialog.hide();
+		};
+	}
+})();
+
+(function() {
+
+    angular.module('fct.core')
+    .animation('.slide-vertical', slideVertical);
+
+    slideVertical.$inject = ['TweenMax'];
+
+    function slideVertical(TweenMax) {
+        return {
+            addClass: addHideClass,
+            removeClass: removeHideClass
+        };
+    }
+
+    function addHideClass(element, className, done) {
+      if (className == 'ng-hide') {
+        // var timeline = new TimelineMax();
+        TweenMax.set(element,{height:"auto", opacity:0});
+        TweenMax.from(element, 0.3, {opacity: 1, ease: Power0.easeNone});
+        TweenMax.to(element, 0.4, {height:0, ease:  Power2.easeOut, onComplete: done}).delay(0.25);
+      }
+      else {
+        done();
+      }
+
+    }
+
+    function removeHideClass(element, className, done) {
+      if (className == 'ng-hide') {
+        element.removeClass('ng-hide');
+        TweenMax.set(element,{height:"auto", opacity:0});
+        TweenMax.from(element, 0.4, {height:0, ease: Power2.easeIn});
+        TweenMax.to(element, 0.3, {opacity: 1, ease: Power2.easeIn, onComplete:done}).delay(0.35);
+      }
+      else {
+        done();
+      }
+    }
 })();

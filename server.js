@@ -59,8 +59,8 @@ app.use('/api/auth', authRouter);
 // var collegeRouter = require('./api/routes/collegeRoutes')(College);
 // app.use('/api/college', collegeRouter);
 //
-// var eventRouter = require('./api/routes/eventRoutes')(Events);
-// app.use('/api/event', eventRouter);
+var eventRouter = require('./api/routes/eventRoutes')(Events);
+app.use('/api/event', eventRouter);
 
 // var memberRouter = require('./api/routes/memberRoutes')(Faculty, Member, Registration, College, Events);
 // app.use('/api/members', memberRouter);
