@@ -73,7 +73,7 @@
 					controllerAs: 'ffpac'
 				})
 				.state('out.forgotPasswordSet', {
-					url: '/forgotPasswordSet?token',
+					url: '/forgotPasswordSet?token&id',
 					templateUrl: '/templates/pages/out/forgotPasswordSet.html',
 					controller: 'FacultyForgotPasswordSetController',
 					controllerAs: 'ffpsc'

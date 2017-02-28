@@ -106,4 +106,4 @@ gulp.task('node', function () {
 });
 
 
-gulp.task('default', ['watch']);
+gulp.task('default', ['node']);

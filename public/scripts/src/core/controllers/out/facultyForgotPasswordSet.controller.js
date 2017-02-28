@@ -22,8 +22,6 @@
 			changePassword: changePassword
 		});
 
-
-
 		function changePassword() {
 			if (vm.changePasswordButtonClicked) {
 				event.preventDefault();
@@ -33,11 +31,9 @@
 			var newUser = angular.copy(vm.user);
 			newUser.token = $stateParams.token;
 			var uid = $stateParams.id;
-			console.log($stateParams.id);
+
 			facultyAuthService.facultyForgotPasswordSet(newUser, uid);
 		}
-
-
 
 		$rootScope.$on('SuccessFacultyForgotPasswordSet', facultyForgotPasswordSetSuccess);
 		$rootScope.$on('ErrorFacultyForgotPasswordSet', facultyForgotPasswordSetFailure);

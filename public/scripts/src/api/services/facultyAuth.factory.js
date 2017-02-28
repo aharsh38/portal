@@ -111,6 +111,7 @@
 		// 	$rootScope.$broadcast('updateUserFailure', error);
 		// }
 		//
+
 		function changeFacultyPassword(passwordObject) {
 			if (checkFacultyLoggedIn()) {
 				if ($rootScope.user) {
@@ -132,7 +133,7 @@
 		}
 
 		function facultyForgotPasswordApply(faculty) {
-			$http.post('/api/auth/faculty/forgotPasswofacultyForgetPasswordSetrdApply', faculty)
+			$http.post('/api/auth/faculty/forgotPasswordApply', faculty)
 				.then(facultyForgotPasswordApplySuccess)
 				.catch(facultyForgotPasswordApplyFailure);
 		}

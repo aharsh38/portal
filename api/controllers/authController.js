@@ -108,11 +108,9 @@ var authController = function (Faculty, Member) {
 				if (error) {
 					throwError(response, error, 500, 'Internal Server error', 'Faculty Change password');
 				} else {
-					var token;
-					token = faculty.generateJwt();
 					response.status(200);
 					response.json({
-						"token": token
+						"message": "Password Successfully Changed"
 					});
 				}
 			});

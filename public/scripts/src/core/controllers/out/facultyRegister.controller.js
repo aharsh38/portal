@@ -44,11 +44,11 @@
 			fctToast.showToast("Succefully Registered", true);
 			vm.registerButtonClicked = false;
 			resetForm();
-			// $state.go('in_fc.guidelines');
+			$state.go('in_fc.guidelines');
 		}
 
 		function registerFailure(event, error) {
-			var msg = error.data.errMsg.toString();
+			var msg = 'Email already registered';
 			vm.registerButtonClicked = false;
 			fctToast.showToast(msg);
 			resetForm();

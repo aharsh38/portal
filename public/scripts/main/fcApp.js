@@ -9,16 +9,6 @@
 	'use strict';
 
 	angular
-		.module('fct_app', [
-			'fct.api',
-			'fct.core'
-		]);
-})();
-
-(function () {
-	'use strict';
-
-	angular
 		.module('fct.core', [
 			'ngAnimate',
 			'ngMessages',
@@ -65,6 +55,16 @@
 	// 		}, 2000);
 	// 	}
 	// }
+})();
+
+(function () {
+	'use strict';
+
+	angular
+		.module('fct_app', [
+			'fct.api',
+			'fct.core'
+		]);
 })();
 
 (function () {
@@ -142,7 +142,7 @@
 					controllerAs: 'ffpac'
 				})
 				.state('out.forgotPasswordSet', {
-					url: '/forgotPasswordSet?token',
+					url: '/forgotPasswordSet?token&id',
 					templateUrl: '/templates/pages/out/forgotPasswordSet.html',
 					controller: 'FacultyForgotPasswordSetController',
 					controllerAs: 'ffpsc'
@@ -444,6 +444,7 @@
 		// 	$rootScope.$broadcast('updateUserFailure', error);
 		// }
 		//
+
 		function changeFacultyPassword(passwordObject) {
 			if (checkFacultyLoggedIn()) {
 				if ($rootScope.user) {
@@ -465,7 +466,7 @@
 		}
 
 		function facultyForgotPasswordApply(faculty) {
-			$http.post('/api/auth/faculty/forgotPasswofacultyForgetPasswordSetrdApply', faculty)
+			$http.post('/api/auth/faculty/forgotPasswordApply', faculty)
 				.then(facultyForgotPasswordApplySuccess)
 				.catch(facultyForgotPasswordApplyFailure);
 		}
@@ -1076,8 +1077,6 @@
 			changePassword: changePassword
 		});
 
-
-
 		function changePassword() {
 			if (vm.changePasswordButtonClicked) {
 				event.preventDefault();
@@ -1087,11 +1086,9 @@
 			var newUser = angular.copy(vm.user);
 			newUser.token = $stateParams.token;
 			var uid = $stateParams.id;
-			console.log($stateParams.id);
+
 			facultyAuthService.facultyForgotPasswordSet(newUser, uid);
 		}
-
-
 
 		$rootScope.$on('SuccessFacultyForgotPasswordSet', facultyForgotPasswordSetSuccess);
 		$rootScope.$on('ErrorFacultyForgotPasswordSet', facultyForgotPasswordSetFailure);
@@ -1234,11 +1231,11 @@
 			fctToast.showToast("Succefully Registered", true);
 			vm.registerButtonClicked = false;
 			resetForm();
-			// $state.go('in_fc.guidelines');
+			$state.go('in_fc.guidelines');
 		}
 
 		function registerFailure(event, error) {
-			var msg = error.data.errMsg.toString();
+			var msg = 'Email already registered';
 			vm.registerButtonClicked = false;
 			fctToast.showToast(msg);
 			resetForm();
