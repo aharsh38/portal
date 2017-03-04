@@ -9,6 +9,16 @@
 	'use strict';
 
 	angular
+		.module('fct_app', [
+			'fct.api',
+			'fct.core'
+		]);
+})();
+
+(function () {
+	'use strict';
+
+	angular
 		.module('fct.core', [
 			'ngAnimate',
 			'ngMessages',
@@ -55,16 +65,6 @@
 	// 		}, 2000);
 	// 	}
 	// }
-})();
-
-(function () {
-	'use strict';
-
-	angular
-		.module('fct_app', [
-			'fct.api',
-			'fct.core'
-		]);
 })();
 
 (function () {
@@ -320,6 +320,7 @@
 	  var service = {
 	    addEvent: addEvent,
 			getEvent: getEvent,
+			updateEvent: updateEvent,
 	  };
 
 	  return service;
@@ -337,7 +338,7 @@
 	  }
 
 	  function updateEvent(eventData) {
-			return $http.put('/api/event/events/' + eventData.id, eventData)
+			return $http.put('/api/event/events/' + eventData._id, eventData)
 				.then(resolveFunc)
 				.catch(rejectFunc);
 	  }
@@ -893,13 +894,13 @@
           if(stateParams.editData !== undefined && stateParams.editData !== null) {
             vm.myEvent = stateParams.editData;
             vm.myEvent.event = "Update";
-			vm.myEvent.isUpdate = true;
+			      vm.myEvent.isUpdate = true;
             CKEDITOR.document.getById("editorRules").setHtml(vm.myEvent.rules);
             CKEDITOR.document.getById("editorSpecification").setHtml(vm.myEvent.specification);
             CKEDITOR.document.getById("editorJudgingCriteria").setHtml(vm.myEvent.judging_criteria);
           } else {
             vm.myEvent.event = "Insert";
-			vm.myEvent.isUpdate = false;
+			      vm.myEvent.isUpdate = false;
           }
         }
 
@@ -908,11 +909,12 @@
           vm.myEvent.rules = CKEDITOR.instances["editorRules"].getData();
           vm.myEvent.specification = CKEDITOR.instances["editorSpecification"].getData();
           vm.myEvent.judging_criteria = CKEDITOR.instances["editorJudgingCriteria"].getData();
-		  if(vm.myEvent.update) {
-			return eventService.updateEvent(vm.myEvent).then(onRegisterSuccess).catch(onRegisterFailure);
-		  } else {
-			return eventService.addEvent(vm.myEvent).then(onRegisterSuccess).catch(onRegisterFailure);
-		  }
+
+    		  if(vm.myEvent.isUpdate) {
+      			return eventService.updateEvent(vm.myEvent).then(onRegisterSuccess).catch(onRegisterFailure);
+    		  } else {
+      			return eventService.addEvent(vm.myEvent).then(onRegisterSuccess).catch(onRegisterFailure);
+    		  }
         }
 
         function onRegisterSuccess(response) {
@@ -1021,6 +1023,86 @@
     }
 })();
 
+
+(function () {
+	'use strict';
+
+	angular
+		.module('fct.core')
+		.controller('FacultyLayoutController', FacultyLayoutController)
+		.controller('ContactDialogController', ContactDialogController);
+
+	FacultyLayoutController.$inject = ['facultyAuthService', '$mdSidenav', '$rootScope', 'fctToast', '$state', '$mdDialog', '$mdMedia', '$scope'];
+
+	function FacultyLayoutController(facultyAuthService, $mdSidenav, $rootScope, fctToast, $state, $mdDialog, $mdMedia, $scope) {
+		var vm = this;
+
+		$scope.$watch(function () {
+			return $mdMedia('xs') || $mdMedia('sm');
+		});
+
+		angular.extend(vm, {
+			logout: logout,
+			openLeftSidenav: openLeftSidenav,
+			isOpenLeftSidenav: isOpenLeftSidenav,
+			closeLeftSidenav: closeLeftSidenav,
+			contact: contact
+		});
+
+		activate();
+
+		function activate() {
+
+		}
+
+		function logout() {
+			facultyAuthService.logout();
+		}
+
+		$rootScope.$on('logoutSuccessful', logoutSuccessful);
+
+		function logoutSuccessful(event) {
+			fctToast.showToast("Succesfully Logged out", true);
+			$state.go('out.login');
+		}
+
+		function openLeftSidenav() {
+			$mdSidenav('left').open();
+		}
+
+		function isOpenLeftSidenav() {
+			return $mdSidenav('left').isOpen();
+		}
+
+		function closeLeftSidenav() {
+			$mdSidenav('left').close();
+		}
+
+		function contact(ev) {
+			var useFullScreen = $mdMedia('sm') || $mdMedia('xs');
+			$mdDialog.show({
+				controller: 'ContactDialogController',
+				templateUrl: '/templates/components/dialogs/contact.html',
+				parent: angular.element(document.body),
+				targetEvent: ev,
+				clickOutsideToClose: true,
+				fullscreen: useFullScreen // Only for -xs, -sm breakpoints.
+			});
+		}
+	}
+
+	ContactDialogController.$inject = ['$scope', '$mdDialog'];
+
+	function ContactDialogController($scope, $mdDialog) {
+		$scope.cancel = function () {
+			$mdDialog.cancel();
+		};
+
+		$scope.hide = function () {
+			$mdDialog.hide();
+		};
+	}
+})();
 
 (function () {
 	'use strict';
@@ -1436,86 +1518,6 @@
 			$scope.registerForm.$setPristine();
 			$scope.registerForm.$setUntouched();
 		}
-	}
-})();
-
-(function () {
-	'use strict';
-
-	angular
-		.module('fct.core')
-		.controller('FacultyLayoutController', FacultyLayoutController)
-		.controller('ContactDialogController', ContactDialogController);
-
-	FacultyLayoutController.$inject = ['facultyAuthService', '$mdSidenav', '$rootScope', 'fctToast', '$state', '$mdDialog', '$mdMedia', '$scope'];
-
-	function FacultyLayoutController(facultyAuthService, $mdSidenav, $rootScope, fctToast, $state, $mdDialog, $mdMedia, $scope) {
-		var vm = this;
-
-		$scope.$watch(function () {
-			return $mdMedia('xs') || $mdMedia('sm');
-		});
-
-		angular.extend(vm, {
-			logout: logout,
-			openLeftSidenav: openLeftSidenav,
-			isOpenLeftSidenav: isOpenLeftSidenav,
-			closeLeftSidenav: closeLeftSidenav,
-			contact: contact
-		});
-
-		activate();
-
-		function activate() {
-
-		}
-
-		function logout() {
-			facultyAuthService.logout();
-		}
-
-		$rootScope.$on('logoutSuccessful', logoutSuccessful);
-
-		function logoutSuccessful(event) {
-			fctToast.showToast("Succesfully Logged out", true);
-			$state.go('out.login');
-		}
-
-		function openLeftSidenav() {
-			$mdSidenav('left').open();
-		}
-
-		function isOpenLeftSidenav() {
-			return $mdSidenav('left').isOpen();
-		}
-
-		function closeLeftSidenav() {
-			$mdSidenav('left').close();
-		}
-
-		function contact(ev) {
-			var useFullScreen = $mdMedia('sm') || $mdMedia('xs');
-			$mdDialog.show({
-				controller: 'ContactDialogController',
-				templateUrl: '/templates/components/dialogs/contact.html',
-				parent: angular.element(document.body),
-				targetEvent: ev,
-				clickOutsideToClose: true,
-				fullscreen: useFullScreen // Only for -xs, -sm breakpoints.
-			});
-		}
-	}
-
-	ContactDialogController.$inject = ['$scope', '$mdDialog'];
-
-	function ContactDialogController($scope, $mdDialog) {
-		$scope.cancel = function () {
-			$mdDialog.cancel();
-		};
-
-		$scope.hide = function () {
-			$mdDialog.hide();
-		};
 	}
 })();
 

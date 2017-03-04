@@ -31,13 +31,13 @@
           if(stateParams.editData !== undefined && stateParams.editData !== null) {
             vm.myEvent = stateParams.editData;
             vm.myEvent.event = "Update";
-			vm.myEvent.isUpdate = true;
+			      vm.myEvent.isUpdate = true;
             CKEDITOR.document.getById("editorRules").setHtml(vm.myEvent.rules);
             CKEDITOR.document.getById("editorSpecification").setHtml(vm.myEvent.specification);
             CKEDITOR.document.getById("editorJudgingCriteria").setHtml(vm.myEvent.judging_criteria);
           } else {
             vm.myEvent.event = "Insert";
-			vm.myEvent.isUpdate = false;
+			      vm.myEvent.isUpdate = false;
           }
         }
 
@@ -46,11 +46,12 @@
           vm.myEvent.rules = CKEDITOR.instances["editorRules"].getData();
           vm.myEvent.specification = CKEDITOR.instances["editorSpecification"].getData();
           vm.myEvent.judging_criteria = CKEDITOR.instances["editorJudgingCriteria"].getData();
-		  if(vm.myEvent.update) {
-			return eventService.updateEvent(vm.myEvent).then(onRegisterSuccess).catch(onRegisterFailure);
-		  } else {
-			return eventService.addEvent(vm.myEvent).then(onRegisterSuccess).catch(onRegisterFailure);
-		  }
+
+    		  if(vm.myEvent.isUpdate) {
+      			return eventService.updateEvent(vm.myEvent).then(onRegisterSuccess).catch(onRegisterFailure);
+    		  } else {
+      			return eventService.addEvent(vm.myEvent).then(onRegisterSuccess).catch(onRegisterFailure);
+    		  }
         }
 
         function onRegisterSuccess(response) {

@@ -114,7 +114,19 @@ var eventController = function (Event) {
 	}
 
 	function updateEvent(request, response) {
-		request.event = request.body;
+		request.event.name = request.body.name;
+		request.event.tagline = request.body.tagline;
+		request.event.description = request.body.description;
+		request.event.rules = request.body.rules;
+		request.event.specification = request.body.specification;
+		request.event.problem_statement = request.body.problem_statement;
+		request.event.judging_criteria = request.body.judging_criteria;
+		request.event.managers = request.body.managers;
+		request.event.section = request.body.section;
+		request.event.fees = request.body.fees;
+		request.event.fees_type = request.body.fees_type;
+		request.event.do_payment = request.body.do_payment;
+		request.event.shortcode = request.body.shortcode;
 		request.event.save(function (error) {
 			if (error) {
 				throwError(response, "Updating Event", error);

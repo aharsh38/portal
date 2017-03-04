@@ -11,6 +11,7 @@
 	  var service = {
 	    addEvent: addEvent,
 			getEvent: getEvent,
+			updateEvent: updateEvent,
 	  };
 
 	  return service;
@@ -28,7 +29,7 @@
 	  }
 
 	  function updateEvent(eventData) {
-			return $http.put('/api/event/events/' + eventData.id, eventData)
+			return $http.put('/api/event/events/' + eventData._id, eventData)
 				.then(resolveFunc)
 				.catch(rejectFunc);
 	  }
