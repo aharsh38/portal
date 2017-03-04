@@ -12,7 +12,7 @@
 		vm.user = {};
 		vm.registerButtonClicked = false;
 
-		vm.states = loadAll();
+		// vm.states = loadAll();
 		vm.selectedItem = null;
 		vm.searchText = null;
 		vm.querySearch = querySearch;
@@ -24,7 +24,17 @@
 		activate();
 
 		function activate() {
+			return facultyAuthService.getColleges()
+				.then(getCollegesSuccess)
+				.catch(getCollegesError);
+		}
 
+		function getCollegesSuccess(response) {
+			vm.colleges = response.data;
+		}
+
+		function getCollegesError(error) {
+			fctToast.showToast('Error in getting colleges');
 		}
 
 		function register() {
@@ -63,33 +73,33 @@
 
 
 		function querySearch(query) {
-			var results = query ? vm.states.filter(createFilterFor(query)) : vm.states;
+			var results = query ? vm.colleges.filter(createFilterFor(query)) : vm.colleges;
 			var deferred = $q.defer();
+			console.log(results);
 			$timeout(function () {
 				deferred.resolve(results);
 			}, Math.random() * 1000, false);
 			return deferred.promise;
 		}
 
-		function loadAll() {
-			var allStates = 'Alabama, Alaska, Arizona, Arkansas, California, Colorado, Connecticut, Delaware, Florida, Georgia, Hawaii, Idaho, Illinois, Indiana, Iowa, Kansas, Kentucky, Louisiana';
-
-			return allStates.split(/, +/g).map(function (state) {
-				return {
-					value: state.toLowerCase(),
-					display: state
-				};
-			});
-		}
+		// function loadAll() {
+		// 	var allStates = 'Alabama, Alaska, Arizona, Arkansas, California, Colorado, Connecticut, Delaware, Florida, Georgia, Hawaii, Idaho, Illinois, Indiana, Iowa, Kansas, Kentucky, Louisiana';
+		//
+		// 	return allStates.split(/, +/g).map(function (state) {
+		// 		return {
+		// 			value: state.toLowerCase(),
+		// 			display: state
+		// 		};
+		// 	});
+		// }
 
 
 		function createFilterFor(query) {
 			var lowercaseQuery = angular.lowercase(query);
 
-			return function filterFn(state) {
-				return (state.value.indexOf(lowercaseQuery) === 0);
+			return function filterFn(college) {
+				return (college.name.toLowerCase().trim().indexOf(lowercaseQuery) === 0);
 			};
-
 		}
 	}
 })();

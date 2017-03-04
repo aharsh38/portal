@@ -1,0 +1,34 @@
+
+.rg-border {
+    border: 2px solid $blue-grey-500;
+}
+
+
+.summary-card{
+    background: $blue-500;
+    color: $white;
+    p{
+        text-align: center;
+    }
+
+    strong{
+        font-size: 1.3rem;
+    }
+
+    &.bg-green{
+        background: $amber-700;
+    }
+}
+
+.registration-card{
+    border: 1px solid $blue-500;
+
+    .title{
+        font-size: 16px;
+    }
+}
+
+.noreg{
+    font-size: 24px;
+    color: $red-700;
+}

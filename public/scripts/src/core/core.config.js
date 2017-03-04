@@ -50,9 +50,12 @@
 					}
 				})
 				.state('in_tc', {
-					controller: 'TeamLayoutController',
-					controllerAs: 'tlac',
-					templateUrl: '/templates/layouts/in_tc.html'
+					// controller: 'TeamLayoutController',
+					// controllerAs: 'tlac',
+					templateUrl: '/templates/layouts/in_tc.html',
+					resolve: {
+						redirectTeamNotLoggedIn: redirectTeamNotLoggedIn
+					}
 				})
 				.state('out.login', {
 					url: '/login',
@@ -93,7 +96,8 @@
 				.state('in_tc.verifyCoordinator', {
 					url: '/verifyCoordinator',
 					templateUrl: '/templates/pages/in/verifyCoordinator.html',
-					controller: 'VerifyCoordinatorController'
+					controller: 'VerifyCoordinatorController',
+					controllerAs: 'vcc'
 				})
 				.state('in_tc.collegeList', {
 					url: '/collegeList',
@@ -127,6 +131,18 @@
 					templateUrl: '/templates/pages/in/facultySettings.html',
 					controller: 'FacultySettingsController',
 					controllerAs: 'fsc'
+				})
+				.state('in_fc.confirm_registration', {
+					url: '/confirm/registrations',
+					templateUrl: '/templates/pages/in/faculty/confirmRegistration.html',
+					controller: 'ConfirmRegistrationsController',
+					controllerAs: 'crc'
+				})
+				.state('in_fc.registration_details', {
+					url: '/registrations',
+					templateUrl: '/templates/pages/in/faculty/registrationDetails.html',
+					controller: 'RegistrationDetailsController',
+					controllerAs: 'rdc'
 				});
 		}
 	}

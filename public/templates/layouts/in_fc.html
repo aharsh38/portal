@@ -7,7 +7,9 @@
             <div ng-include src="'/templates/components/in_fc_sidenav.html'"></div>
         </md-sidenav>
         <md-content flex class="main-content">
-            <ui-view></ui-view>
+            <div id="preloader-container" ng-include src="'/templates/components/preloader.html'" ng-show="$root.pageTransition">
+            </div>
+            <ui-view ng-show="!$root.pageTransition"></ui-view>
         </md-content>
     </div>
 </div>

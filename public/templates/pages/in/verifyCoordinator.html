@@ -1,23 +1,30 @@
-     <div ng-controller="VerifyCoordinatorController">
-       <ng-md-icon class="md-default-theme searchicon margin-right-5" icon="search" ></ng-md-icon>
-      <input type="text" name="search" ng-model="search" style="float:right;margin-right:10px;margin-top:10px;">
-        <h1 style="margin-left:140px;margin-top:50px;">Faculty Coordinators</h1>
-      <div layout="row"  ng-repeat="detail in details">
-        <div class="md-parents" layout="column" layout-align="center-center" layout-margin flex>
-   <md-whiteframe class="md-whiteframe-9dp" layout-align="center center" style="width:80%">
-     <md-content layout-padding>
-    <div flex style="float:left">
-      <label>  Name :  </label><span>{{detail.name}}</span><br>
-    <label>  Mobile No:</label><span>{{detail.mobileno}}</span><br>
-    <label>  City:</label><span>{{detail.city}}</span><br>
-   </div>
-    <div flex style="float:right;">
-      <label>  College Name:</label><span>{{detail.collegename}}</span><br>
-      <label>E-mail:</label><span>{{detail.email}}</span><br>
-      <label>Verified:</label><span>{{detail.verified}}</span><br>
+<div class="margin-tb-gt-xs-4 margin-lr-gt-xs-2 bg-white margin-xs-1 padding-tb-3 padding-lr-xs-1 padding-lr-gt-xs-2 page" md-whiteframe="5">
+    <div layout-gt-xs="row" layout-align-gt-xs="space-between center" layout-xs="column" >
+        <h2>Faculty Coordinators</h2>
+        <md-input-container flex-gt-xs="30">
+            <label>Search</label>
+            <input class="margin-tb-xs-1" type="text" name="search" ng-model="search">
+        </md-input-container>
     </div>
-   </md-content>
-    </md-whiteframe>
-  </div>
-  </div>
-  </div>
+
+    <div layout="column" >
+        <div class="faculty-card padding-lr-gt-xs-3 padding-lr-xs-1 margin-tb-2" layout-xs="column" layout-gt-xs="row" layout-wrap layout-align-gt-xs="space-between center" ng-repeat="detail in vcc.faculties|filter:search|limitTo:vcc.limitFaculty track by $index">
+            <p flex-gt-xs="45">Name: <strong>{{detail.name}}</strong></p>
+            <p flex-gt-xs="45">College Name: <strong>{{detail.collegename}}</strong></p>
+            <p flex-gt-xs="45">Mobile: <strong>{{detail.mobileno}}</strong></p>
+            <p flex-gt-xs="45">Email: <strong>{{detail.email}}</strong></p>
+            <p flex-gt-xs="45">City: <strong>{{detail.city}}</strong></p>
+            <p flex-gt-xs="45">Registrations: <strong>50</strong></p>
+            <div flex-gt-xs layout="row" layout-align="center center" class="margin-top-2">
+                <md-button ng-click="vcc.verifyFaculty(detail._id, $index)" class="md-raised md-success" md-no-ink="true">Verify</md-button>
+            </div>
+        </div>
+
+        <div ng-hide="vcc.nomoreFaculty" layout="row" layout-align="space-between center" class="loadmore margin-top-3">
+            <span flex class="border"></span>
+            <a class="margin-lr-2" ng-click="vcc.loadmore()"><b>Load more</b></a>
+            <span flex class="border"></span>
+        </div>
+    </div>
+
+</div>

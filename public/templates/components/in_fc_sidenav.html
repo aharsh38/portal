@@ -1,6 +1,7 @@
 <!-- <md-button class="md-icon-button" layout="row" layout-align="center center" md-no-ink="true" aria-label="toggle" ng-click="toggleOptions()">
     <ng-md-icon icon="{{caret}}" size="16" options='{"rotation" : "clockwise","duration":500, "easing" : "expo-in-out"}'></ng-md-icon>
 </md-button> -->
+
 <div class="margin-1" hide-gt-xs show-xs layout="row">
     <div flex></div>
     <md-button ng-click="flayc.closeLeftSidenav()" flex-xs="15" hide-gt-xs show-xs class="md-icon-button" layout="row" layout-align="center center" aria-label="sidenav">
@@ -17,14 +18,16 @@
             <p>CONFIRM REGISTRATION</p>
         </div>
     </md-button>
+
     <md-button ng-show="$root.faculty.verified" ng-disabled="$root.faculty.rejected" class="margin-0 padding-0 text-capitalize"
     ui-sref-active="al-subOption-selected"
-    ui-sref=".guidelines">
+    ui-sref=".registration_details">
         <div class="container-title" layout="row" layout-align="none center">
             <ng-md-icon icon="beenhere" class="padding-lr-1 title-icon" size="20"></ng-md-icon>
             <p>REGISTRATIONS</p>
         </div>
     </md-button>
+
     <md-button class="margin-0 padding-0 text-capitalize"
     ui-sref-active="al-subOption-selected"
     ui-sref=".guidelines">
@@ -33,12 +36,14 @@
             <p>GUIDELINES</p>
         </div>
     </md-button>
+
     <md-button  ng-show="$root.faculty.verified" ng-disabled="$root.faculty.rejected" class="margin-0 padding-0 text-capitalize">
         <div class="container-title" layout="row" layout-align="none center">
             <ng-md-icon icon="add_to_queue" class="padding-lr-1 title-icon" size="20"></ng-md-icon>
             <p>RESOURCES</p>
         </div>
     </md-button>
+
     <md-button class="margin-0 padding-0 text-capitalize"
     ui-sref-active="al-subOption-selected"
     ui-sref=".settings">

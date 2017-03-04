@@ -14,12 +14,10 @@ var facultyController = function (Faculty, Registration) {
 		});
 	}
 
+
 	function confirmRegistration(request, response) {
 		Registration.findOne({
-				teamId: request.body.teamId,
-				"team_leader.email": request.body.email,
-				"team_leader.mobileno": request.body.mobileno,
-				serialId: request.body.serialId
+				teamId: request.body.teamId
 			})
 			.exec(function (error, registration) {
 				if (error) {
@@ -28,9 +26,26 @@ var facultyController = function (Faculty, Registration) {
 				}
 				if (!registration) {
 					throwError(response, error, 404, 'Not Found', 'Registration not found');
+					return;
 				} else {
+					if (registration.team_leader.email !== request.body.email) {
+						throwError(response, error, 400, 'Bad Request', 'Team leader email address incorrect');
+						return;
+					}
+
+					if (registration.team_leader.mobileno !== request.body.mobileno) {
+						throwError(response, error, 400, 'Bad Request', 'Team leader mobile number incorrect');
+						return;
+					}
+
+					if (registration.team_leader.serialId !== request.body.serialId) {
+						throwError(response, error, 400, 'Bad Request', 'Serial id is incorrect');
+						return;
+					}
+
 					if (registration.confirmation === false) {
 						registration.confirmation = true;
+						registration.confirmation_date = new Date();
 						registration.facultyId = request.faculty._id;
 						var confirmedTime = new Date();
 						var data = {
@@ -47,6 +62,10 @@ var facultyController = function (Faculty, Registration) {
 						} else {
 							throwError(response, error, 404, 'Not Found', 'Generated data not found.');
 						}
+
+						request.faculty.registrations = request.faculty.registrations + (1 + registration.other_participants.length);
+						request.faculty.collected_amount = registration.total_amount + request.faculty.collected_amount;
+
 						registration.save(function (error) {
 							if (error) {
 								throwError(response, error, 520, "Confirming Registration", "Failed");
@@ -57,40 +76,64 @@ var facultyController = function (Faculty, Registration) {
 							}
 						});
 					} else {
-						throwError(response, error, 403, 'Forbidden', 'You are Confirmed already!');
+						throwError(response, error, 403, 'Forbidden', 'Registration confirmed already!');
 					}
 				}
 			});
 	}
 
-	function getFaculty(request, response) {
+
+	function getAllFacultyCoordinators(request, response) {
 		Faculty.find()
-			.exec(function (err, faculty) {
-				if (err) {
-					res.status(500).send(err);
+			.select({
+				name: 1,
+				email: 1,
+				mobileno: 1,
+				verified: 1,
+				collegeId: 1,
+				registrations: 1,
+				collected_amount: 1
+			})
+			.sort({
+				createdAt: -1
+			})
+			.populate({
+				path: 'collegeId',
+				select: '_id name code city state pincode'
+			})
+			.exec(function (error, faculties) {
+				if (error) {
+					throwError(response, error, 500, 'Internal Server Error', 'Finding Faculties');
 				} else {
-					res.json(faculty);
+					response.status(200).json(faculties);
 				}
 			});
 	}
+
 
 	function facultyChangePassword(request, response) {
-		if (request.faculty.checkValidPassword(request.body.currentPassword)) {
-			request.faculty.setPassword(request.body.newPassword);
-
-			request.faculty.save(function (error) {
-				if (error)
-					throwError(response, error, 500, 'Internal Server Error', 'Faculty Change Password');
-				else {
-					response.status(200).json({
-						"message": "Password Succesfuly Changed"
+		Faculty.findById(request.body.facultyId)
+			.exec(function (error, faculty) {
+				if (error) {
+					console.log(error);
+				} else if (faculty.checkValidPassword(request.body.currentPassword)) {
+					faculty.setPassword(request.body.newPassword);
+					faculty.save(function (error) {
+						if (error)
+							throwError(response, error, 500, 'Internal Server Error', 'Faculty Change Password');
+						else {
+							response.status(200).json({
+								"message": "Password Succesfuly Changed"
+							});
+						}
 					});
+
+				} else {
+					throwError(response, null, 403, 'Forbidden', 'Password Incorrect');
 				}
 			});
-		} else {
-			throwError(response, null, 403, 'Forbidden', 'Password Incorrect');
-		}
 	}
+
 
 	function seeRegistration(request, response) {
 		Registration.findOne({
@@ -112,12 +155,13 @@ var facultyController = function (Faculty, Registration) {
 
 
 	var ac = {};
-	ac.getFaculty = getFaculty;
 	ac.seeRegistration = seeRegistration;
 	ac.confirmRegistration = confirmRegistration;
 	ac.facultyChangePassword = facultyChangePassword;
+	ac.getAllFacultyCoordinators = getAllFacultyCoordinators;
+	// ac.getAllFaculties = getAllFaculties;
 	return ac;
 
-
 };
+
 module.exports = facultyController;

@@ -21,15 +21,33 @@ var memberController = function (Faculty, Member) {
 
 	function verifyFaculty(request, response) {
 		request.faculty.verified = true;
-		request.faculty.save(function (error) {
-			if (error)
-				throwError(response, error, 500, 'Internal Server Error', 'Faculty Verified Failed');
-			else {
-				response.status(200).json({
-					"message": "Faculty Succesfuly Verified"
-				});
-			}
-		});
+
+		College.findOne({
+				_id: request.faculty.collegeId
+			})
+			.exec(function (error, college) {
+				if (error) {
+					throwError(response, error, 500, 'Internal Server Error', 'Faculty Verified Failed');
+				} else {
+					college.facultyId = request.faculty._id;
+					college.faculty_assigned = true;
+					college.save(function (error) {
+						if (error) {
+							throwError(response, error, 500, 'Internal Server Error', 'Faculty Verified Failed');
+						} else {
+							request.faculty.save(function (error) {
+								if (error)
+									throwError(response, error, 500, 'Internal Server Error', 'Faculty Verified Failed');
+								else {
+									response.status(200).json({
+										"message": "Faculty Succesfuly Verified"
+									});
+								}
+							});
+						}
+					});
+				}
+			});
 	}
 
 	function rejectFaculty(request, response) {
@@ -118,7 +136,7 @@ var memberController = function (Faculty, Member) {
 							var newElem = e.toJSON();
 							newElem.event_section = element.eventObject.event_section;
 							newElem.event_name = element.eventObject.event_name;
-							console.log(newElem);
+							// console.log(newElem);
 							return newElem;
 						});
 

@@ -22,11 +22,13 @@ var memberRoutes = function (Faculty, Member, Registration, College, Events) {
 	memberRouter.patch('/faculty/verify/:facultyId', memberController.verifyFaculty);
 	memberRouter.patch('/faculty/reject/:facultyId', memberController.rejectFaculty);
 
+	memberRouter.get('/faculty', facultyController.getAllFacultyCoordinators);
+
 	// memberRouter.get('/registrations/', registrationController.getRegistration);
-	memberRouter.post('/registrations/export', registrationController.exportRegistration);
+	// memberRouter.post('/registrations/export', registrationController.exportRegistration);
 	// memberRouter.get('/registrations/allEventsExport', registrationController.exportForCertificate);
 
-	memberRouter.patch('/settings/:memberId/changePassword', memberController.memberChangePassword);
+	// memberRouter.patch('/settings/:memberId/changePassword', memberController.memberChangePassword);
 
 	return memberRouter;
 };

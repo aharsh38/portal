@@ -37,7 +37,7 @@ body{
         font-size: 12px;
     }
 
-    b{
+    b, strong{
         font-weight: 600;
     }
 
@@ -150,4 +150,8 @@ h6{
 
 .text-success{
     color: $green-500;
+}
+
+.text-underline{
+    text-decoration: underline;
 }

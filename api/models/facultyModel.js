@@ -11,46 +11,44 @@ var facultyModel = new Schema({
 		unique: true,
 		required: true
 	},
-
 	name: {
 		type: String,
 		required: true
 	},
-
 	mobileno: {
 		type: String,
 		required: true
 	},
-
 	verified: {
 		type: Boolean,
 		default: false
 	},
-
 	collegeId: {
 		type: Schema.Types.ObjectId,
 		ref: 'College',
-		// required: true
 	},
-
 	city: {
 		type: String
 	},
-
 	rejected: {
 		type: Boolean,
 		default: false
 	},
-
 	forgot_password: {
 		type: Boolean,
 		default: false
 	},
-
 	forgot_password_token: {
 		type: String
 	},
-
+	registrations_count: {
+		type: Number,
+		default: 0
+	},
+	collected_amount: {
+		type: Number,
+		default: 0
+	},
 	password: String,
 	salt: String
 }, {
@@ -79,6 +77,8 @@ facultyModel.methods.generateJwt = function () {
 		mobileno: this.mobileno,
 		verified: this.verified,
 		rejected: this.rejected,
+		registrations_count: this.registrations_count,
+		collected_amount: this.collected_amount,
 		forgot_password: this.forgot_password,
 		exp: parseInt(expiry.getTime() / 1000),
 	}, config.secrets.faculty);

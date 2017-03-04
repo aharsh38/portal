@@ -78,6 +78,35 @@
 			$rootScope.$broadcast('ErrorMemberLogin', error);
 		}
 
+		function memberForgotPasswordApply(member) {
+			$http.post('/api/auth/member/forgotPasswordApply', member)
+				.then(memberForgotPasswordApplySuccess)
+				.catch(memberForgotPasswordApplyFailure);
+		}
+
+		function memberForgotPasswordApplySuccess(response) {
+			$rootScope.$broadcast('SuccessFacultyForgotPasswordApply');
+		}
+
+		function memberForgotPasswordApplyFailure(error) {
+			$rootScope.$broadcast('ErrorFacultyForgotPasswordApply', error);
+		}
+
+		function memberForgotPasswordSet(member, id) {
+			var link = '/api/auth/member/' + id + '/forgotPasswordSet';
+			$http.post(link, member)
+				.then(memberForgotPasswordSetSuccess)
+				.catch(memberForgotPasswordSetFailure);
+		}
+
+		function memberForgotPasswordSetSuccess(response) {
+			$rootScope.$broadcast('SuccessFacultyForgotPasswordSet');
+		}
+
+		function memberForgotPasswordSetFailure() {
+			$rootScope.$broadcast('ErrorFacultyForgotPasswordSet', error);
+		}
+
 		function logout() {
 			removeToken();
 			$rootScope.$broadcast('logoutSuccessful');

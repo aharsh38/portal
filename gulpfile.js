@@ -3,6 +3,8 @@ var config = require('./gulpConfig.js');
 var clc = require('cli-color');
 var path = require('path');
 var runSequence = require('run-sequence');
+var nodemonStream;
+
 
 var plugins = require("gulp-load-plugins")({
 	pattern: ['gulp-*', 'gulp.*'],
@@ -92,14 +94,16 @@ gulp.task('watch', ['scripts::build', 'sass::build'], function () {
 });
 
 gulp.task('node', function () {
-	plugins.nodemon({
+	nodemonStream = plugins.nodemon({
 			script: 'server.js',
 			ext: 'js',
-			watch: './api',
-			ignore: ['./node_modules/**']
+			watch: 'api',
+			ignore: ['node_modules/**'],
 		})
 		.on('start', ['watch'])
-		.on('change', ['watch'])
+		.on('change', function () {
+			nodemonStream.emit('restart', 10);
+		})
 		.on('restart', function () {
 			console.log('Restarting');
 		});

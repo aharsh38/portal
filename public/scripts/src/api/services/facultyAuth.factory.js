@@ -15,7 +15,8 @@
 			changeFacultyPassword: changeFacultyPassword,
 			logout: logout,
 			facultyForgotPasswordApply: facultyForgotPasswordApply,
-			facultyForgotPasswordSet: facultyForgotPasswordSet
+			facultyForgotPasswordSet: facultyForgotPasswordSet,
+			getColleges: getColleges
 		};
 
 		return service;
@@ -35,7 +36,8 @@
 				$rootScope.faculty.rejected = payload.rejected;
 				$rootScope.faculty.forgot_password = payload.forgot_password;
 				$rootScope.faculty.id = payload._id;
-				console.log($rootScope.faculty);
+				$rootScope.faculty.registrations_count = payload.registrations_count;
+				$rootScope.faculty.collected_amount = payload.collected_amount;
 				return (payload.exp > Date.now() / 1000);
 			} else {
 				return false;
@@ -93,30 +95,25 @@
 			$rootScope.$broadcast('ErrorFacultyLogin', error);
 		}
 
+		function getColleges() {
+			return $http.get('/api/college/getAllCollege')
+				.then(getCollegesSuccess)
+				.catch(getCollegesFailure);
+		}
 
-		// function updateUser(user) {
-		// 	var link = "/api/faculty/" + user.id;
-		// 	$http.put(link, user)
-		// 		.then(updateUserSuccess)
-		// 		.catch(updateUserFailure);
-		// }
-		//
-		// function updateUserSuccess(response) {
-		// 	removeToken();
-		// 	saveToken(response.data.token);
-		// 	$rootScope.$broadcast('updateUserSuccess');
-		// }
-		//
-		// function updateUserFailure(error) {
-		// 	$rootScope.$broadcast('updateUserFailure', error);
-		// }
-		//
+		function getCollegesSuccess(response) {
+			return response;
+		}
+
+		function getCollegesFailure(error) {
+			return error;
+		}
 
 		function changeFacultyPassword(passwordObject) {
 			if (checkFacultyLoggedIn()) {
-				if ($rootScope.user) {
-					var faculty = $rootScope.faculty;
-					var changePasswordLink = "/api/faculty/settings/" + faculty.id + "/changePassword";
+				if ($rootScope.faculty) {
+					passwordObject.facultyId = $rootScope.faculty.id;
+					var changePasswordLink = "/api/faculty/settings/changePassword";
 					$http.patch(changePasswordLink, passwordObject)
 						.then(changePasswordSuccess)
 						.catch(changePasswordFailure);

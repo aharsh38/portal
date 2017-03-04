@@ -1,0 +1,43 @@
+<div class="margin-tb-gt-xs-4 margin-lr-gt-xs-2 bg-white margin-xs-1 padding-tb-3 padding-lr-xs-1 padding-lr-gt-xs-2 page" md-whiteframe="5" layout="column">
+    <h2 style="text-align:center">Confirm Registrations</h2>
+    <form name="confirmRegistrationForm" class="margin-top-3 " layout="row" layout-align="center" layout-wrap>
+        <div class="padding-gt-xs-3 padding-xs-1 rg-border" flex-gt-xs="60" layout="column">
+            <h3 class="margin-bottom-1">Enter Registration Details</h3>
+            <md-input-container>
+                <label>Team Id</label>
+                <input type="text" name="teamId" required ng-pattern="/^[A-Z]{2}[0-9]{6}$/" ng-model="registration.teamId">
+                <div ng-messages="confirmRegistrationForm.teamId.$error" >
+                    <div ng-message="required">This is required.</div>
+                    <div ng-message="pattern">Invalid Team Id.</div>
+                </div>
+            </md-input-container>
+
+            <md-input-container>
+                <label>Team Leader Email Id</label>
+                <input type="email" name="email" required ng-pattern="/^.+@.+\..+$/" ng-model="registration.email">
+                <div ng-messages="confirmRegistrationForm.email.$error" >
+                    <div ng-message="required">This is required.</div>
+                    <div ng-message="email">Invalid e-mail address.</div>
+                    <div ng-message="pattern">Invalid e-mail address.</div>
+                </div>
+            </md-input-container>
+
+            <md-input-container>
+                <label>Team Leader Mobile No</label>
+                <input type="text" name="mobileno" required ng-model="registration.mobileno" minlength="10" maxlength="10" ng-pattern="/^[7-9]{3}[0-9]{7}$/">
+                <div ng-messages="confirmRegistrationForm.mobileno.$error">
+                    <div ng-message="required">This is required.</div>
+                    <div ng-message="maxlength">Invalid Mobile No.</div>
+                    <div ng-message="pattern">Invalid Mobile No.</div>
+                </div>
+            </md-input-container>
+
+            <div layout="row" layout-align="center center">
+                <md-button flex-gt-xs="30" class="md-raised md-primary" md-no-ink="true" ng-click="crc.confirmRegistration($event)" required layout="row" layout-align="center center">
+                    <b ng-show="!crc.registrationButtonClicked">Confirm</b>
+                    <md-progress-circular ng-show="crc.registrationButtonClicked" ng-disabled="confirmRegistrationForm.$invalid" class="md-black mini" md-diameter="20px"></md-progress-circular>
+                </md-button>
+            </div>
+        </div>
+    </form>
+</div>

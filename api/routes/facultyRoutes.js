@@ -3,21 +3,19 @@ var express = require('express');
 var facultyRoutes = function (Faculty, Registration) {
 	var facultyRouter = express.Router();
 	var facultyController = require('../controllers/facultyController')(Faculty, Registration);
+	var registrationController = require('../controllers/registrationController')(Registration);
 
-
-
-	// facultyRouter.get('/getFaculty', facultyController.getFaculty);
-	facultyRouter.patch('/:facultyId/settings/changePassword', facultyController.facultyChangePassword);
-
-	facultyRouter.post('/:facultyId/registrations/confirm', registrationController.confirmRegistration);
-
+	facultyRouter.patch('/settings/changePassword', facultyController.facultyChangePassword);
+	facultyRouter.post('/:facultyId/registrations/confirm', facultyController.confirmRegistration);
 	facultyRouter.get('/:facultyId/registrations', registrationController.getFacultyRegistrations);
 
-	facultyRouter.get('/:facultyId/registrationSummary', registrationController.getFacultySummary);
 
-	// fac
-	// facultyRouter.post('/forgotPasswordSet', facultyController.forgotPasswordSet);
-	// facultyRouter.get('/registration', facultyController.seeRegistration);
+	// facultyRouter.post('/:facultyId/studentCoordinator', facultyController.addStudentController);
+	// facultyRouter.put('/:facultyId/studentCoordinator/edit', facultyController.editStudentController);
+
+
+	//To Remove
+	// facultyRouter.get('/:facultyId/registrations/summary', registrationController.getFacultySummary);
 
 	return facultyRouter;
 };

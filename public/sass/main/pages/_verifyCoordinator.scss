@@ -1,6 +1,11 @@
-.searchicon{
-float: right;
-}
-label{
-  font-weight: bold;
+.faculty-card{
+    border: 2px solid $blue-grey-500;
+    // border-color: ;
+    background: $blue-grey-50;
+    padding-top: 3px;
+    padding-bottom: 3px;
+
+    p{
+        font-size: 16px;
+    }
 }

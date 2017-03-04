@@ -21,19 +21,24 @@ var collegeController = function (College) {
 		//     console.log('collection dropped');
 		// });
 		node_xj({
-			input: "data.xlsx", // input xls
-			output: "output.json" // output json
+			input: "./api/data/college.xlsx", // input xls
+			output: "./api/data/college.json" // output json
 		}, function (error, result) {
 			if (error) {
+				console.log(error);
 				throwError(response, error, 500, "Internal Server Error", "failed");
+				return;
 			} else {
 				_.each(result, function (element, index, list) {
 					var college = new College(element);
 					college.save(function (error) {
 						if (error) {
+							console.log(error);
 							throwError(response, error, 500, "Internal server error", "Failed");
+							return;
 						} else {
-							if (index == result.length) {
+							console.log("College : ", index);
+							if (index == (result.length - 1)) {
 								response.status(200);
 								response.json({
 									"message": "Done"

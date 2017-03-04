@@ -4,11 +4,11 @@ var config = require('../config/config');
 var Schema = mongoose.Schema;
 
 var collegeModel = new Schema({
-	college_name: {
+	name: {
 		type: String,
 		required: true
 	},
-	college_code: {
+	code: {
 		type: String,
 		required: true
 	},

@@ -42,7 +42,8 @@ var authController = function (Faculty, Member) {
 		faculty.email = request.body.email;
 		faculty.mobileno = request.body.mobileno;
 		// faculty.city = request.body.city;
-		// faculty.collegeId = request.body.collegeId;
+		// faculty.collegeId = request.body.college.;
+		console.log("College", request.body.college);
 		faculty.setPassword(request.body.password);
 		faculty.save(function (error) {
 			if (error) {

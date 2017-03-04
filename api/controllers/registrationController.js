@@ -114,15 +114,17 @@ var registrationController = function (Registration) {
 	function getFacultyRegistrations(request, response) {
 		Registration
 			.find({
-				facultyId: request.params.facultyId
+				facultyId: request.params.facultyId,
+				confirmation: true
 			})
+			.select('_id teamId facultyId no_of_participants team_leader eventObject total_amount')
 			.exec(function (error, registrations) {
 				if (error) {
 					throwError(response, error, 500, 'Internal Server Error', 'Registration Fetch Failed');
 					return;
 				}
 				if (!registration) {
-					throwError(response, error, 404, 'Not Found', 'Registration not found');
+					throwError(response, error, 404, 'Not Found', 'Registrations not found');
 				} else {
 					response.status(200);
 					response.json(registrations);

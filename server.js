@@ -8,7 +8,8 @@ var passport = require('passport');
 var config = require('./api/config/config');
 require('./api/config/passport');
 
-var dbURI = 'mongodb://localhost/gtutesting';
+// var dbURI = config.mongoURI;
+var dbURI = "mongodb://localhost/gtutesting";
 
 mongoose.Promise = global.Promise;
 
@@ -39,6 +40,7 @@ app.use(logger('dev'));
 app.use(bodyParser.urlencoded({
 	extended: true
 }));
+
 app.use(bodyParser.json());
 
 app.use(passport.initialize());
@@ -56,17 +58,17 @@ var Registration = require('./api/models/registrationModel');
 var authRouter = require('./api/routes/authRoutes')(Faculty, Member);
 app.use('/api/auth', authRouter);
 
-// var collegeRouter = require('./api/routes/collegeRoutes')(College);
-// app.use('/api/college', collegeRouter);
+var collegeRouter = require('./api/routes/collegeRoutes')(College);
+app.use('/api/college', collegeRouter);
 //
 // var eventRouter = require('./api/routes/eventRoutes')(Events);
 // app.use('/api/event', eventRouter);
 
-// var memberRouter = require('./api/routes/memberRoutes')(Faculty, Member, Registration, College, Events);
-// app.use('/api/members', memberRouter);
+var memberRouter = require('./api/routes/memberRoutes')(Faculty, Member, Registration, College, Events);
+app.use('/api/members', memberRouter);
 //
-// var facultyRouter = require('./api/routes/facultyRoutes')(Faculty, Registration);
-// app.use('/api/faculty', facultyRouter);
+var facultyRouter = require('./api/routes/facultyRoutes')(Faculty, Registration);
+app.use('/api/faculty', facultyRouter);
 //
 // var registrationRouter = require('./api/routes/registrationRoutes')(Registration);
 // app.use('/api/registration', registrationRouter);

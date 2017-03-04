@@ -123,3 +123,17 @@ body{
 
     }
 }
+
+.loadmore{
+    .border{
+        border-bottom: 2px solid $grey-600;
+    }
+
+    a{
+        cursor: pointer;
+
+        &:hover{
+            color: $blue-800;
+        }
+    }
+}
