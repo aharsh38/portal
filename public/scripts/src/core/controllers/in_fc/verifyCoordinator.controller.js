@@ -28,6 +28,7 @@
 
 		function getAllFacultyCoordinatorsSuccess(response) {
 			vm.faculties = response.data;
+			console.log(vm.faculties);
 			if (vm.limitFaculty <= vm.faculties.length) {
 				vm.nomoreFaculty = false;
 			}

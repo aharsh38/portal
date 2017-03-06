@@ -8,15 +8,17 @@
     </div>
 
     <div layout="column" >
-        <div class="faculty-card padding-lr-gt-xs-3 padding-lr-xs-1 margin-tb-2" layout-xs="column" layout-gt-xs="row" layout-wrap layout-align-gt-xs="space-between center" ng-repeat="detail in vcc.faculties|filter:search|limitTo:vcc.limitFaculty track by $index">
-            <p flex-gt-xs="45">Name: <strong>{{detail.name}}</strong></p>
-            <p flex-gt-xs="45">College Name: <strong>{{detail.collegename}}</strong></p>
-            <p flex-gt-xs="45">Mobile: <strong>{{detail.mobileno}}</strong></p>
-            <p flex-gt-xs="45">Email: <strong>{{detail.email}}</strong></p>
-            <p flex-gt-xs="45">City: <strong>{{detail.city}}</strong></p>
-            <p flex-gt-xs="45">Registrations: <strong>50</strong></p>
-            <div flex-gt-xs layout="row" layout-align="center center" class="margin-top-2">
-                <md-button ng-click="vcc.verifyFaculty(detail._id, $index)" class="md-raised md-success" md-no-ink="true">Verify</md-button>
+        <div class="faculty-card padding-lr-gt-xs-3 padding-lr-xs-1 margin-tb-2" layout-xs="column" layout-gt-xs="row" layout-wrap layout-align-gt-xs="none center" ng-repeat="detail in vcc.faculties|filter:search|limitTo:vcc.limitFaculty track by $index">
+            <p flex-gt-xs="40">Name: <strong>{{detail.name}}</strong></p>
+            <p flex-gt-xs="55">College Name: <strong>{{detail.collegeId.name}}</strong></p>
+            <p flex-gt-xs="40">Mobile: <strong>{{detail.mobileno}}</strong></p>
+            <p flex-gt-xs="55">Email: <strong>{{detail.email}}</strong></p>
+            <p flex-gt-xs="40">City: <strong>{{detail.collegeId.city}}</strong></p>
+            <p flex-gt-xs="35">Registrations: <strong>{{detail.registrations_count}}</strong></p>
+            <p flex-gt-xs="20">Amount: <strong>{{detail.collected_amount}}</strong></p>
+            <div flex-gt-xs="100" layout="row" layout-align="center center" class="margin-top-2">
+                <md-button ng-show="!detail.verified" ng-click="vcc.verifyFaculty(detail._id, $index)" class="md-raised md-success margin-lr-1" md-no-ink="true">Verify</md-button>
+                <md-button ng-click="vcc.rejectFaculty(detail._id, $index)" class="md-raised md-warn margin-lr-1" md-no-ink="true">Reject</md-button>
             </div>
         </div>
 

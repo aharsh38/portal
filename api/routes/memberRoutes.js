@@ -3,7 +3,7 @@ var express = require('express');
 var memberRoutes = function (Faculty, Member, Registration, College, Events) {
 	var memberRouter = express.Router();
 
-	var memberController = require('../controllers/memberController')(Faculty, Member);
+	var memberController = require('../controllers/memberController')(Faculty, Member, College);
 	var facultyController = require('../controllers/facultyController')(Faculty, Registration);
 	var registrationController = require('../controllers/registrationController')(Registration);
 	var eventController = require('../controllers/eventController')(Events);

@@ -40,7 +40,7 @@
 			fctToast.showToast("Succefully Registered", true);
 			vm.registerButtonClicked = false;
 			resetForm();
-			// $state.go('in_fc.guidelines');
+			$state.go('in_tc.verifyCoordinator');
 		}
 
 		function registerFailure(event, error) {

@@ -9,8 +9,9 @@ var config = require('./api/config/config');
 require('./api/config/passport');
 
 // var dbURI = config.mongoURI;
-var dbURI = "mongodb://localhost/gtutesting";
-
+// var dbURI = "mongodb://localhost/gtutesting";
+var dbURI = config.testMongo;
+//
 mongoose.Promise = global.Promise;
 
 var db = mongoose.connect(dbURI);
@@ -57,13 +58,13 @@ var Registration = require('./api/models/registrationModel');
 
 var authRouter = require('./api/routes/authRoutes')(Faculty, Member);
 app.use('/api/auth', authRouter);
-
+//
 var collegeRouter = require('./api/routes/collegeRoutes')(College);
 app.use('/api/college', collegeRouter);
 //
-// var eventRouter = require('./api/routes/eventRoutes')(Events);
-// app.use('/api/event', eventRouter);
-
+// // var eventRouter = require('./api/routes/eventRoutes')(Events);
+// // app.use('/api/event', eventRouter);
+//
 var memberRouter = require('./api/routes/memberRoutes')(Faculty, Member, Registration, College, Events);
 app.use('/api/members', memberRouter);
 //

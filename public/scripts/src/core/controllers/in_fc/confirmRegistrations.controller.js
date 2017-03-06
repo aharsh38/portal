@@ -5,9 +5,9 @@
 		.module('fct.core')
 		.controller('ConfirmRegistrationsController', ConfirmRegistrationsController);
 
-	ConfirmRegistrationsController.$inject = ['memberService', '$mdDialog', 'fctToast'];
+	ConfirmRegistrationsController.$inject = ['memberService', '$mdDialog', 'fctToast', '$scope'];
 
-	function ConfirmRegistrationsController(memberService, $mdDialog, fctToast) {
+	function ConfirmRegistrationsController(memberService, $mdDialog, fctToast, $scope) {
 		var vm = this;
 		vm.registration = {};
 		vm.registrationButtonClicked = false;
@@ -55,6 +55,9 @@
 
 		function confirmRegistrationSuccess(response) {
 			vm.registrationButtonClicked = false;
+			vm.registration = {};
+			$scope.confirmRegistrationForm.$setPristine();
+			$scope.confirmRegistrationForm.$setUntouched();
 			fctToast.showToast('Registration Successful', true);
 		}
 

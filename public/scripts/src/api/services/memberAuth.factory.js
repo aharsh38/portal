@@ -12,7 +12,10 @@
 			memberLogin: memberLogin,
 			memberRegister: memberRegister,
 			checkMemberLoggedIn: checkMemberLoggedIn,
-			logout: logout
+			logout: logout,
+			changeMemberPassword: changeMemberPassword,
+			memberForgotPasswordApply: memberForgotPasswordApply,
+			memberForgotPasswordSet: memberForgotPasswordSet
 		};
 
 		return service;
@@ -85,11 +88,11 @@
 		}
 
 		function memberForgotPasswordApplySuccess(response) {
-			$rootScope.$broadcast('SuccessFacultyForgotPasswordApply');
+			$rootScope.$broadcast('SuccessMemberForgotPasswordApply');
 		}
 
 		function memberForgotPasswordApplyFailure(error) {
-			$rootScope.$broadcast('ErrorFacultyForgotPasswordApply', error);
+			$rootScope.$broadcast('ErrorMemberForgotPasswordApply', error);
 		}
 
 		function memberForgotPasswordSet(member, id) {
@@ -100,11 +103,31 @@
 		}
 
 		function memberForgotPasswordSetSuccess(response) {
-			$rootScope.$broadcast('SuccessFacultyForgotPasswordSet');
+			$rootScope.$broadcast('SuccessMemberForgotPasswordSet');
 		}
 
 		function memberForgotPasswordSetFailure() {
-			$rootScope.$broadcast('ErrorFacultyForgotPasswordSet', error);
+			$rootScope.$broadcast('ErrorMemberForgotPasswordSet', error);
+		}
+
+		function changeMemberPassword(passwordObject) {
+			if (checkMemberLoggedIn()) {
+				if ($rootScope.member) {
+					passwordObject.memberId = $rootScope.member.id;
+					var changePasswordLink = "/api/member/settings/changePassword";
+					$http.patch(changePasswordLink, passwordObject)
+						.then(changePasswordSuccess)
+						.catch(changePasswordFailure);
+				}
+			}
+		}
+
+		function changePasswordSuccess(response) {
+			$rootScope.$broadcast('MemberChangePasswordSuccess');
+		}
+
+		function changePasswordFailure(error) {
+			$rootScope.$broadcast('MemberChangePasswordFailure', error);
 		}
 
 		function logout() {

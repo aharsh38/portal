@@ -1,0 +1,83 @@
+<div class="margin-tb-gt-xs-4 margin-lr-gt-xs-2 bg-white margin-xs-1 padding-tb-3 padding-lr-2 page" md-whiteframe="5">
+    <h2>Student Coordinator Details</h2>
+
+    <form name="studentCoordinatorForm" ng-model="studentCoordinatorForm" layout-gt-xs="row" class="margin-top-3" layout-wrap>
+        <div flex-gt-xs="50" layout="column">
+            <md-input-container>
+                <label>Name</label>
+                <input ng-pattern="/^$|^[a-zA-Z]+ [a-zA-Z]+( [a-zA-Z]+)?$/" type="text" required minlength="6" name="name" ng-model="ascc.coordinator.name" ng-disabled="!ascc.editInfo">
+                <div ng-messages="studentCoordinatorForm.name.$error">
+                    <div ng-message="required">This is required.</div>
+                    <div ng-message="pattern">Name should be of only 2 to 3 words and should be valid.</div>
+                    <div ng-message="minlength">Name should be atleast 6 characters long.</div>
+                </div>
+            </md-input-container>
+
+            <md-input-container>
+                <label>Enrollment Number</label>
+                <input required minlength="10" name="enroll"  type="text" ng-model="ascc.coordinator.enrollment" ng-pattern="/^[0-9]{10,15}$/" ng-disabled="!ascc.editInfo">
+                <div ng-messages="studentCoordinatorForm.enroll.$error">
+                    <div ng-message="required">This is required.</div>
+                    <div ng-message="minlength">Enrollment number must be atleast 10 characters long.</div>
+                    <div ng-message="pattern">Invalid Enrollment No.</div>
+                </div>
+            </md-input-container>
+
+            <md-input-container>
+                <label>Mobile Number</label>
+                <input required minlength="6" name="mobileno" type="text" ng-model="ascc.coordinator.mobileno" ng-disabled="!ascc.editInfo" ng-pattern="/^[0-9]{10}$/">
+                <div ng-messages="studentCoordinatorForm.mobileno.$error">
+                    <div ng-message="required">This is required.</div>
+                    <div ng-message="pattern">Invalid Mobile No.</div>
+                </div>
+            </md-input-container>
+
+            <md-input-container>
+                <label>Email Address</label>
+                <input required name="email" type="email" ng-pattern="/^.+@.+\..+$/"  ng-model="ascc.coordinator.email" ng-disabled="!ascc.editInfo">
+                <div ng-messages="studentCoordinatorForm.email.$error">
+                    <div ng-message="required">This is required.</div>
+                    <div ng-message="email">Invalid e-mail address.</div>
+                    <div ng-message="pattern">Invalid e-mail address.</div>
+                </div>
+            </md-input-container>
+
+            <div layout-gt-xs="row" layout-wrap layout-align="space-between">
+                <md-input-container flex-gt-xs="45">
+                    <label>Semester</label>
+                    <md-select required name="semester" type="text" ng-model="ascc.coordinator.semester" ng-disabled="!ascc.editInfo">
+                        <md-option ng-repeat="ind in [1,2,3,4,5,6,7,8]" value="{{ind}}">{{ind}}</md-option>
+                    </md-select>
+                    <div ng-messages="studentCoordinatorForm.semester.$error">
+                        <div ng-message="required">This is required.</div>
+                    </div>
+                </md-input-container>
+
+                <md-input-container flex-gt-xs="45">
+                    <label>Branch</label>
+                    <input required name="branch" type="text" ng-model="ascc.coordinator.branch" ng-disabled="!ascc.editInfo">
+                    <div ng-messages="studentCoordinatorForm.branch.$error">
+                        <div ng-message="required">This is required.</div>
+                    </div>
+                </md-input-container>
+            </div>
+        </div>
+
+        <div flex-offset-gt-xs="5" layout="column" class="padding-lr-2">
+            <md-button ng-click="ascc.update()" ng-show="ascc.editInfo && ascc.preInfo"  class="md-raised md-primary md-hue-1 md-big" ng-disabled="studentCoordinatorForm.$invalid" aria-label="edit" layout="column" layout-align="center center">
+                <b ng-show="!ascc.updateButtonClicked">Update</b>
+                <md-progress-circular ng-show="ascc.updateButtonClicked" ng-disabled="!ascc.updateButtonClicked" class="md-white" md-diameter="20px"></md-progress-circular>
+            </md-button>
+
+            <md-button ng-click="ascc.edit()" ng-show="!ascc.editInfo && ascc.preInfo"  class="md-raised md-primary md-hue-1 md-big" ng-disabled="studentCoordinatorForm.$invalid" aria-label="edit" layout="column" layout-align="center center">
+                <b ng-show="!ascc.updateButtonClicked">Edit</b>
+                <md-progress-circular ng-show="ascc.updateButtonClicked" ng-disabled="!ascc.updateButtonClicked" class="md-white" md-diameter="20px"></md-progress-circular>
+            </md-button>
+
+            <md-button ng-click="ascc.addStudentCoordinator()" ng-show="ascc.editInfo && !ascc.preInfo"  class="md-raised md-primary md-hue-1 md-big" ng-disabled="studentCoordinatorForm.$invalid" aria-label="edit" layout="column" layout-align="center center">
+                <b ng-show="!ascc.addButtonClicked">Add</b>
+                <md-progress-circular ng-show="ascc.addButtonClicked" ng-disabled="!ascc.addButtonClicked" class="md-white" md-diameter="20px"></md-progress-circular>
+            </md-button>
+        </div>
+    </form>
+</div>

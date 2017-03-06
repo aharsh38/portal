@@ -1,3 +1,20 @@
 <div class="margin-tb-gt-xs-4 margin-lr-gt-xs-2 bg-white margin-xs-1 padding-tb-3 padding-lr-xs-1 padding-lr-gt-xs-2 page" md-whiteframe="5">
-    <h2>Guidelines</h2>
+    <h2 ng-show="$root.faculty.verified">Guidelines</h2>
+
+    <div ng-hide="$root.faculty.verified" class="margin-top-3 nv-guid" layout="column" layout-align="center center">
+        <p>Please Wait for Verification Call from GTU TECHFEST TEAM</p>
+        <div layout="row" layout-align="center center">
+            <img flex="40" src="/media/svg/call.svg" alt="">
+        </div>
+    </div>
+
+    <div ng-show="$root.faculty.verified" class="margin-top-3 nv-guid padding-right-gt-xs-5 padding-left-xs-3" layout="column" layout-align="center center">
+        <ul class="">
+            <li>Please read the <a href="#">Registration Sheet Manual</a> thoroughly before starting the registration procedure to understand how to use the portal</li>
+
+            <li>Proper and student-friendly platform for registration at your institute must be provided. Special desks or room must be assigned for the registration procedure.</li>
+        </ul>
+    </div>
+
+
 </div>

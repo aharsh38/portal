@@ -42,7 +42,7 @@ var authController = function (Faculty, Member) {
 		faculty.email = request.body.email;
 		faculty.mobileno = request.body.mobileno;
 		// faculty.city = request.body.city;
-		// faculty.collegeId = request.body.college.;
+		faculty.collegeId = request.body.college._id;
 		console.log("College", request.body.college);
 		faculty.setPassword(request.body.password);
 		faculty.save(function (error) {
@@ -122,6 +122,15 @@ var authController = function (Faculty, Member) {
 				throwError(response, null, 406, 'Not Acceptable', 'Forgot password bad request');
 			}
 		}
+	}
+
+	function facultyUpdateCoordinator(request, response) {
+		request.faculty.studentCoordinator = request.body.coordinator;
+		request.faculty.save(function (error) {
+			if (error) {
+				throwError(response, error, 500, 'Internal Server Error', 'Student Coordinator Update Failed');
+			}
+		});
 	}
 
 	function memberLogin(request, response) {

@@ -108,7 +108,7 @@
 					templateUrl: '/templates/pages/in/eventRegistration.html'
 				})
 				.state('in_tc.addEvent', {
-					url: '/team/addEvent',
+					url: '/addEvent',
 					templateUrl: '/templates/pages/in/addEvent.html',
 					controller: 'AddEventController',
 					controllerAs: 'aec',
@@ -116,8 +116,14 @@
 						editData: null,
 					}
 				})
+				.state('in_tc.settings', {
+					url: '/member/settings',
+					templateUrl: '/templates/pages/in/memberSettings.html',
+					controller: 'MemberSettingsController',
+					controllerAs: 'msc'
+				})
 				.state('in_tc.showEvent', {
-					url: '/team/showEvent',
+					url: '/showEvent',
 					templateUrl: '/templates/pages/in/showEvent.html',
 					controller: 'ShowEventController',
 					controllerAs: 'sec'
@@ -143,6 +149,12 @@
 					templateUrl: '/templates/pages/in/faculty/registrationDetails.html',
 					controller: 'RegistrationDetailsController',
 					controllerAs: 'rdc'
+				})
+				.state('in_fc.student_coordinator', {
+					url: '/studentCoordinator',
+					templateUrl: '/templates/pages/in/faculty/addStudentCordinator.html',
+					controller: 'AddStudentController',
+					controllerAs: 'ascc'
 				});
 		}
 	}

@@ -1,10 +1,21 @@
-<!--
-<md-button class="md-icon-button" layout="row" layout-align="center center" md-no-ink="true" aria-label="toggle" ng-click="toggleOptions()">
-    <ng-md-icon icon="{{caret}}" size="16" options='{"rotation" : "clockwise","duration":500, "easing" : "expo-in-out"}'></ng-md-icon>
-</md-button>
--->
+
+<div class="margin-1" hide-gt-xs show-xs layout="row">
+    <div flex></div>
+    <md-button ng-click="tlayc.closeLeftSidenav()" flex-xs="15" hide-gt-xs show-xs class="md-icon-button" layout="row" layout-align="center center" aria-label="sidenav">
+        <ng-md-icon style="fill:white" icon="close" class="title-icon" size="24"></ng-md-icon>
+    </md-button>
+</div>
 
 <div class="margin-top-2 sidenav-container" layout="column">
+
+    <md-button class="margin-0 padding-0 text-capitalize"
+    ui-sref-active="al-subOption-selected"
+    ui-sref=".dashboard">
+        <div class="container-title" layout="row" layout-align="none center">
+            <ng-md-icon icon="donut_large" class="padding-lr-1 title-icon" size="20"></ng-md-icon>
+            <p>DASHBOARD</p>
+        </div>
+    </md-button>
 
     <md-button class="margin-0 padding-0 text-capitalize"
     ui-sref-active="al-subOption-selected"
@@ -32,7 +43,7 @@
     </md-button>
     <md-button class="margin-0 padding-0 text-capitalize"
     ui-sref-active="al-subOption-selected"
-    ui-sref=".guidelines">
+    ui-sref=".eventRegistrations">
         <div class="container-title" layout="row" layout-align="none center">
             <ng-md-icon icon="beenhere" class="padding-lr-1 title-icon" size="20"></ng-md-icon>
             <p>REGISTRATIONS</p>
@@ -40,7 +51,15 @@
     </md-button>
     <md-button class="margin-0 padding-0 text-capitalize"
     ui-sref-active="al-subOption-selected"
-    ui-sref=".guidelines">
+    ui-sref=".colleges">
+        <div class="container-title" layout="row" layout-align="none center">
+            <ng-md-icon icon="business" class="padding-lr-1 title-icon" size="20"></ng-md-icon>
+            <p>COLLEGES</p>
+        </div>
+    </md-button>
+    <md-button class="margin-0 padding-0 text-capitalize"
+    ui-sref-active="al-subOption-selected"
+    ui-sref=".settings">
         <div class="container-title" layout="row" layout-align="none center">
             <ng-md-icon icon="settings" class="padding-lr-1 title-icon" size="20"></ng-md-icon>
             <p>SETTINGS</p>

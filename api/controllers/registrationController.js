@@ -64,6 +64,33 @@ var registrationController = function (Registration) {
 		}
 	}
 
+	function generatePDFTest() {
+		console.log("IN FUNC");
+		var current_date = new Date();
+		var nd = current_date.toLocaleDateString('en-US', {
+			year: 'numeric',
+			month: 'long',
+			day: 'numeric'
+		});
+		var dataToGeneratePDF = {
+			teamId: 'MK123456',
+			serialId: 'aswd12345900',
+			date: nd,
+			team_leader: {
+				name: 'Raj Kotari',
+				mobileno: '9876543210',
+				email: 'rajkotari@gmail.com'
+			},
+			amount: 200,
+			eventObject: {
+				event_name: 'Junkyard Wars',
+				event_section: 'Mekkato'
+			}
+		};
+		slip = generateSlip('forPayment', 'example', dataToGeneratePDF);
+		console.log("Done");
+	}
+
 	function register(request, response) {
 		var registration = new Registration(request.body);
 		registration.teamId = request.body.eventObject.event_shortcode + rand.generateDigits(6);
@@ -71,11 +98,15 @@ var registrationController = function (Registration) {
 		var dataToGeneratePDF;
 
 		if (registration.do_payment) {
-			registration.serialId = rand.generate(10);
+			registration.serialId = rand.generate(12);
+			var current_date = new Date();
 			dataToGeneratePDF = {
 				teamId: registration.teamId,
 				serialId: registration.serialId,
-				team_leader: registration.team_leader
+				team_leader: registration.team_leader,
+				date: current_date,
+				amount: registration.total_amount,
+				eventObject: registration.eventObject
 			};
 			slip = generateSlip('forPayment', registration.teamId, dataToGeneratePDF);
 		} else {
@@ -271,6 +302,7 @@ var registrationController = function (Registration) {
 	ac.oneTimeEditSet = oneTimeEditSet;
 	ac.oneTimeEditAllow = oneTimeEditAllow;
 	ac.generateSlip = generateSlip;
+	ac.generatePDFTest = generatePDFTest;
 	return ac;
 };
 

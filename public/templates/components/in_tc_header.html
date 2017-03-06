@@ -1,17 +1,21 @@
 <div layout="row" layout-wrap layout-align="center center">
-    <div flex-xs="100" flex-gt-xs="20" class="logo padding-left-2">
-        <a ui-sref=".home">
-            <!-- <img src="/media/logo/logo-linear.svg" alt=""/> -->
-            GTU TECHFEST'17
-        </a>
+    <md-button ng-click="tlayc.openLeftSidenav()" flex-xs="15" hide-gt-xs show-xs class="md-icon-button" layout="row" layout-align="center center" aria-label="sidenav">
+        <ng-md-icon icon="menu" class="title-icon" size="24"></ng-md-icon>
+    </md-button>
+    <div flex-xs="30" flex-gt-xs="20" class="logo padding-left-gt-xs-2">
+            <span hide-xs show-gt-xs>GTU TECHFEST'17</span>
+            <span hide-gt-xs show-xs>GTF17</span>
     </div>
     <div flex show-gt-xs>
     </div>
 
 
+    <md-button hide-xs show-gt-xs ng-click="tlayc.logout()" flex-xs="15" aria-label="description">
+        <span>Log out</span>
+    </md-button>
 
-    <md-button flex-xs="40"  class="al-border-button" aria-label="description">
-        Log out
+    <md-button flex-xs="15" hide-gt-xs show-xs ng-click="tlayc.logout()" class="md-icon-button" layout="row" layout-align="center center" aria-label="sidenav">
+        <ng-md-icon icon="power_settings_new" class="title-icon" size="24"></ng-md-icon>
     </md-button>
 
 </div>

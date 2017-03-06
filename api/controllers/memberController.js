@@ -7,7 +7,7 @@ var _ = require('underscore');
 var mailController = require('./mailController')();
 
 
-var memberController = function (Faculty, Member) {
+var memberController = function (Faculty, Member, College) {
 	function throwError(response, error, status, message, errorFor) {
 		response.status(status);
 		response.json({

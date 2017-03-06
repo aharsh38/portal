@@ -10,10 +10,6 @@
 	function RegistrationDetailsController(fctToast, $rootScope, facultyService) {
 		var vm = this;
 
-		// angular.extend(vm, {
-		// 	func: func
-		// });
-
 		activate();
 
 		function activate() {

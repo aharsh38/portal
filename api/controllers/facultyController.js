@@ -91,7 +91,7 @@ var facultyController = function (Faculty, Registration) {
 				mobileno: 1,
 				verified: 1,
 				collegeId: 1,
-				registrations: 1,
+				registrations_count: 1,
 				collected_amount: 1
 			})
 			.sort({

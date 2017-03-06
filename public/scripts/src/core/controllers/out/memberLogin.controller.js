@@ -35,7 +35,7 @@
 			fctToast.showToast("Succefully Logged In", true);
 			vm.loginButtonClicked = false;
 			resetLogin();
-			// $state.go('inapp.orders');
+			$state.go('in_tc.verifyCoordinator');
 		}
 
 		function loginFailure(event, error) {

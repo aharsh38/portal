@@ -44,6 +44,14 @@
         </div>
     </md-button>
 
+    <md-button  ng-show="$root.faculty.verified" ng-disabled="$root.faculty.rejected" class="margin-0 padding-0 text-capitalize" ui-sref-active="al-subOption-selected"
+    ui-sref=".student_coordinator">
+        <div class="container-title" layout="row" layout-align="none center">
+            <ng-md-icon icon="person" class="padding-lr-1 title-icon" size="20"></ng-md-icon>
+            <p>STUDENT COORDINATOR</p>
+        </div>
+    </md-button>
+
     <md-button class="margin-0 padding-0 text-capitalize"
     ui-sref-active="al-subOption-selected"
     ui-sref=".settings">
