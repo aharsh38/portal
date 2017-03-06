@@ -27,13 +27,18 @@
 				payload = token.split('.')[1];
 				payload = $window.atob(payload);
 				payload = JSON.parse(payload);
-				$rootScope.member = {};
-				$rootScope.member.email = payload.email;
-				$rootScope.member.mobileno = payload.mobileno;
-				$rootScope.member.name = payload.name;
-				$rootScope.member.forgot_password = payload.forgot_password;
-				$rootScope.member.id = payload._id;
-				return (payload.exp > Date.now() / 1000);
+
+				if (angular.isUndefined(payload.registrations_count)) {
+					$rootScope.member = {};
+					$rootScope.member.email = payload.email;
+					$rootScope.member.mobileno = payload.mobileno;
+					$rootScope.member.name = payload.name;
+					$rootScope.member.forgot_password = payload.forgot_password;
+					$rootScope.member.id = payload._id;
+					return (payload.exp > Date.now() / 1000);
+				} else {
+					return false;
+				}
 			} else {
 				return false;
 			}

@@ -9,8 +9,8 @@ var config = require('./api/config/config');
 require('./api/config/passport');
 
 // var dbURI = config.mongoURI;
-// var dbURI = "mongodb://localhost/gtutesting";
-var dbURI = config.testMongo;
+var dbURI = "mongodb://localhost/gtutesting";
+// var dbURI = config.testMongo;
 //
 mongoose.Promise = global.Promise;
 

@@ -24,14 +24,14 @@
 		}
 
 		function logout() {
-			facultyAuthService.logout();
+			memberAuthService.logout();
 		}
 
 		$rootScope.$on('logoutSuccessful', logoutSuccessful);
 
 		function logoutSuccessful(event) {
 			fctToast.showToast("Succesfully Logged out", true);
-			$state.go('out.login');
+			$state.go('out.member_login');
 		}
 
 		function openLeftSidenav() {

@@ -2,6 +2,16 @@
 	'use strict';
 
 	angular
+		.module('fct_app', [
+			'fct.api',
+			'fct.core'
+		]);
+})();
+
+(function () {
+	'use strict';
+
+	angular
 		.module('fct.api', []);
 })();
 
@@ -63,16 +73,6 @@
 	'use strict';
 
 	angular
-		.module('fct_app', [
-			'fct.api',
-			'fct.core'
-		]);
-})();
-
-(function () {
-	'use strict';
-
-	angular
 		.module('fct.core')
 		.config(configName);
 
@@ -110,7 +110,11 @@
 			$urlRouterProvider.otherwise('/login');
 			$stateProvider
 				.state('out', {
-					templateUrl: '/templates/layouts/out.html'
+					templateUrl: '/templates/layouts/out.html',
+					resolve: {
+						redirectFacultyLoggedIn: redirectFacultyLoggedIn,
+						redirectTeamLoggedIn: redirectTeamLoggedIn
+					}
 				})
 				.state('in_fc', {
 					templateUrl: '/templates/layouts/in_fc.html',
@@ -121,8 +125,8 @@
 					}
 				})
 				.state('in_tc', {
-					// controller: 'TeamLayoutController',
-					// controllerAs: 'tlac',
+					controller: 'MemberLayoutController',
+					controllerAs: 'mlayc',
 					templateUrl: '/templates/layouts/in_tc.html',
 					resolve: {
 						redirectTeamNotLoggedIn: redirectTeamNotLoggedIn
@@ -253,9 +257,9 @@
 		return defer.promise;
 	}
 
-	redirectTeamNotLoggedIn.$inject = ['memberAuthService', '$q', '$state', '$timeout', '$rootScope'];
+	redirectTeamNotLoggedIn.$inject = ['memberAuthService', '$q', '$state', '$timeout'];
 
-	function redirectTeamNotLoggedIn(memberAuthService, $q, $state, $timeout, $rootScope) {
+	function redirectTeamNotLoggedIn(memberAuthService, $q, $state, $timeout) {
 		var defer = $q.defer();
 		var authenticate = memberAuthService.checkMemberLoggedIn();
 		if (authenticate) {
@@ -270,6 +274,99 @@
 		return defer.promise;
 	}
 
+
+	redirectFacultyLoggedIn.$inject = ['facultyAuthService', '$state', '$q', '$timeout', '$rootScope'];
+
+	function redirectFacultyLoggedIn(facultyAuthService, $state, $q, $timeout, $rootScope) {
+		var defer = $q.defer();
+		var authenticate = facultyAuthService.checkFacultyLoggedIn();
+		if (authenticate) {
+			defer.reject();
+			$timeout(function () {
+				$state.go('in_fc.guidelines');
+			});
+		} else {
+			defer.resolve();
+		}
+		return defer.promise;
+	}
+
+	redirectTeamLoggedIn.$inject = ['memberAuthService', '$state', '$q', '$timeout', '$rootScope'];
+
+	function redirectTeamLoggedIn(memberAuthService, $state, $q, $timeout, $rootScope) {
+		// if(angular.isDefined($rootScope.faculty)){
+		//
+		// }
+
+		var defer = $q.defer();
+		var authenticate = memberAuthService.checkMemberLoggedIn();
+		if (authenticate) {
+			defer.reject();
+			$timeout(function () {
+				$state.go('in_tc.verifyCoordinator');
+			});
+		} else {
+			defer.resolve();
+		}
+		return defer.promise;
+	}
+
+})();
+
+(function () {
+	'use strict';
+
+	angular
+		.module('fct.api')
+		.factory('authInterceptor', authInterceptor);
+
+	authInterceptor.$inject = ['$window', '$q', '$location'];
+
+	function authInterceptor($window, $q, $location) {
+		var service = {
+			request: request,
+			requestError: requestError,
+			response: response,
+			responseError: responseError
+		};
+
+		return service;
+
+		function getToken() {
+			if ($window.localStorage['auth-token']) {
+				return $window.localStorage['auth-token'];
+			} else {
+				return null;
+			}
+		}
+
+		function request(config) {
+			var token = getToken();
+			if (token !== null) {
+				var authHead = 'Bearer ' + token;
+				config.headers['Authorization'] = authHead;
+			}
+			return config;
+		}
+
+		function requestError(rejection) {
+			// console.log("Request Rejection",rejection);
+			return $q.reject(rejection);
+		}
+
+		function response(response) {
+			// console.log("response",response);
+			return response || $q.when(response);
+		}
+
+		function responseError(rejection) {
+			console.log("response rejection", rejection);
+			if (rejection.status == 403) {
+				$location.path('/login');
+			}
+			return $q.reject(rejection);
+		}
+	}
 })();
 
 (function () {
@@ -384,17 +481,23 @@
 				payload = token.split('.')[1];
 				payload = $window.atob(payload);
 				payload = JSON.parse(payload);
-				$rootScope.faculty = {};
-				$rootScope.faculty.email = payload.email;
-				$rootScope.faculty.mobileno = payload.mobileno;
-				$rootScope.faculty.name = payload.name;
-				$rootScope.faculty.verified = payload.verified;
-				$rootScope.faculty.rejected = payload.rejected;
-				$rootScope.faculty.forgot_password = payload.forgot_password;
-				$rootScope.faculty.id = payload._id;
-				$rootScope.faculty.registrations_count = payload.registrations_count;
-				$rootScope.faculty.collected_amount = payload.collected_amount;
-				return (payload.exp > Date.now() / 1000);
+
+				if (angular.isDefined(payload.registrations_count)) {
+					$rootScope.faculty = {};
+					$rootScope.faculty.email = payload.email;
+					$rootScope.faculty.mobileno = payload.mobileno;
+					$rootScope.faculty.name = payload.name;
+					$rootScope.faculty.verified = payload.verified;
+					$rootScope.faculty.rejected = payload.rejected;
+					$rootScope.faculty.forgot_password = payload.forgot_password;
+					$rootScope.faculty.id = payload._id;
+					$rootScope.faculty.registrations_count = payload.registrations_count;
+					$rootScope.faculty.collected_amount = payload.collected_amount;
+					return (payload.exp > Date.now() / 1000);
+				} else {
+					return false;
+				}
+
 			} else {
 				return false;
 			}
@@ -595,13 +698,18 @@
 				payload = token.split('.')[1];
 				payload = $window.atob(payload);
 				payload = JSON.parse(payload);
-				$rootScope.member = {};
-				$rootScope.member.email = payload.email;
-				$rootScope.member.mobileno = payload.mobileno;
-				$rootScope.member.name = payload.name;
-				$rootScope.member.forgot_password = payload.forgot_password;
-				$rootScope.member.id = payload._id;
-				return (payload.exp > Date.now() / 1000);
+
+				if (angular.isUndefined(payload.registrations_count)) {
+					$rootScope.member = {};
+					$rootScope.member.email = payload.email;
+					$rootScope.member.mobileno = payload.mobileno;
+					$rootScope.member.name = payload.name;
+					$rootScope.member.forgot_password = payload.forgot_password;
+					$rootScope.member.id = payload._id;
+					return (payload.exp > Date.now() / 1000);
+				} else {
+					return false;
+				}
 			} else {
 				return false;
 			}
@@ -701,62 +809,6 @@
 		function logout() {
 			removeToken();
 			$rootScope.$broadcast('logoutSuccessful');
-		}
-	}
-})();
-
-(function () {
-	'use strict';
-
-	angular
-		.module('fct.api')
-		.factory('authInterceptor', authInterceptor);
-
-	authInterceptor.$inject = ['$window', '$q', '$location'];
-
-	function authInterceptor($window, $q, $location) {
-		var service = {
-			request: request,
-			requestError: requestError,
-			response: response,
-			responseError: responseError
-		};
-
-		return service;
-
-		function getToken() {
-			if ($window.localStorage['auth-token']) {
-				return $window.localStorage['auth-token'];
-			} else {
-				return null;
-			}
-		}
-
-		function request(config) {
-			var token = getToken();
-			if (token !== null) {
-				var authHead = 'Bearer ' + token;
-				config.headers['Authorization'] = authHead;
-			}
-			return config;
-		}
-
-		function requestError(rejection) {
-			// console.log("Request Rejection",rejection);
-			return $q.reject(rejection);
-		}
-
-		function response(response) {
-			// console.log("response",response);
-			return response || $q.when(response);
-		}
-
-		function responseError(rejection) {
-			console.log("response rejection", rejection);
-			if (rejection.status == 403) {
-				$location.path('/login');
-			}
-			return $q.reject(rejection);
 		}
 	}
 })();
@@ -1427,6 +1479,137 @@
 
 	angular
 		.module('fct.core')
+		.controller('FacultyLayoutController', FacultyLayoutController)
+		.controller('ContactDialogController', ContactDialogController);
+
+	FacultyLayoutController.$inject = ['facultyAuthService', '$mdSidenav', '$rootScope', 'fctToast', '$state', '$mdDialog', '$mdMedia', '$scope'];
+
+	function FacultyLayoutController(facultyAuthService, $mdSidenav, $rootScope, fctToast, $state, $mdDialog, $mdMedia, $scope) {
+		var vm = this;
+
+		$scope.$watch(function () {
+			return $mdMedia('xs') || $mdMedia('sm');
+		});
+
+		angular.extend(vm, {
+			logout: logout,
+			openLeftSidenav: openLeftSidenav,
+			isOpenLeftSidenav: isOpenLeftSidenav,
+			closeLeftSidenav: closeLeftSidenav,
+			contact: contact
+		});
+
+		activate();
+
+		function activate() {
+
+		}
+
+		function logout() {
+			facultyAuthService.logout();
+		}
+
+		$rootScope.$on('logoutSuccessful', logoutSuccessful);
+
+		function logoutSuccessful(event) {
+			fctToast.showToast("Succesfully Logged out", true);
+			$state.go('out.login');
+		}
+
+		function openLeftSidenav() {
+			$mdSidenav('left').open();
+		}
+
+		function isOpenLeftSidenav() {
+			return $mdSidenav('left').isOpen();
+		}
+
+		function closeLeftSidenav() {
+			$mdSidenav('left').close();
+		}
+
+		function contact(ev) {
+			var useFullScreen = $mdMedia('sm') || $mdMedia('xs');
+			$mdDialog.show({
+				controller: 'ContactDialogController',
+				templateUrl: '/templates/components/dialogs/contact.html',
+				parent: angular.element(document.body),
+				targetEvent: ev,
+				clickOutsideToClose: true,
+				fullscreen: useFullScreen // Only for -xs, -sm breakpoints.
+			});
+		}
+	}
+
+	ContactDialogController.$inject = ['$scope', '$mdDialog'];
+
+	function ContactDialogController($scope, $mdDialog) {
+		$scope.cancel = function () {
+			$mdDialog.cancel();
+		};
+
+		$scope.hide = function () {
+			$mdDialog.hide();
+		};
+	}
+})();
+
+(function () {
+	'use strict';
+
+	angular
+		.module('fct.core')
+		.controller('MemberLayoutController', MemberLayoutController);
+
+	MemberLayoutController.$inject = ['memberAuthService', '$mdSidenav', '$rootScope', 'fctToast', '$state', '$scope'];
+
+	function MemberLayoutController(memberAuthService, $mdSidenav, $rootScope, fctToast, $state, $scope) {
+		var vm = this;
+
+		angular.extend(vm, {
+			logout: logout,
+			openLeftSidenav: openLeftSidenav,
+			isOpenLeftSidenav: isOpenLeftSidenav,
+			closeLeftSidenav: closeLeftSidenav,
+		});
+
+		activate();
+
+		function activate() {
+
+		}
+
+		function logout() {
+			memberAuthService.logout();
+		}
+
+		$rootScope.$on('logoutSuccessful', logoutSuccessful);
+
+		function logoutSuccessful(event) {
+			fctToast.showToast("Succesfully Logged out", true);
+			$state.go('out.member_login');
+		}
+
+		function openLeftSidenav() {
+			$mdSidenav('left').open();
+		}
+
+		function isOpenLeftSidenav() {
+			return $mdSidenav('left').isOpen();
+		}
+
+		function closeLeftSidenav() {
+			$mdSidenav('left').close();
+		}
+	}
+
+})();
+
+(function () {
+	'use strict';
+
+	angular
+		.module('fct.core')
 		.controller('FacultyForgotPasswordApplyController', FacultyForgotPasswordApplyController);
 
 	FacultyForgotPasswordApplyController.$inject = ['$scope', 'fctToast', 'facultyAuthService', '$state', '$rootScope'];
@@ -1969,135 +2152,4 @@
 			$scope.registerForm.$setUntouched();
 		}
 	}
-})();
-
-(function () {
-	'use strict';
-
-	angular
-		.module('fct.core')
-		.controller('FacultyLayoutController', FacultyLayoutController)
-		.controller('ContactDialogController', ContactDialogController);
-
-	FacultyLayoutController.$inject = ['facultyAuthService', '$mdSidenav', '$rootScope', 'fctToast', '$state', '$mdDialog', '$mdMedia', '$scope'];
-
-	function FacultyLayoutController(facultyAuthService, $mdSidenav, $rootScope, fctToast, $state, $mdDialog, $mdMedia, $scope) {
-		var vm = this;
-
-		$scope.$watch(function () {
-			return $mdMedia('xs') || $mdMedia('sm');
-		});
-
-		angular.extend(vm, {
-			logout: logout,
-			openLeftSidenav: openLeftSidenav,
-			isOpenLeftSidenav: isOpenLeftSidenav,
-			closeLeftSidenav: closeLeftSidenav,
-			contact: contact
-		});
-
-		activate();
-
-		function activate() {
-
-		}
-
-		function logout() {
-			facultyAuthService.logout();
-		}
-
-		$rootScope.$on('logoutSuccessful', logoutSuccessful);
-
-		function logoutSuccessful(event) {
-			fctToast.showToast("Succesfully Logged out", true);
-			$state.go('out.login');
-		}
-
-		function openLeftSidenav() {
-			$mdSidenav('left').open();
-		}
-
-		function isOpenLeftSidenav() {
-			return $mdSidenav('left').isOpen();
-		}
-
-		function closeLeftSidenav() {
-			$mdSidenav('left').close();
-		}
-
-		function contact(ev) {
-			var useFullScreen = $mdMedia('sm') || $mdMedia('xs');
-			$mdDialog.show({
-				controller: 'ContactDialogController',
-				templateUrl: '/templates/components/dialogs/contact.html',
-				parent: angular.element(document.body),
-				targetEvent: ev,
-				clickOutsideToClose: true,
-				fullscreen: useFullScreen // Only for -xs, -sm breakpoints.
-			});
-		}
-	}
-
-	ContactDialogController.$inject = ['$scope', '$mdDialog'];
-
-	function ContactDialogController($scope, $mdDialog) {
-		$scope.cancel = function () {
-			$mdDialog.cancel();
-		};
-
-		$scope.hide = function () {
-			$mdDialog.hide();
-		};
-	}
-})();
-
-(function () {
-	'use strict';
-
-	angular
-		.module('fct.core')
-		.controller('MemberLayoutController', MemberLayoutController);
-
-	MemberLayoutController.$inject = ['memberAuthService', '$mdSidenav', '$rootScope', 'fctToast', '$state', '$scope'];
-
-	function MemberLayoutController(memberAuthService, $mdSidenav, $rootScope, fctToast, $state, $scope) {
-		var vm = this;
-
-		angular.extend(vm, {
-			logout: logout,
-			openLeftSidenav: openLeftSidenav,
-			isOpenLeftSidenav: isOpenLeftSidenav,
-			closeLeftSidenav: closeLeftSidenav,
-		});
-
-		activate();
-
-		function activate() {
-
-		}
-
-		function logout() {
-			facultyAuthService.logout();
-		}
-
-		$rootScope.$on('logoutSuccessful', logoutSuccessful);
-
-		function logoutSuccessful(event) {
-			fctToast.showToast("Succesfully Logged out", true);
-			$state.go('out.login');
-		}
-
-		function openLeftSidenav() {
-			$mdSidenav('left').open();
-		}
-
-		function isOpenLeftSidenav() {
-			return $mdSidenav('left').isOpen();
-		}
-
-		function closeLeftSidenav() {
-			$mdSidenav('left').close();
-		}
-	}
-
 })();

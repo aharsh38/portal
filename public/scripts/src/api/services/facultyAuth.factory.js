@@ -28,17 +28,23 @@
 				payload = token.split('.')[1];
 				payload = $window.atob(payload);
 				payload = JSON.parse(payload);
-				$rootScope.faculty = {};
-				$rootScope.faculty.email = payload.email;
-				$rootScope.faculty.mobileno = payload.mobileno;
-				$rootScope.faculty.name = payload.name;
-				$rootScope.faculty.verified = payload.verified;
-				$rootScope.faculty.rejected = payload.rejected;
-				$rootScope.faculty.forgot_password = payload.forgot_password;
-				$rootScope.faculty.id = payload._id;
-				$rootScope.faculty.registrations_count = payload.registrations_count;
-				$rootScope.faculty.collected_amount = payload.collected_amount;
-				return (payload.exp > Date.now() / 1000);
+
+				if (angular.isDefined(payload.registrations_count)) {
+					$rootScope.faculty = {};
+					$rootScope.faculty.email = payload.email;
+					$rootScope.faculty.mobileno = payload.mobileno;
+					$rootScope.faculty.name = payload.name;
+					$rootScope.faculty.verified = payload.verified;
+					$rootScope.faculty.rejected = payload.rejected;
+					$rootScope.faculty.forgot_password = payload.forgot_password;
+					$rootScope.faculty.id = payload._id;
+					$rootScope.faculty.registrations_count = payload.registrations_count;
+					$rootScope.faculty.collected_amount = payload.collected_amount;
+					return (payload.exp > Date.now() / 1000);
+				} else {
+					return false;
+				}
+
 			} else {
 				return false;
 			}
