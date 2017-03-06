@@ -2,17 +2,17 @@
 	'use strict';
 
 	angular
-		.module('fct_app', [
-			'fct.api',
-			'fct.core'
-		]);
+		.module('fct.api', []);
 })();
 
 (function () {
 	'use strict';
 
 	angular
-		.module('fct.api', []);
+		.module('fct_app', [
+			'fct.api',
+			'fct.core'
+		]);
 })();
 
 (function () {
