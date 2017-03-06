@@ -87,7 +87,7 @@ var registrationController = function (Registration) {
 				event_section: 'Mekkato'
 			}
 		};
-		slip = generateSlip('forPayment', 'example', dataToGeneratePDF);
+		slip = generateSlip('confirmPayment', 'example', dataToGeneratePDF);
 		console.log("Done");
 	}
 
