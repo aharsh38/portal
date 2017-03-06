@@ -10,24 +10,24 @@ require('./api/config/passport');
 
 // var dbURI = config.mongoURI;
 // var dbURI = "mongodb://localhost/gtutesting";
-var dbURI = config.testMongo;
+// var dbURI = config.testMongo;
 //
-mongoose.Promise = global.Promise;
-
-var db = mongoose.connect(dbURI);
-
-mongoose.connection.on('connected', function () {
-	console.log('Mongoose connected to ' + dbURI);
-});
-
-mongoose.connection.on('error', function (err) {
-	console.log('Mongoose connection error: ' + err);
-});
-
-mongoose.connection.on('disconnected', function () {
-	console.log('Mongoose disconnected');
-});
-
+// mongoose.Promise = global.Promise;
+//
+// var db = mongoose.connect(dbURI);
+//
+// mongoose.connection.on('connected', function () {
+// 	console.log('Mongoose connected to ' + dbURI);
+// });
+//
+// mongoose.connection.on('error', function (err) {
+// 	console.log('Mongoose connection error: ' + err);
+// });
+//
+// mongoose.connection.on('disconnected', function () {
+// 	console.log('Mongoose disconnected');
+// });
+//
 
 var app = express();
 var port = 9000;
@@ -35,7 +35,7 @@ app.set('x-powered-by', false);
 
 // app.use(favicon(__dirname + '/public/favicon.ico'));
 
-app.use(express.static('public'));
+// app.use(express.static('public'));
 
 app.use(logger('dev'));
 app.use(bodyParser.urlencoded({
@@ -53,37 +53,32 @@ var Member = require('./api/models/memberModel');
 var Faculty = require('./api/models/facultyModel');
 var Registration = require('./api/models/registrationModel');
 
-// var registrationController = require('./api/controllers/registrationController')(Registration);
-// registrationController.generatePDFTest();
+var registrationController = require('./api/controllers/registrationController')(Registration);
+registrationController.generatePDFTest();
 
-var authRouter = require('./api/routes/authRoutes')(Faculty, Member);
-app.use('/api/auth', authRouter);
+// var authRouter = require('./api/routes/authRoutes')(Faculty, Member);
+// app.use('/api/auth', authRouter);
 //
-var collegeRouter = require('./api/routes/collegeRoutes')(College);
-app.use('/api/college', collegeRouter);
+// var collegeRouter = require('./api/routes/collegeRoutes')(College);
+// app.use('/api/college', collegeRouter);
 //
-// // var eventRouter = require('./api/routes/eventRoutes')(Events);
-// // app.use('/api/event', eventRouter);
+// var eventRouter = require('./api/routes/eventRoutes')(Events);
+// app.use('/api/event', eventRouter);
 //
-var memberRouter = require('./api/routes/memberRoutes')(Faculty, Member, Registration, College, Events);
-app.use('/api/members', memberRouter);
+// var memberRouter = require('./api/routes/memberRoutes')(Faculty, Member, Registration, College, Events);
+// app.use('/api/members', memberRouter);
 //
-var facultyRouter = require('./api/routes/facultyRoutes')(Faculty, Registration);
-app.use('/api/faculty', facultyRouter);
+// var facultyRouter = require('./api/routes/facultyRoutes')(Faculty, Registration);
+// app.use('/api/faculty', facultyRouter);
 //
 // var registrationRouter = require('./api/routes/registrationRoutes')(Registration);
 // app.use('/api/registration', registrationRouter);
-
 // app.listen(port, function () {
 // 	console.log("Now Running on port " + port);
 // });
-
-
-
-
-app.get('*', function (request, response) {
-	response.sendFile(path.join(__dirname, 'public', 'index.html'));
-});
+// app.get('*', function (request, response) {
+// 	response.sendFile(path.join(__dirname, 'public', 'index.html'));
+// });
 
 app.listen(port, function () {
 	console.log("Now Running on port" + port);
