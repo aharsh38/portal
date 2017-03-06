@@ -66,10 +66,10 @@ app.use('/api/college', collegeRouter);
 // // app.use('/api/event', eventRouter);
 //
 var memberRouter = require('./api/routes/memberRoutes')(Faculty, Member, Registration, College, Events);
-app.use('/api/members', memberRouter);
+app.use('/api/members', authenticate.memberAuth, memberRouter);
 //
 var facultyRouter = require('./api/routes/facultyRoutes')(Faculty, Registration);
-app.use('/api/faculty', facultyRouter);
+app.use('/api/faculty', authenticate.facultyAuth, facultyRouter);
 //
 // var registrationRouter = require('./api/routes/registrationRoutes')(Registration);
 // app.use('/api/registration', registrationRouter);
