@@ -10,7 +10,9 @@
 	function memberService($http) {
 		var service = {
 			getAllFacultyCoordinators: getAllFacultyCoordinators,
-			verifyFaculty: verifyFaculty
+			verifyFaculty: verifyFaculty,
+			getTotalRegistrations: getTotalRegistrations,
+			getDeleteModal: getDeleteModal,
 		};
 
 		return service;
@@ -27,8 +29,23 @@
 				.catch(errorFunc);
 		}
 
+		function getTotalRegistrations() {
+			return $http.get('/api/members/registrations')
+				.then(responseFunc)
+				.catch(errorFunc);
+		}
+
 		function confirmRegistration(registration) {
 
+		}
+
+		function getDeleteModal() {
+			var confirm = $mdDialog.confirm()
+				.title('Delete')
+				.textContent('Are you sure you want to delete this record?')
+				.ok('Confirm')
+				.cancel('Cancel');
+			return $mdDialog.show(confirm).then(responseFunc, errorFunc);
 		}
 
 		function responseFunc(response) {

@@ -5,40 +5,45 @@
       .module('fct.core')
       .controller('EventCardController', EventCardController);
 
-    EventCardController.$inject = ['eventService', '$scope'];
+    EventCardController.$inject = ['eventService', '$mdDialog'];
 
-    function EventCardController(eventService, $scope) {
+    function EventCardController(eventService, $mdDialog) {
         var vm = this;
         vm.openCard = false;
         vm.caret = 'expand_less';
 
         angular.extend(vm, {
             deleteEvent: deleteEvent,
-            abc: abc,
         });
 
         activate();
 
         function activate() {
-        }
 
-        function abc() {
-          console.log('fff');
-          vm.abcd();
         }
 
         function deleteEvent(id) {
           if(id !== undefined && id !== null) {
-              return eventService.deleteEvent(id)
-                .then(deleteEventSuccess)
-                .catch(deleteEventFailure);
-
+            return eventService.getDeleteModal()
+              .then(confirmedDelete)
+              .catch(unconfirmedDelete);
           }
           return null;
         }
 
+        function confirmedDelete() {
+          return eventService.deleteEvent(id)
+            .then(deleteEventSuccess)
+            .catch(deleteEventFailure);
+        }
+
+        function unconfirmedDelete() {
+          //
+        }
+
         function deleteEventSuccess(response) {
           console.log(response);
+          vm.reload();
         }
 
         function deleteEventFailure(error) {

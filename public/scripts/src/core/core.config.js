@@ -109,7 +109,9 @@
 				})
 				.state('in_tc.eventRegistrations', {
 					url: '/eventRegistration',
-					templateUrl: '/templates/pages/in/eventRegistration.html'
+					templateUrl: '/templates/pages/in/eventRegistration.html',
+					controller: 'EventRegistrationController',
+					controllerAs: 'erc'
 				})
 				.state('in_tc.addEvent', {
 					url: '/member/events/create',
