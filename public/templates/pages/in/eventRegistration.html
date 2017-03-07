@@ -1,32 +1,3 @@
-  <style type="">
-
-    table
-     {
-       width: 100%;
-       border-collapse: collapse;
-       border: 1px solid black;
-      text-align: center;
-
-  	}
-      td,th
-     {
-      border: 1px solid black;
-      text-align: center;
-      padding:10px;
-
-     }
-     .th1
-     {
-     	border-right:none;
-     	text-align: left;
-      padding-left: 20px;
-     }
-     tr
-     {
-     	text-align: left;
-     }
-
-    </style>
    	<div ng-init="Details=[{name:'Galaxy Runner',verified:'50',unverified:'80',export:'link'},{name:'xyz',verified:'50',unverified:'80',export:'link'},{name:'abc',verified:'50',unverified:'80',export:'link'}]">
      <div class="margin-tb-gt-xs-4 margin-lr-gt-xs-2 bg-white margin-xs-1 padding-tb-3 padding-lr-xs-1 padding-lr-gt-xs-2 page" md-whiteframe="5">
        <div layout-gt-xs="row" layout-align-gt-xs="space-between center" layout-xs="column" >
@@ -37,13 +8,13 @@
            </md-input-container>
        </div>
    <md-content>
-    <table class="responsive-table">
+    <table class="responsive-table padding-lr-gt-xs-3 padding-lr-xs-1 margin-tb-2">
           <tr>
           	<th>Event_Name</th>
           	<th>Verified</th>
           	<th>Non-Verified</th>
           	<th>Export_xls</th>
-  		</tr>
+  		   </tr>
   		<tr>
   			<th class="th1">Event Section</th>
           </tr>
@@ -53,7 +24,6 @@
   		    <td>{{event.unverified}}</td>
   		    <td>{{event.export}}</td>
   		</tr>
-      
     </table>
   </md-content>
   </div>
