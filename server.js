@@ -11,7 +11,7 @@ require('./api/config/passport');
 // var dbURI = config.mongoURI;
 var dbURI = "mongodb://localhost/gtutesting";
 // var dbURI = config.testMongo;
-//
+
 mongoose.Promise = global.Promise;
 
 var db = mongoose.connect(dbURI);
@@ -32,8 +32,6 @@ mongoose.connection.on('disconnected', function () {
 var app = express();
 var port = 9000;
 app.set('x-powered-by', false);
-
-// app.use(favicon(__dirname + '/public/favicon.ico'));
 
 app.use(express.static('public'));
 
