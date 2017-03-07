@@ -6,7 +6,6 @@
             <input class="margin-tb-xs-1" type="text" name="search" ng-model="search">
         </md-input-container>
     </div>
-
     <div layout="column" >
         <div class="faculty-card padding-lr-gt-xs-3 padding-lr-xs-1 margin-tb-2" layout-xs="column" layout-gt-xs="row" layout-wrap layout-align-gt-xs="none center" ng-repeat="detail in vcc.faculties|filter:search|limitTo:vcc.limitFaculty track by $index">
             <p flex-gt-xs="40">Name: <strong>{{detail.name}}</strong></p>
