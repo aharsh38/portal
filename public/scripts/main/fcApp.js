@@ -28,7 +28,8 @@
 			'ngFileUpload',
 			'validation.match',
 			'ngMdIcons',
-			'angularMoment'
+			'angularMoment',
+			// 'fct.api'
 		]);
 
 	angular
@@ -180,7 +181,9 @@
 				})
 				.state('in_tc.eventRegistrations', {
 					url: '/eventRegistration',
-					templateUrl: '/templates/pages/in/eventRegistration.html'
+					templateUrl: '/templates/pages/in/eventRegistration.html',
+					controller: 'EventRegistrationController',
+					controllerAs: 'erc'
 				})
 				.state('in_tc.addEvent', {
 					url: '/member/events/create',
@@ -676,7 +679,9 @@
 	function memberService($http) {
 		var service = {
 			getAllFacultyCoordinators: getAllFacultyCoordinators,
-			verifyFaculty: verifyFaculty
+			verifyFaculty: verifyFaculty,
+			getTotalRegistrations: getTotalRegistrations,
+			getDeleteModal: getDeleteModal,
 		};
 
 		return service;
@@ -693,8 +698,23 @@
 				.catch(errorFunc);
 		}
 
+		function getTotalRegistrations() {
+			return $http.get('/api/members/registrations')
+				.then(responseFunc)
+				.catch(errorFunc);
+		}
+
 		function confirmRegistration(registration) {
 
+		}
+
+		function getDeleteModal() {
+			var confirm = $mdDialog.confirm()
+				.title('Delete')
+				.textContent('Are you sure you want to delete this record?')
+				.ok('Confirm')
+				.cancel('Cancel');
+			return $mdDialog.show(confirm).then(responseFunc, errorFunc);
 		}
 
 		function responseFunc(response) {
@@ -1442,40 +1462,45 @@
       .module('fct.core')
       .controller('EventCardController', EventCardController);
 
-    EventCardController.$inject = ['eventService', '$scope'];
+    EventCardController.$inject = ['eventService', '$mdDialog'];
 
-    function EventCardController(eventService, $scope) {
+    function EventCardController(eventService, $mdDialog) {
         var vm = this;
         vm.openCard = false;
         vm.caret = 'expand_less';
 
         angular.extend(vm, {
             deleteEvent: deleteEvent,
-            abc: abc,
         });
 
         activate();
 
         function activate() {
-        }
 
-        function abc() {
-          console.log('fff');
-          vm.abcd();
         }
 
         function deleteEvent(id) {
           if(id !== undefined && id !== null) {
-              return eventService.deleteEvent(id)
-                .then(deleteEventSuccess)
-                .catch(deleteEventFailure);
-
+            return eventService.getDeleteModal()
+              .then(confirmedDelete)
+              .catch(unconfirmedDelete);
           }
           return null;
         }
 
+        function confirmedDelete() {
+          return eventService.deleteEvent(id)
+            .then(deleteEventSuccess)
+            .catch(deleteEventFailure);
+        }
+
+        function unconfirmedDelete() {
+          //
+        }
+
         function deleteEventSuccess(response) {
           console.log(response);
+          vm.reload();
         }
 
         function deleteEventFailure(error) {
@@ -1483,6 +1508,34 @@
           //redirect
         }
     }
+})();
+
+(function () {
+	'use strict';
+
+	angular
+		.module('fct.core')
+		.controller('EventRegistrationController', EventRegistrationController);
+
+	EventRegistrationController.$inject = ['memberService'];
+
+	function EventRegistrationController(memberService) {
+		var vm = this;
+
+		// angular.extend(vm, {
+		// 	func: func
+		// });
+
+		activate();
+
+		function activate() {
+			console.log(JSON.stringify(getRegistration()));
+		}
+
+		function getRegistration() {
+			return memberService.getTotalRegistrations();
+		}
+	}
 })();
 
 (function () {
@@ -1559,17 +1612,13 @@
         var vm = this;
 
         angular.extend(vm, {
-            abcd: abcd,
+            getEvents: getEvents,
         });
 
         activate();
 
         function activate() {
           getEvents();
-        }
-
-        function abcd() {
-          console.log('dddd');
         }
 
         function getEvents() {

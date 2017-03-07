@@ -11,17 +11,13 @@
         var vm = this;
 
         angular.extend(vm, {
-            abcd: abcd,
+            getEvents: getEvents,
         });
 
         activate();
 
         function activate() {
           getEvents();
-        }
-
-        function abcd() {
-          console.log('dddd');
         }
 
         function getEvents() {
