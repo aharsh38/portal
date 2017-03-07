@@ -49,17 +49,17 @@
 					templateUrl: '/templates/layouts/in_fc.html',
 					controller: 'FacultyLayoutController',
 					controllerAs: 'flayc',
-					resolve: {
-						redirectFacultyNotLoggedIn: redirectFacultyNotLoggedIn
-					}
+					// resolve: {
+					// 	redirectFacultyNotLoggedIn: redirectFacultyNotLoggedIn
+					// }
 				})
 				.state('in_tc', {
 					controller: 'MemberLayoutController',
 					controllerAs: 'mlayc',
 					templateUrl: '/templates/layouts/in_tc.html',
-					resolve: {
-						redirectTeamNotLoggedIn: redirectTeamNotLoggedIn
-					}
+					// resolve: {
+					// 	redirectTeamNotLoggedIn: redirectTeamNotLoggedIn
+					// }
 				})
 				.state('out.login', {
 					url: '/login',
