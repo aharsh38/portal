@@ -9,16 +9,43 @@
 
 	function eventService($http) {
 	  var service = {
-	    addEvent: addEvent
+	    addEvent: addEvent,
+			getEvent: getEvent,
+			updateEvent: updateEvent,
+			getSingleEvent: getSingleEvent,
+			deleteEvent: deleteEvent,
 	  };
 
 	  return service;
 
-	  function addEvent(event) {
-			alert(JSON.stringify(event));
-			// return $http.post('/api/event/events', event)
-			// 	.then(resolveFunc)
-			// 	.catch(rejectFunc);
+	  function addEvent(eventData) {
+			return $http.post('/api/event/events', eventData)
+				.then(resolveFunc)
+				.catch(rejectFunc);
+	  }
+
+	  function getEvent() {
+			return $http.get('/api/event/events')
+				.then(resolveFunc)
+				.catch(rejectFunc);
+	  }
+
+	  function getSingleEvent(id) {
+			return $http.get('/api/event/events/' + id)
+				.then(resolveFunc)
+				.catch(rejectFunc);
+	  }
+
+	  function updateEvent(eventId, eventData) {
+			return $http.put('/api/event/events/' + eventId, eventData)
+				.then(resolveFunc)
+				.catch(rejectFunc);
+	  }
+
+	  function deleteEvent(eventId) {
+			return $http.delete('/api/event/events/' + eventId)
+				.then(resolveFunc)
+				.catch(rejectFunc);
 	  }
 
 		function resolveFunc(response) {

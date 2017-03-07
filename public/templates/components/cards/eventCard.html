@@ -5,16 +5,33 @@
                 <ng-md-icon icon="people" size="24" aria-label="Alarm Icon"></ng-md-icon>
             </div>
         </div>
-        <div flex-xs="60" flex-gt-xs="80">
+        <div flex-xs="40" flex-gt-xs="70">
             <h3>
               {{ eventdata.teamName }} ({{ eventdata.teamId }})
             </h3>
         </div>
         <div flex-gt-xs="5">
-          <div class="user-img">
-            <ng-md-icon icon="edit" size="24" ui-sref="in_tc.addEvent({editData:eventdata})">
-            </ng-md-icon>
-          </div>
+          <md-button class="md-icon-button expand-button" aria-label="description" md-no-ink="true"
+             ui-sref="in_tc.updateEvent({eventId:eventdata._id})">
+              <ng-md-icon icon="edit" size="20" aria-label="Alarm Icon">
+              </ng-md-icon>
+          </md-button>
+        </div>
+        <div flex-xs="20" flex-gt-xs="5">
+            <md-button class="md-icon-button expand-button" aria-label="description" md-no-ink="true"
+              ui-sref="in_tc.eachEvent({eventId:eventdata._id})">
+                <ng-md-icon icon="airplay" size="20" aria-label="Alarm Icon">
+                </ng-md-icon>
+            </md-button>
+        </div>
+        <div flex-xs="20" flex-gt-xs="5">
+            <!-- <md-button class="md-icon-button expand-button" aria-label="description" md-no-ink="true"
+              ng-click="ecc.deleteEvent(eventdata._id)"> -->
+              <md-button class="md-icon-button expand-button" aria-label="description" md-no-ink="true"
+                ng-click="ecc.abc()">
+                <ng-md-icon icon="delete" size="20" aria-label="Alarm Icon">
+                </ng-md-icon>
+            </md-button>
         </div>
         <div flex-xs="20" flex-gt-xs="5">
             <md-button class="md-icon-button expand-button" ng-click="toggleCard()" aria-label="description" md-no-ink="true">

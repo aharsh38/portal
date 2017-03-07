@@ -6,14 +6,15 @@
     .directive('eventCard', eventCard);
 
   eventCard.$inject = [];
-  
+
   function eventCard() {
     var directive = {
           restrict: 'E',
           templateUrl: '/templates/components/cards/eventCard.html',
           link: linkFunc,
           scope: {
-              eventdata : '='
+              eventdata : '=',
+              reload: '&'
           },
           controller: 'EventCardController',
           controllerAs: 'ecc'
@@ -24,9 +25,9 @@
       function linkFunc($scope, $element, $attributes) {
           $scope.openCard = false;
           $scope.caret = 'expand_less';
-          $scope.toggleCard = toggleCard;
-          console.log($scope.userdata);
 
+          console.log($scope.userdata);
+          // console.log(JSON.stringify($customFunc));
           function toggleCard() {
               $scope.openCard = !($scope.openCard);
 
@@ -38,16 +39,6 @@
               }
           }
       }
-
-  }
-
-	angular
-    .module('fct.core')
-    .controller('EventCardController', EventCardController);
-
-  EventCardController.$inject = ['$scope'];
-
-  function EventCardController($scope) {
 
   }
 

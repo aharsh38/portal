@@ -183,14 +183,19 @@
 					templateUrl: '/templates/pages/in/eventRegistration.html'
 				})
 				.state('in_tc.addEvent', {
+<<<<<<< Updated upstream
 					url: '/addEvent',
+=======
+					url: '/member/events/create',
+>>>>>>> Stashed changes
 					templateUrl: '/templates/pages/in/addEvent.html',
 					controller: 'AddEventController',
-					controllerAs: 'aec',
+					controllerAs: 'ec',
 					params: {
 						editData: null,
 					}
 				})
+<<<<<<< Updated upstream
 				.state('in_tc.settings', {
 					url: '/member/settings',
 					templateUrl: '/templates/pages/in/memberSettings.html',
@@ -199,10 +204,29 @@
 				})
 				.state('in_tc.showEvent', {
 					url: '/showEvent',
+=======
+				.state('in_tc.updateEvent', {
+					url: '/member/events/:eventId/update',
+					templateUrl: '/templates/pages/in/addEvent.html',
+					controller: 'UpdateEventController',
+					controllerAs: 'ec'
+				})
+				.state('in_tc.showEvent', {
+					url: '/member/events',
+>>>>>>> Stashed changes
 					templateUrl: '/templates/pages/in/showEvent.html',
 					controller: 'ShowEventController',
 					controllerAs: 'sec'
 				})
+<<<<<<< Updated upstream
+=======
+				.state('in_tc.eachEvent', {
+					url: '/member/events/:eventId',
+					templateUrl: '/templates/pages/in/eachEvent.html',
+					controller: 'EachEventController',
+					controllerAs: 'eec'
+				})
+>>>>>>> Stashed changes
 				.state('in_fc.guidelines', {
 					url: '/guidelines',
 					templateUrl: '/templates/pages/in/guidelines.html'
@@ -380,7 +404,15 @@
 
 	function eventService($http) {
 	  var service = {
+<<<<<<< Updated upstream
 	    addEvent: addEvent
+=======
+	    addEvent: addEvent,
+			getEvent: getEvent,
+			updateEvent: updateEvent,
+			getSingleEvent: getSingleEvent,
+			deleteEvent: deleteEvent,
+>>>>>>> Stashed changes
 	  };
 
 	  return service;
@@ -427,9 +459,26 @@
 				.catch(errorFunc);
 		}
 
+<<<<<<< Updated upstream
 		function getFacultyRegistrations() {
 			var link = baseLink + '/registrations';
 			return $http.get(link)
+=======
+	  function getSingleEvent(id) {
+			return $http.get('/api/event/events/' + id)
+				.then(resolveFunc)
+				.catch(rejectFunc);
+	  }
+
+	  function updateEvent(eventId, eventData) {
+			return $http.put('/api/event/events/' + eventId, eventData)
+				.then(resolveFunc)
+				.catch(rejectFunc);
+	  }
+
+	  function deleteEvent(eventId) {
+			return $http.delete('/api/event/events/' + eventId)
+>>>>>>> Stashed changes
 				.then(resolveFunc)
 				.catch(errorFunc);
 		}
@@ -854,14 +903,15 @@
     .directive('eventCard', eventCard);
 
   eventCard.$inject = [];
-  
+
   function eventCard() {
     var directive = {
           restrict: 'E',
           templateUrl: '/templates/components/cards/eventCard.html',
           link: linkFunc,
           scope: {
-              eventdata : '='
+              eventdata : '=',
+              reload: '&'
           },
           controller: 'EventCardController',
           controllerAs: 'ecc'
@@ -872,9 +922,9 @@
       function linkFunc($scope, $element, $attributes) {
           $scope.openCard = false;
           $scope.caret = 'expand_less';
-          $scope.toggleCard = toggleCard;
-          console.log($scope.userdata);
 
+          console.log($scope.userdata);
+          // console.log(JSON.stringify($customFunc));
           function toggleCard() {
               $scope.openCard = !($scope.openCard);
 
@@ -886,16 +936,6 @@
               }
           }
       }
-
-  }
-
-	angular
-    .module('fct.core')
-    .controller('EventCardController', EventCardController);
-
-  EventCardController.$inject = ['$scope'];
-
-  function EventCardController($scope) {
 
   }
 
@@ -1157,6 +1197,7 @@
 
 	VerifyCoordinatorController.$inject = ['$scope', 'memberService', '$mdDialog'];
 
+<<<<<<< Updated upstream
 	function VerifyCoordinatorController($scope, memberService, $mdDialog) {
 		var vm = this;
 		vm.limitFaculty = 5;
@@ -1245,12 +1286,28 @@
 
         angular.extend(vm, {
             register: register
+=======
+    function AddEventController(stateParams, eventService, $rootScope) {
+        var vm = this;
+        vm.isUpdate = false;
+        vm.myEvent = {
+          'managers':[],
+          'event': "Add",
+        };
+        vm.files = [];
+        vm.images = [];
+
+        angular.extend(vm, {
+            save: save,
+            openManagersModal: openManagersModal,
+>>>>>>> Stashed changes
         });
 
         activate();
 
         function activate() {
           initializeCKEditor();
+<<<<<<< Updated upstream
         }
 
         function register() {alert(JSON.stringify(vm.myEvent));
@@ -1259,6 +1316,22 @@
 
     		$rootScope.$on('registerSuccess', registerSuccess);
         $rootScope.$on('registerFailure', registerFailure);
+=======
+        }
+
+        function save() {
+          console.log(JSON.stringify(vm.myEvent));
+          vm.myEvent.rules = CKEDITOR.instances["editorRules"].getData();
+          vm.myEvent.specification = CKEDITOR.instances["editorSpecification"].getData();
+          vm.myEvent.judging_criteria = CKEDITOR.instances["editorJudgingCriteria"].getData();
+
+    		  if(vm.myEvent.isUpdate) {
+      			return eventService.updateEvent(vm.myEvent).then(onRegisterSuccess).catch(onRegisterFailure);
+    		  } else {
+      			return eventService.addEvent(vm.myEvent).then(onRegisterSuccess).catch(onRegisterFailure);
+    		  }
+        }
+>>>>>>> Stashed changes
 
     		function registerSuccess(event) {
             asToast.showToast("Registered",true);
@@ -1333,15 +1406,23 @@
 		.module('fct.core')
 		.controller('DashboardController', DashboardController);
 
+<<<<<<< Updated upstream
 	DashboardController.$inject = ['$rootScope', 'memberService'];
 
 	function DashboardController($rootScope, memberService) {
 		var vm = this;
+=======
+    EachEventController.$inject = ['$stateParams', 'eventService'];
+
+    function EachEventController(stateParams, eventService) {
+        var vm = this;
+>>>>>>> Stashed changes
 
 		angular.extend(vm, {
 			func: func
 		});
 
+<<<<<<< Updated upstream
 		activate();
 
 		function activate() {
@@ -1413,6 +1494,82 @@
 			$scope.changePasswordForm.$setUntouched();
 		}
 	}
+=======
+        function activate() {
+          if(stateParams.eventId !== undefined && stateParams.eventId !== null) {
+            vm.eventId = stateParams.eventId;
+            getEvent();
+          }
+		    }
+
+        function getEvent() {
+          return eventService.getSingleEvent(vm.eventId)
+            .then(getEventSuccess)
+            .catch(getEventFailure);
+        }
+
+        function getEventSuccess(response) {
+          console.log(response);
+          vm.myEvent = response.data;
+          //todo: redirect
+        }
+
+        function getEventFailure(error) {
+          console.log(error);
+        }
+    }
+})();
+
+(function () {
+    'use strict';
+
+    angular
+      .module('fct.core')
+      .controller('EventCardController', EventCardController);
+
+    EventCardController.$inject = ['eventService', '$scope'];
+
+    function EventCardController(eventService, $scope) {
+        var vm = this;
+
+        angular.extend(vm, {
+            deleteEvent: deleteEvent,
+            abc: abc,
+        });
+
+        activate();
+
+        function activate() {
+        }
+
+        function abc() {
+          console.log('fff');
+          $scope.reload();
+        }
+
+        function deleteEvent(id) {
+          if(id !== undefined && id !== null) {
+              return eventService.deleteEvent(id)
+                .then(deleteEventSuccess)
+                .catch(deleteEventFailure);
+
+          }
+          return null;
+        }
+
+        function deleteEvent1() {alert('fff');
+        }
+
+        function deleteEventSuccess(response) {
+          console.log(response);
+        }
+
+        function deleteEventFailure(error) {
+          console.log(error);
+          //redirect
+        }
+    }
+>>>>>>> Stashed changes
 })();
 
 (function () {
@@ -1428,10 +1585,10 @@
         var vm = this;
 
         activate();
-        var joinedDate = "ab";
 
         function activate() {
 
+<<<<<<< Updated upstream
           vm.dummyEvents = [{
             teamId: '32049',
             teamName: 'Mona Lisa',
@@ -1468,11 +1625,136 @@
             email: 'abc@123.com',
             eventSection: 'IT Department'
           },];
+=======
+        function getEvents() {console.log("dff");alert('dd');
+            return eventService.getEvent()
+              .then(getEventSuccess)
+              .catch(getEventFailure);
+        }
+
+        function getEventSuccess(response) {
+          console.log(response);
+          vm.dummyEvents = response.data;
+        }
+>>>>>>> Stashed changes
 
         }
     }
 })();
 
+
+(function () {
+    'use strict';
+
+    angular
+      .module('fct.core')
+      .controller('UpdateEventController', UpdateEventController);
+
+    UpdateEventController.$inject = ['$stateParams', 'eventService', '$rootScope', '$state', 'fctToast'];
+
+    function UpdateEventController(stateParams, eventService, $rootScope, state, fctToast) {
+        var vm = this;
+        vm.isUpdate = true;
+        vm.myEvent = {
+          'managers':[],
+        };
+
+        angular.extend(vm, {
+            save: save,
+            openManagersModal: openManagersModal,
+        });
+
+        activate();
+
+        function activate() {
+          initializeCKEditor();
+          checkEventId();
+        }
+
+        function openManagersModal(total) {
+          vm.myEvent.managers = [];
+          while(total > 0) {
+            var each = {"index":1};
+            vm.myEvent.managers.push(each);
+            total--;
+          }
+        }
+
+        function checkEventId() {
+          if(stateParams.eventId !== undefined && stateParams.eventId !== null) {
+              vm.eventId = stateParams.eventId;
+              return eventService.getSingleEvent(vm.eventId)
+                .then(onEventGetSuccess)
+                .catch(onEventGetFailure);
+
+          }
+          return null;
+        }
+
+        function onEventGetSuccess(eventData) {
+          console.log(eventData);
+          vm.myEvent = eventData.data;
+          vm.myEvent.event = "Update";
+        }
+
+        function onEventGetFailure(error) {
+          console.log(error);
+          //redirect
+        }
+
+        function save() {
+          vm.myEvent.rules = CKEDITOR.instances["editorRules"].getData();
+          vm.myEvent.specification = CKEDITOR.instances["editorSpecification"].getData();
+          vm.myEvent.judging_criteria = CKEDITOR.instances["editorJudgingCriteria"].getData();
+          console.log(JSON.stringify(vm.myEvent));
+          return eventService.updateEvent(vm.eventId, vm.myEvent)
+            .then(onUpdateSuccess)
+            .catch(onUpdateFailure);
+        }
+
+        function onUpdateSuccess(response) {
+          console.log(response);
+          fctToast.showToast("Update Success.", true);
+          state.go('in_tc.showEvent');
+        }
+
+        function onUpdateFailure(error) {
+          console.log(error);
+          fctToast.showToast("Please try again later.");
+        }
+
+        function initializeCKEditor() {
+          if ( CKEDITOR.env.ie && CKEDITOR.env.version < 9 )
+          	CKEDITOR.tools.enableHtml5Elements( document );
+            CKEDITOR.config.height = 150;
+            CKEDITOR.config.width = 'auto';
+            var initSample = ( function() {
+            	var wysiwygareaAvailable = isWysiwygareaAvailable();
+            	return function() {
+            		var editorElement = CKEDITOR.document.getById( 'editor' );
+            		if ( wysiwygareaAvailable ) {
+            			CKEDITOR.replace( 'editorRules' );
+            			CKEDITOR.replace( 'editorSpecification' );
+            			CKEDITOR.replace( 'editorJudgingCriteria' );
+            		} else {
+            			editorElement.setAttribute( 'contenteditable', 'true' );
+            			CKEDITOR.inline( 'editorRules' );
+            			CKEDITOR.inline( 'editorSpecification' );
+            			CKEDITOR.inline( 'editorJudgingCriteria' );
+            		}
+            	};
+
+          	function isWysiwygareaAvailable() {
+          		if ( CKEDITOR.revision == ( '%RE' + 'V%' ) ) {
+          			return true;
+          		}
+          		return !!CKEDITOR.plugins.get( 'wysiwygarea' );
+          	}
+          } )();
+          initSample();
+        }
+    }
+})();
 
 (function () {
 	'use strict';
