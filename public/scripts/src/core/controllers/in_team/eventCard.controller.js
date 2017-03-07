@@ -9,6 +9,8 @@
 
     function EventCardController(eventService, $scope) {
         var vm = this;
+        vm.openCard = false;
+        vm.caret = 'expand_less';
 
         angular.extend(vm, {
             deleteEvent: deleteEvent,
@@ -22,7 +24,7 @@
 
         function abc() {
           console.log('fff');
-          $scope.reload();
+          vm.abcd();
         }
 
         function deleteEvent(id) {
@@ -33,9 +35,6 @@
 
           }
           return null;
-        }
-
-        function deleteEvent1() {alert('fff');
         }
 
         function deleteEventSuccess(response) {

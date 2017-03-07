@@ -28,6 +28,15 @@
           initializeCKEditor();
         }
 
+        function openManagersModal(total) {
+          vm.myEvent.managers = [];
+          while(total > 0) {
+            var each = {"index":1};
+            vm.myEvent.managers.push(each);
+            total--;
+          }
+        }
+
         function save() {
           console.log(JSON.stringify(vm.myEvent));
           vm.myEvent.rules = CKEDITOR.instances["editorRules"].getData();
@@ -51,14 +60,6 @@
         }
 
         function initializeCKEditor() {
-          if(stateParams.editData !== undefined &&
-              stateParams.editData !== null) {
-            vm.myEvent = stateParams.editData;
-            vm.myEvent.event = "Insert";
-          } else {
-            vm.myEvent.event = "Update";
-          }
-
           if ( CKEDITOR.env.ie && CKEDITOR.env.version < 9 )
           	CKEDITOR.tools.enableHtml5Elements( document );
 

@@ -5,16 +5,26 @@
       .module('fct.core')
       .controller('ShowEventController', ShowEventController);
 
-    ShowEventController.$inject = [];
+    ShowEventController.$inject = ['eventService'];
 
-    function ShowEventController() {
+    function ShowEventController(eventService) {
         var vm = this;
+
+        angular.extend(vm, {
+            abcd: abcd,
+        });
 
         activate();
 
         function activate() {
+          getEvents();
+        }
 
-        function getEvents() {console.log("dff");alert('dd');
+        function abcd() {
+          console.log('dddd');
+        }
+
+        function getEvents() {
             return eventService.getEvent()
               .then(getEventSuccess)
               .catch(getEventFailure);
@@ -25,6 +35,8 @@
           vm.dummyEvents = response.data;
         }
 
+        function getEventFailure(error) {
+          console.log(error);
         }
     }
 })();

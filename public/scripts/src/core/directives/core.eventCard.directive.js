@@ -14,7 +14,7 @@
           link: linkFunc,
           scope: {
               eventdata : '=',
-              reload: '&'
+              reload : '&'
           },
           controller: 'EventCardController',
           controllerAs: 'ecc'
@@ -22,15 +22,13 @@
 
       return directive;
 
-      function linkFunc($scope, $element, $attributes) {
+      function linkFunc($scope) {
           $scope.openCard = false;
           $scope.caret = 'expand_less';
+          $scope.toggleCard = toggleCard;
 
-          console.log($scope.userdata);
-          // console.log(JSON.stringify($customFunc));
           function toggleCard() {
               $scope.openCard = !($scope.openCard);
-
               if($scope.openCard === true){
                   $scope.caret = 'expand_more';
               }

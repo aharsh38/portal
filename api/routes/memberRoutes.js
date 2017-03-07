@@ -24,6 +24,16 @@ var memberRoutes = function (Faculty, Member, Registration, College, Events) {
 
 	memberRouter.get('/faculty', facultyController.getAllFacultyCoordinators);
 
+	memberRouter.route('/events_in_section').get(eventController.getEventsBySection);
+	memberRouter.route('/events')
+		.post(eventController.createEvent)
+		.get(eventController.getAllEvents);
+
+	memberRouter.route('/events/:eventId')
+		.get(eventController.getSingleEvent)
+		.put(eventController.updateEvent)
+		.delete(eventController.deleteEvent);
+
 	// memberRouter.get('/registrations/', registrationController.getRegistration);
 	// memberRouter.post('/registrations/export', registrationController.exportRegistration);
 	// memberRouter.get('/registrations/allEventsExport', registrationController.exportForCertificate);
