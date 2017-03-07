@@ -179,6 +179,10 @@
 					url: '/collegeList',
 					templateUrl: '/templates/pages/in/collegeList.html'
 				})
+				.state('in_tc.dashboard', {
+					url: '/dashboard',
+					templateUrl: '/templates/pages/in/dashboard.html'
+				})
 				.state('in_tc.eventRegistrations', {
 					url: '/eventRegistration',
 					templateUrl: '/templates/pages/in/eventRegistration.html',

@@ -1,0 +1,38 @@
+<div class="margin-tb-gt-xs-4 margin-lr-gt-xs-2 bg-white margin-xs-1 padding-tb-3 padding-lr-xs-1 padding-lr-gt-xs-2 page" md-whiteframe="5">
+    <div layout-gt-xs="row" layout-align-gt-xs="space-between center" layout-xs="column" >
+              <md-card md-theme="dark-grey" md-theme-watch flex="25" ng-click="tdc.showAdvanced($event);">
+        <md-card-title>
+          <md-card-title-text>
+            <span class="md-headline text-center">Confirm Registration</span>
+          </md-card-title-text>
+        </md-card-title>
+      </md-card>
+      <md-card md-theme="red" md-theme-watch flex="25">
+        <md-card-title>
+          <md-card-title-text>
+            <span class="md-headline text-center">Collected Amount</span>
+          </md-card-title-text>
+        </md-card-title>
+      </md-card>
+      <md-card md-theme="dark-grey" md-theme-watch flex="25">
+        <md-card-title>
+          <md-card-title-text>
+            <span class="md-headline text-center">Confirm Participants</span>
+          </md-card-title-text>
+        </md-card-title>
+      </md-card>
+      <md-card md-theme="dark-grey" md-theme-watch flex="25">
+        <md-card-title>
+          <md-card-title-text>
+            <span class="md-headline text-center">Unconfirm Registration</span>
+          </md-card-title-text>
+        </md-card-title>
+      </md-card>
+    </div>
+      <div layout="row">
+      <md-button flex="33" ng-show="!detail.verified" ng-click="vcc.verifyFaculty(detail._id, $index)" class="md-raised md-success margin-lr-1" md-no-ink="true">Export Faculty Student Coordinator</md-button>
+      <md-button flex="33" ng-show="!detail.verified" ng-click="vcc.verifyFaculty(detail._id, $index)" class="md-raised md-success margin-lr-1" md-no-ink="true">Export Participant List</md-button>
+     <md-button flex="33" ng-show="!detail.verified" ng-click="vcc.verifyFaculty(detail._id, $index)" class="md-raised md-success margin-lr-1" md-no-ink="true">Export Unconfirmed Registrations</md-button>
+      </div>
+  </div>
+  <!-- </div> -->
