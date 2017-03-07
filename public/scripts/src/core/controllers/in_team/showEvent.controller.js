@@ -5,53 +5,38 @@
       .module('fct.core')
       .controller('ShowEventController', ShowEventController);
 
-    ShowEventController.$inject = [];
-    
-    function ShowEventController() {
+    ShowEventController.$inject = ['eventService'];
+
+    function ShowEventController(eventService) {
         var vm = this;
 
+        angular.extend(vm, {
+            abcd: abcd,
+        });
+
         activate();
-        var joinedDate = "ab";
 
         function activate() {
+          getEvents();
+        }
 
-          vm.dummyEvents = [{
-            teamId: '32049',
-            teamName: 'Mona Lisa',
-            leaderName: 'Monit',
-            contactNumber: '9329239499',
-            eventName: 'Scrabble+',
-            email: 'abc@123.com',
-            eventSection: 'IT Department'
-          },
-          {
-            teamId: '32048',
-            teamName: 'Mango',
-            leaderName: 'Monit',
-            contactNumber: '9329239499',
-            eventName: 'Scrabble+',
-            email: 'abc@123.com',
-            eventSection: 'IT Department'
-          },
-          {
-            teamId: '32047',
-            teamName: 'Rascals',
-            leaderName: 'Monit',
-            contactNumber: '9329239499',
-            eventName: 'Scrabble+',
-            email: 'abc@123.com',
-            eventSection: 'IT Department'
-          },
-          {
-            teamId: '32046',
-            teamName: 'Rockerstar',
-            leaderName: 'Monit',
-            contactNumber: '9329239499',
-            eventName: 'Scrabble+',
-            email: 'abc@123.com',
-            eventSection: 'IT Department'
-          },];
+        function abcd() {
+          console.log('dddd');
+        }
 
+        function getEvents() {
+            return eventService.getEvent()
+              .then(getEventSuccess)
+              .catch(getEventFailure);
+        }
+
+        function getEventSuccess(response) {
+          console.log(response);
+          vm.dummyEvents = response.data;
+        }
+
+        function getEventFailure(error) {
+          console.log(error);
         }
     }
 })();

@@ -49,17 +49,17 @@
 					templateUrl: '/templates/layouts/in_fc.html',
 					controller: 'FacultyLayoutController',
 					controllerAs: 'flayc',
-					resolve: {
-						redirectFacultyNotLoggedIn: redirectFacultyNotLoggedIn
-					}
+					// resolve: {
+					// 	redirectFacultyNotLoggedIn: redirectFacultyNotLoggedIn
+					// }
 				})
 				.state('in_tc', {
 					controller: 'MemberLayoutController',
 					controllerAs: 'mlayc',
 					templateUrl: '/templates/layouts/in_tc.html',
-					resolve: {
-						redirectTeamNotLoggedIn: redirectTeamNotLoggedIn
-					}
+					// resolve: {
+					// 	redirectTeamNotLoggedIn: redirectTeamNotLoggedIn
+					// }
 				})
 				.state('out.login', {
 					url: '/login',
@@ -112,10 +112,10 @@
 					templateUrl: '/templates/pages/in/eventRegistration.html'
 				})
 				.state('in_tc.addEvent', {
-					url: '/addEvent',
+					url: '/member/events/create',
 					templateUrl: '/templates/pages/in/addEvent.html',
 					controller: 'AddEventController',
-					controllerAs: 'aec',
+					controllerAs: 'ec',
 					params: {
 						editData: null,
 					}
@@ -126,11 +126,23 @@
 					controller: 'MemberSettingsController',
 					controllerAs: 'msc'
 				})
+				.state('in_tc.updateEvent', {
+					url: '/member/events/:eventId/update',
+					templateUrl: '/templates/pages/in/addEvent.html',
+					controller: 'UpdateEventController',
+					controllerAs: 'ec'
+				})
 				.state('in_tc.showEvent', {
-					url: '/showEvent',
+					url: '/member/events',
 					templateUrl: '/templates/pages/in/showEvent.html',
 					controller: 'ShowEventController',
 					controllerAs: 'sec'
+				})
+				.state('in_tc.eachEvent', {
+					url: '/member/events/:eventId',
+					templateUrl: '/templates/pages/in/eachEvent.html',
+					controller: 'EachEventController',
+					controllerAs: 'eec'
 				})
 				.state('in_fc.guidelines', {
 					url: '/guidelines',

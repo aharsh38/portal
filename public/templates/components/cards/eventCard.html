@@ -1,3 +1,4 @@
+<!DOCTYPE html>
 <div class="al-user-card" layout="column" md-whiteframe="3" layout-wrap>
     <div class="header request padding-1" ng-class="{'round-borders':!(openCard)}" layout="row" layout-align="none center" layout-align-xs="space-between center" layout-wrap>
         <div flex-xs="20" flex-gt-xs="10">
@@ -5,55 +6,45 @@
                 <ng-md-icon icon="people" size="24" aria-label="Alarm Icon"></ng-md-icon>
             </div>
         </div>
-        <div flex-xs="60" flex-gt-xs="80">
+        <div flex-xs="60" flex-gt-xs="70">
             <h3>
-              {{ eventdata.teamName }} ({{ eventdata.teamId }})
+              {{ eventdata.name }}
             </h3>
         </div>
         <div flex-gt-xs="5">
-          <div class="user-img">
-            <ng-md-icon icon="edit" size="24" ui-sref="in_tc.addEvent({editData:eventdata})">
-            </ng-md-icon>
-          </div>
+          <md-button class="md-icon-button expand-button" ng-click="toggleCard()" aria-label="description" md-no-ink="true"
+             ui-sref="in_tc.updateEvent({eventId:eventdata._id})">
+              <ng-md-icon icon="edit" size="20" aria-label="Alarm Icon">
+              </ng-md-icon>
+          </md-button>
         </div>
         <div flex-xs="20" flex-gt-xs="5">
-            <md-button class="md-icon-button expand-button" ng-click="toggleCard()" aria-label="description" md-no-ink="true">
-                <ng-md-icon icon="{{caret}}" size="20" options='{"rotation" : "clockwise","duration":500, "easing" : "expo-in-out"}' aria-label="Alarm Icon"></ng-md-icon>
+            <md-button class="md-icon-button expand-button" ng-click="toggleCard()" aria-label="description" md-no-ink="true"
+              ui-sref="in_tc.eachEvent({eventId:eventdata._id})">
+                <ng-md-icon icon="airplay" size="20" aria-label="Alarm Icon">
+                </ng-md-icon>
+            </md-button>
+        </div>
+        <div flex-xs="20" flex-gt-xs="5">
+            <md-button class="md-icon-button expand-button" aria-label="description" md-no-ink="true"
+              ng-click="ecc.abc()">
+                <ng-md-icon icon="delete" size="20" aria-label="Alarm Icon">
+                </ng-md-icon>
+            </md-button>
+        </div>
+        <div flex-xs="20" flex-gt-xs="5">
+            <md-button class="md-icon-button expand-button" ng-click="toggleCard()" aria-label="description"
+              md-no-ink="true">
+                <ng-md-icon icon="{{caret}}" size="20"
+                  options='{"rotation" : "clockwise","duration":500, "easing" : "expo-in-out"}' aria-label="Alarm Icon">
+                </ng-md-icon>
             </md-button>
         </div>
     </div>
     <div ng-show="openCard" class="details slide-vertical" layout="row" layout-wrap layout-align="space between">
-        <div flex-gt-xs="30" class="padding-1">
-            <p>
-                <b>Team Leader Name : </b>
-                {{ eventdata.leaderName }}
-            </p>
-        </div>
-
-        <div flex-gt-xs="30" class="padding-1">
-            <p>
-                <b>Mobile no : </b>
-                {{ eventdata.contactNumber }}
-            </p>
-        </div>
-        <div flex-gt-xs="30" class="padding-1">
-            <p>
-                <b>Email : </b>
-                {{ eventdata.email }}
-            </p>
-        </div>
-        <div flex-gt-xs="30" class="padding-1">
-            <p>
-                <b>Event Name : </b>
-                {{ eventdata.eventName }}
-            </p>
-        </div>
-        <div flex-gt-xs="65" class="padding-1">
-            <p>
-                <b>Event Section : </b>
-                {{ eventdata.eventSection }}
-            </p>
-        </div>
+      <div flex class="padding-1">
+        <b>Description : </b>
+        {{ eventdata.description }}
+      </div>
     </div>
-
 </div>

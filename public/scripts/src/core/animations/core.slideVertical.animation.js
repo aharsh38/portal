@@ -1,7 +1,7 @@
 (function() {
 
     angular.module('fct.core')
-    .animation('.slide-vertical', slideVertical);
+      .animation('.slide-vertical', slideVertical);
 
     slideVertical.$inject = ['TweenMax'];
 

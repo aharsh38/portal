@@ -9,10 +9,17 @@
 
     function AddEventController(stateParams, eventService, $rootScope) {
         var vm = this;
-        vm.myEvent = {};
+        vm.isUpdate = false;
+        vm.myEvent = {
+          'managers':[],
+          'event': "Add",
+        };
+        vm.files = [];
+        vm.images = [];
 
         angular.extend(vm, {
-            register: register
+            save: save,
+            openManagersModal: openManagersModal,
         });
 
         activate();
@@ -21,12 +28,27 @@
           initializeCKEditor();
         }
 
-        function register() {alert(JSON.stringify(vm.myEvent));
-          //eventService.addEvent(vm.myEvent);
+        function openManagersModal(total) {
+          vm.myEvent.managers = [];
+          while(total > 0) {
+            var each = {"index":1};
+            vm.myEvent.managers.push(each);
+            total--;
+          }
         }
 
-    		$rootScope.$on('registerSuccess', registerSuccess);
-        $rootScope.$on('registerFailure', registerFailure);
+        function save() {
+          console.log(JSON.stringify(vm.myEvent));
+          vm.myEvent.rules = CKEDITOR.instances["editorRules"].getData();
+          vm.myEvent.specification = CKEDITOR.instances["editorSpecification"].getData();
+          vm.myEvent.judging_criteria = CKEDITOR.instances["editorJudgingCriteria"].getData();
+
+    		  if(vm.myEvent.isUpdate) {
+      			return eventService.updateEvent(vm.myEvent).then(onRegisterSuccess).catch(onRegisterFailure);
+    		  } else {
+      			return eventService.addEvent(vm.myEvent).then(onRegisterSuccess).catch(onRegisterFailure);
+    		  }
+        }
 
     		function registerSuccess(event) {
             asToast.showToast("Registered",true);
@@ -38,14 +60,6 @@
         }
 
         function initializeCKEditor() {
-          if(stateParams.editData !== undefined &&
-              stateParams.editData !== null) {
-            vm.myEvent = stateParams.editData;
-            vm.myEvent.event = "Insert";
-          } else {
-            vm.myEvent.event = "Update";
-          }
-
           if ( CKEDITOR.env.ie && CKEDITOR.env.version < 9 )
           	CKEDITOR.tools.enableHtml5Elements( document );
 
