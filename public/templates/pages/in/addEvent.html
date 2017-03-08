@@ -77,10 +77,7 @@
             </md-switch>
             <md-input-container>
               <label>Event Section</label>
-              <md-select ng-model="ec.myEvent.section" name="eventSection" required="">
-                <md-option value="ce">Computer</md-option>
-                <md-option value="it">IT</md-option>
-              </md-select>
+              <input required="" ng-model="ec.myEvent.section" name="eventSection">
               <div ng-messages="myEvent.eventSection.$error">
                 <div ng-message="required">This Field Is Required.</div>
               </div>
@@ -88,14 +85,11 @@
             <md-input-container>
               <label>Number Of Managers</label>
               <md-select ng-model="ec.myEvent.totalManager"
-                ng-change="ec.openManagersModal(ec.myEvent.totalManager)" name="eventSection" required="">
+                ng-change="ec.openManagersModal(ec.myEvent.totalManager)" name="eventSection">
                 <md-option value="1">1</md-option>
                 <md-option value="2">2</md-option>
                 <md-option value="3">3</md-option>
               </md-select>
-              <div ng-messages="myEvent.eventSection.$error">
-                <div ng-message="required">This Field Is Required.</div>
-              </div>
             </md-input-container>
             <div ng-repeat="each in ec.myEvent.managers" layout="row" flex>
               <md-input-container flex="33">
