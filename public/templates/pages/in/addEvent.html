@@ -131,6 +131,7 @@
                 Upload Files
             </md-button>
           </div>
+          <div class="margin-1">
           <ul>
             <li ng-repeat="f in ec.myEvent.attachments" style="font:smaller">{{f.name}} {{f.$errorParam}}
               <md-button class="md-icon-button md-raised md-primary" ng-click="ec.files.splice($index, 1)"
@@ -148,7 +149,8 @@
           </ul>
         </div>
         </div>
-        <div layout="column" flex="100">
+      </div>
+        <div layout="column" flex="100" class="margin-2">
           <h3>Rules</h3>
           <div id="editorRules">
       		</div>
