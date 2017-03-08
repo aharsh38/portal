@@ -1,4 +1,4 @@
-(function () {
+	(function () {
 	'use strict';
 
 	angular
@@ -41,25 +41,24 @@
 				.state('out', {
 					templateUrl: '/templates/layouts/out.html',
 					resolve: {
-						redirectFacultyLoggedIn: redirectFacultyLoggedIn,
-						redirectTeamLoggedIn: redirectTeamLoggedIn
+						redirectLoggedIn: redirectLoggedIn
 					}
 				})
 				.state('in_fc', {
 					templateUrl: '/templates/layouts/in_fc.html',
 					controller: 'FacultyLayoutController',
 					controllerAs: 'flayc',
-					// resolve: {
-					// 	redirectFacultyNotLoggedIn: redirectFacultyNotLoggedIn
-					// }
+					resolve: {
+						redirectFacultyNotLoggedIn: redirectFacultyNotLoggedIn
+					}
 				})
 				.state('in_tc', {
 					controller: 'MemberLayoutController',
 					controllerAs: 'mlayc',
 					templateUrl: '/templates/layouts/in_tc.html',
-					// resolve: {
-					// 	redirectTeamNotLoggedIn: redirectTeamNotLoggedIn
-					// }
+					resolve: {
+						redirectTeamNotLoggedIn: redirectTeamNotLoggedIn
+					}
 				})
 				.state('out.login', {
 					url: '/login',
@@ -177,85 +176,124 @@
 					templateUrl: '/templates/pages/in/faculty/addStudentCordinator.html',
 					controller: 'AddStudentController',
 					controllerAs: 'ascc'
+				})
+				.state('in_fc.participant_registration', {
+					url: '/participantRegistration',
+					templateUrl: '/templates/pages/in/faculty/participantRegistration.html',
+					controller: 'ParticipantRegistrationController',
+					controllerAs: 'prc'
 				});
 		}
 	}
 
-	redirectFacultyNotLoggedIn.$inject = ['facultyAuthService', '$q', '$state', '$timeout', '$rootScope'];
+	redirectFacultyNotLoggedIn.$inject = ['facultyAuthService','memberAuthService', '$q', '$state', '$timeout', '$rootScope'];
 
-	function redirectFacultyNotLoggedIn(facultyAuthService, $q, $state, $timeout, $rootScope) {
+	function redirectFacultyNotLoggedIn(facultyAuthService, memberAuthService, $q, $state, $timeout, $rootScope) {
 		var defer = $q.defer();
-		var authenticate = facultyAuthService.checkFacultyLoggedIn();
-		if (authenticate) {
-			if ($rootScope.faculty.verified !== true) {
+		var facultyAuthenticate = facultyAuthService.checkFacultyLoggedIn();
+		if (facultyAuthenticate) {
+			if ($rootScope.faculty.verified !== true && !$rootScope.alreadyRedirected) {
 				$timeout(function () {
+					$rootScope.alreadyRedirected = true;
 					$state.go('in_fc.guidelines');
 				});
 			}
 
 			defer.resolve();
 		} else {
-			$timeout(function () {
-				$state.go('out.login');
-			});
-			defer.reject();
+			var memberAuthenticate = memberAuthService.checkMemberLoggedIn();
+			if(memberAuthenticate && !$rootScope.alreadyRedirected){
+				$timeout(function () {
+					$rootScope.alreadyRedirected = true;
+					$state.go('in_tc.verifyCoordinator');
+				});
+				defer.resolve();
+			}else {
+				$timeout(function () {
+					$rootScope.alreadyRedirected = true;
+					$state.go('out.login');
+				});
+				defer.reject();
+			}
 		}
-
 		return defer.promise;
 	}
 
-	redirectTeamNotLoggedIn.$inject = ['memberAuthService', '$q', '$state', '$timeout'];
+	redirectTeamNotLoggedIn.$inject = ['memberAuthService','facultyAuthService', '$q', '$state', '$timeout', '$rootScope'];
 
-	function redirectTeamNotLoggedIn(memberAuthService, $q, $state, $timeout) {
+	function redirectTeamNotLoggedIn(memberAuthService, facultyAuthService, $q, $state, $timeout, $rootScope) {
 		var defer = $q.defer();
-		var authenticate = memberAuthService.checkMemberLoggedIn();
-		if (authenticate) {
+		var memberAuthenticate = memberAuthService.checkMemberLoggedIn();
+		if (memberAuthenticate) {
 			defer.resolve();
 		} else {
-			$timeout(function () {
-				$state.go('out.login');
-			});
-			defer.reject();
+			var facultyAuthenticate = facultyAuthService.checkFacultyLoggedIn();
+			if(facultyAuthenticate && !$rootScope.alreadyRedirected){
+				$timeout(function () {
+					$rootScope.alreadyRedirected = true;
+					$state.go('in_fc.guidelines');
+				});
+				defer.resolve();
+			}else {
+					$timeout(function () {
+						$rootScope.alreadyRedirected = true;
+						$state.go('out.login');
+					});
+					defer.reject();
+			}
+
+
 		}
 
 		return defer.promise;
 	}
 
 
-	redirectFacultyLoggedIn.$inject = ['facultyAuthService', '$state', '$q', '$timeout', '$rootScope'];
+	redirectLoggedIn.$inject = ['facultyAuthService', 'memberAuthService', '$state', '$q', '$timeout', '$rootScope'];
 
-	function redirectFacultyLoggedIn(facultyAuthService, $state, $q, $timeout, $rootScope) {
+	function redirectLoggedIn(facultyAuthService, memberAuthService, $state, $q, $timeout, $rootScope) {
 		var defer = $q.defer();
-		var authenticate = facultyAuthService.checkFacultyLoggedIn();
-		if (authenticate) {
+		var facultyAuthenticate = facultyAuthService.checkFacultyLoggedIn();
+		if (facultyAuthenticate && !$rootScope.alreadyRedirected) {
 			defer.reject();
-			$timeout(function () {
+			 $timeout(function () {
+				$rootScope.alreadyRedirected = true;
 				$state.go('in_fc.guidelines');
-			});
+			 });
 		} else {
-			defer.resolve();
+			var memberAuthenticate = memberAuthService.checkMemberLoggedIn();
+			if (memberAuthenticate && !$rootScope.alreadyRedirected) {
+					defer.reject();
+					$timeout(function () {
+	 					$rootScope.alreadyRedirected = true;
+						$state.go('in_fc.guidelines');
+					});
+			}else {
+					defer.resolve();
+			}
+
 		}
 		return defer.promise;
 	}
 
-	redirectTeamLoggedIn.$inject = ['memberAuthService', '$state', '$q', '$timeout', '$rootScope'];
-
-	function redirectTeamLoggedIn(memberAuthService, $state, $q, $timeout, $rootScope) {
-		// if(angular.isDefined($rootScope.faculty)){
-		//
-		// }
-
-		var defer = $q.defer();
-		var authenticate = memberAuthService.checkMemberLoggedIn();
-		if (authenticate) {
-			defer.reject();
-			$timeout(function () {
-				$state.go('in_tc.verifyCoordinator');
-			});
-		} else {
-			defer.resolve();
-		}
-		return defer.promise;
-	}
+	// redirectTeamLoggedIn.$inject = ['memberAuthService','facultyAuthService', '$state', '$q', '$timeout'];
+	//
+	// function redirectTeamLoggedIn(memberAuthService, facultyAuthService, $state, $q, $timeout) {
+	// 	// if(angular.isDefined($rootScope.faculty)){
+	// 	//
+	// 	// }
+	//
+	// 	var defer = $q.defer();
+	// 	var authenticate = memberAuthService.checkMemberLoggedIn();
+	// 	if (authenticate) {
+	// 		defer.reject();
+	// 		$timeout(function () {
+	// 			$state.go('in_tc.verifyCoordinator');
+	// 		});
+	// 	} else {
+	// 		defer.resolve();
+	// 	}
+	// 	return defer.promise;
+	// }
 
 })();

@@ -135,7 +135,7 @@
             <!-- <ng-file-model files=""></ng-file-model>
             <input type="file" ng-file-model multiple accept="application/pdf,application/msword,
               application/vnd.openxmlformats-officedocument.wordprocessingml.document"
-              filesdata="ec.files">
+              filesdata="ec">
     				<div ng-repeat="x in ec.files">
     					{{x.name}} - {{x.progress}}
     					<br/>
@@ -143,6 +143,35 @@
     						<div class="progress_bar_uploaded" data-ng-style="{'width': x.progress + '%'}"></div>
     					</div>
     				</div> -->
+            <!-- <file-upload class="btn btn-success btn-rad btn-trans file-upload" name="userFile" resize="true"
+              max-width="1280" max-height="1280" ng-model="my.foo.model" multiple="false" uri="/api/members/upload"
+              accept="application/pdf,application/msword,
+              application/vnd.openxmlformats-officedocument.wordprocessingml.document">
+              <i class="fa fa-upload"></i>
+              <span>Upload Files</span>
+              <ul>
+                  <li ng-repeat="p in my.foo.model" ng-hide="p.percent == 100">
+                      <small>{{ p.name }}</small>
+                      <div class="progress">
+                          <div class="progress-bar" style="width: {{ p.percent }}%;"></div>
+                      </div>
+                  </li>
+              </ul>
+          </file-upload> -->
+          <button ngf-select="ec.uploadFiles($files, $invalidFiles)" multiple
+              accept="application/pdf,application/msword,
+                application/vnd.openxmlformats-officedocument.wordprocessingml.document" ngf-max-height="10000" ngf-max-size="10MB">
+          Select Files</button>
+          <ul>
+            <li ng-repeat="f in files" style="font:smaller">{{f.name}} {{f.$errorParam}}
+              <span class="progress" ng-show="f.progress >= 0">
+                <div style="width:{{f.progress}}%"
+                    ng-bind="f.progress + '%'"></div>
+              </span>
+            </li>
+            <li ng-repeat="f in errFiles" style="font:smaller">{{f.name}} {{f.$error}} {{f.$errorParam}}
+            </li>
+          </ul>
         </div>
         <div layout="column" flex="100">
           <h3>Rules</h3>

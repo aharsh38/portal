@@ -10,6 +10,7 @@ require('./api/config/passport');
 
 // var dbURI = config.mongoURI;
 //var dbURI = "mongodb://localhost/gtutesting";
+//var dbURI = "mongodb://localhost/gtutesting";
 
 var dbURI = 'mongodb://hraw1699:fdtdcdr6m@ds161039.mlab.com:61039/gtutechfesttest';
 // var dbURI = config.testMongo;
@@ -73,8 +74,8 @@ app.use('/api/members', authenticate.memberAuth, memberRouter);
 var facultyRouter = require('./api/routes/facultyRoutes')(Faculty, Registration);
 app.use('/api/faculty', authenticate.facultyAuth, facultyRouter);
 //
-// var registrationRouter = require('./api/routes/registrationRoutes')(Registration);
-// app.use('/api/registration', registrationRouter);
+var registrationRouter = require('./api/routes/registrationRoutes')(Registration);
+app.use('/api/registration', registrationRouter);
 
 // app.listen(port, function () {
 // 	console.log("Now Running on port " + port);

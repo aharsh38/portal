@@ -5,9 +5,9 @@
       .module('fct.core')
       .controller('AddEventController', AddEventController);
 
-    AddEventController.$inject = ['$stateParams', 'eventService', '$rootScope'];
+    AddEventController.$inject = ['$stateParams', 'eventService', '$rootScope', '$timeout', 'Upload'];
 
-    function AddEventController(stateParams, eventService, $rootScope) {
+    function AddEventController(stateParams, eventService, $rootScope, $timeout, Upload) {
         var vm = this;
         vm.isUpdate = false;
         vm.myEvent = {
@@ -20,6 +20,7 @@
         angular.extend(vm, {
             save: save,
             openManagersModal: openManagersModal,
+            uploadFiles: uploadFiles
         });
 
         activate();
@@ -58,6 +59,34 @@
         function registerFailure(event, error) {
             asToast.showToast(error.data.message);
         }
+
+
+        function uploadFiles(files, errFiles) {alert('ccc');
+                vm.files = files;
+                vm.errFiles = errFiles;
+                angular.forEach(files, function(file) {
+                    file.upload = Upload.upload({
+                        url: '/api/members/upload',
+                        data: {file: file}
+                    });
+
+                    file.upload.then(function (response) {
+                        $timeout(function () {alert('uploaded');
+                            file.result = response.data;
+                        });
+                    }, function (response) {
+                        if (response.status > 0) {
+                            //alert(response.status + ': ' + response.data);
+                            vm.myEvent.files = response.data.file.result.path;
+                          }
+                    }, function (evt) {
+                        file.progress = Math.min(100, parseInt(100.0 *
+                                                 evt.loaded / evt.total));
+                    });
+                });
+            }
+
+
 
         function initializeCKEditor() {
           if ( CKEDITOR.env.ie && CKEDITOR.env.version < 9 )

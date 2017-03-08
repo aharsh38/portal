@@ -1,7 +1,9 @@
 var express = require('express');
+var multipart = require('connect-multiparty');
 
 var memberRoutes = function (Faculty, Member, Registration, College, Events) {
 	var memberRouter = express.Router();
+	var multipartMiddleware = multipart({autoFiles:true, maxFileSize:2000000});
 
 	var memberController = require('../controllers/memberController')(Faculty, Member, College);
 	var facultyController = require('../controllers/facultyController')(Faculty, Registration);
@@ -14,6 +16,11 @@ var memberRoutes = function (Faculty, Member, Registration, College, Events) {
 	var eventMiddleware = require('../middlewares/getParamEvent')(Events);
 	var memberMiddleware = require('../middlewares/getParamMember')(Member);
 
+	memberRouter.use('/upload', multipartMiddleware, function(request, response, next) {
+		console.log("Mulipart");
+		next();
+	});
+
 	memberRouter.param('teamId', registrationMiddleware);
 	memberRouter.param('facultyId', facultyMiddleware);
 	memberRouter.param('eventId', eventMiddleware);
@@ -21,6 +28,8 @@ var memberRoutes = function (Faculty, Member, Registration, College, Events) {
 
 	memberRouter.patch('/faculty/verify/:facultyId', memberController.verifyFaculty);
 	memberRouter.patch('/faculty/reject/:facultyId', memberController.rejectFaculty);
+
+	memberRouter.post('/upload', eventController.upload);
 
 	memberRouter.get('/faculty', facultyController.getAllFacultyCoordinators);
 
