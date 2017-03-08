@@ -1,5 +1,4 @@
-var eventSections = require('../config/eventList').event_sections;
-
+var _und = require(underscore);
 var eventController = function (Event) {
 
 	function throwError(response, errorFor, error) {
@@ -27,6 +26,42 @@ var eventController = function (Event) {
 		});
 	}
 
+	function getEventsBySection(req, res) {
+		var event_classification = [];
+		var event_classification_final = [];
+
+		Event.aggregate(
+			[{
+				$group: {
+					_id: "$section",
+					events: {
+						$push: {
+							event_name: "$name",
+							do_payment: "$do_payment",
+							fees: "$fees",
+							fees_type: "$fees_type"
+						}
+					}
+				}
+			}],
+			function (error, data) {
+				if (error) {
+					throwError(response, "Finding all events according to section", error);
+				} else {
+
+					event_classification = _und.indexBy(data, '_id');
+
+					for (var j in event_classification) {
+						event_classification_final.push({
+							section_name: event_classification[j]['_id'],
+							events: event_classification[j]['events']
+						});
+					}
+					res.json(event_classification_final);
+				}
+			});
+	}
+
 
 	function getAllEvents(request, response) {
 		Event.find(function (error, events) {
@@ -38,60 +73,6 @@ var eventController = function (Event) {
 			}
 		});
 	}
-
-	function getEventsBySection(req, res) {
-		var i = 0;
-		var event_classification = [];
-
-		// Event.find().exec(function (error, events) {
-		// 	if (error) {
-		// 		throwError(response, "Finding All Events", error);
-		// 	} else {
-		// 		if (events.length !== 0) {
-		// 			var objToSend = [];
-		// 			_.each(eventSections, function (el) {
-		// 				objToSend.push({
-		// 					"section": el,
-		// 					"events": []
-		// 				});
-		// 			});
-		//
-		// 			_.each(events, function (element, index, list) {
-		//
-		// 			});
-		// 		}
-		// 	}
-		// });
-
-		Event.aggregate(
-			[{
-				$group: {
-					_id: "$section",
-					events: {
-						$push: "$name"
-					}
-				}
-			}],
-			function (error, data) {
-				if (error) {
-					throwError(response, "Finding all events according to section", error);
-				}
-
-				for (var j = 0; j < data.length; j++) {
-					for (var k = 0; k < data[j]['events'].length; k++) {
-						event_classification.push({
-							section_name: data[j]['_id'],
-							event_name: data[j]['events'][k]
-						});
-
-						i = parseInt(i + 1);
-					}
-				}
-				response.json(data);
-			}
-		);
-	}
-
 
 	function createEvent(request, response) {
 		var event_obj = new Event(request.body);
@@ -142,9 +123,9 @@ var eventController = function (Event) {
 		createEvent: createEvent,
 		getSingleEvent: getSingleEvent,
 		updateEvent: updateEvent,
-		deleteEvent: deleteEvent
+		deleteEvent: deleteEvent,
+		upload: upload
 	};
+
 };
-
-
 module.exports = eventController;

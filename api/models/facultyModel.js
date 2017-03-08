@@ -27,8 +27,13 @@ var facultyModel = new Schema({
 		type: Schema.Types.ObjectId,
 		ref: 'College',
 	},
-	city: {
-		type: String
+	student_coordinator: {
+		name: String,
+		email: String,
+		mobileno: String,
+		enrollment: String,
+		semester: String,
+		branch: String
 	},
 	rejected: {
 		type: Boolean,

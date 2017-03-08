@@ -9,7 +9,7 @@ var config = require('./api/config/config');
 require('./api/config/passport');
 
 // var dbURI = config.mongoURI;
-var dbURI = "mongodb://localhost/gtutesting";
+var dbURI = "mongodb://localhost/gtutechfest2";
 // var dbURI = config.testMongo;
 
 mongoose.Promise = global.Promise;
@@ -64,13 +64,15 @@ app.use('/api/college', collegeRouter);
 // // app.use('/api/event', eventRouter);
 //
 var memberRouter = require('./api/routes/memberRoutes')(Faculty, Member, Registration, College, Events);
+//app.use('/api/members', memberRouter);
 app.use('/api/members', authenticate.memberAuth, memberRouter);
 //
 var facultyRouter = require('./api/routes/facultyRoutes')(Faculty, Registration);
+//app.use('/api/faculty', facultyRouter);
 app.use('/api/faculty', authenticate.facultyAuth, facultyRouter);
 //
-// var registrationRouter = require('./api/routes/registrationRoutes')(Registration);
-// app.use('/api/registration', registrationRouter);
+var registrationRouter = require('./api/routes/registrationRoutes')(Registration);
+app.use('/api/registration', registrationRouter);
 
 // app.listen(port, function () {
 // 	console.log("Now Running on port " + port);
