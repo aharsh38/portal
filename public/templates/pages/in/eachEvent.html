@@ -81,6 +81,12 @@
           </div>
         </div>
       </div>
+      <div>
+        Attachments:
+        <div ng-repeat="file in eec.myEvent.attachments">
+          <a href="{{file.link}}">{{file.doc_name}}</a>
+        </div>
+      </div>
     </div>
   </form>
 </div>

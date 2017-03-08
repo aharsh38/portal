@@ -27,7 +27,7 @@
 
         function getEventSuccess(response) {
           console.log(response);
-          vm.myEvent = response.data;console.log(vm.myEvent);
+          vm.myEvent = response.data;
           vm.rules = $sce.trustAsHtml(vm.myEvent.rules);
           vm.judging_criteria = $sce.trustAsHtml(vm.myEvent.judging_criteria);
           vm.specification = $sce.trustAsHtml(vm.myEvent.specification);

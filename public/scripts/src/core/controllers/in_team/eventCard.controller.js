@@ -5,9 +5,9 @@
       .module('fct.core')
       .controller('EventCardController', EventCardController);
 
-    EventCardController.$inject = ['eventService', '$mdDialog'];
+    EventCardController.$inject = ['eventService', '$mdDialog', 'memberService', '$scope'];
 
-    function EventCardController(eventService, $mdDialog) {
+    function EventCardController(eventService, $mdDialog, memberService, $scope) {
         var vm = this;
         vm.openCard = false;
         vm.caret = 'expand_less';
@@ -24,7 +24,8 @@
 
         function deleteEvent(id) {
           if(id !== undefined && id !== null) {
-            return eventService.getDeleteModal()
+            vm.deleteId = id;
+            return memberService.getDeleteModal()
               .then(confirmedDelete)
               .catch(unconfirmedDelete);
           }
@@ -32,7 +33,7 @@
         }
 
         function confirmedDelete() {
-          return eventService.deleteEvent(id)
+          return eventService.deleteEvent(vm.deleteId)
             .then(deleteEventSuccess)
             .catch(deleteEventFailure);
         }
@@ -43,7 +44,8 @@
 
         function deleteEventSuccess(response) {
           console.log(response);
-          vm.reload();
+          $scope.reload();
+          // vm.reload();
         }
 
         function deleteEventFailure(error) {

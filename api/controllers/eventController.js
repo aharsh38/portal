@@ -96,6 +96,7 @@ var eventController = function (Event) {
 		event_obj.fees_type = request.body.fees_type;
 		event_obj.do_payment = request.body.do_payment;
 		event_obj.shortcode = request.body.shortcode;
+		event_obj.attachments = request.body.attachments;
 		event_obj.save(function (error) {
 			if (error) {
 				throwError(response, "Creating Event", error);
