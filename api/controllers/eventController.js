@@ -1,4 +1,3 @@
-var eventSections = require('../config/eventList').event_sections;
 var _und = require(underscore);
 var eventController = function(Event) {
 
@@ -24,39 +23,6 @@ var eventController = function(Event) {
             }
         });
     }
-
-    // function getEventsBySection(req, res) {
-    // 	var i = 0;
-    // 	var event_classification = [];
-    //
-    // 	Event.aggregate(
-    // 		[{
-    // 			$group: {
-    // 				_id: "$section",
-    // 				events: {
-    // 					$push: "$name"
-    // 				}
-    // 			}
-    // 		}],
-    // 		function (error, data) {
-    // 			if (error) {
-    // 				throwError(response, "Finding all events according to section", error);
-    // 			}
-    //
-    // 			for (var j = 0; j < data.length; j++) {
-    // 				for (var k = 0; k < data[j]['events'].length; k++) {
-    // 					event_classification.push({
-    // 						section_name: data[j]['_id'],
-    // 						event_name: data[j]['events'][k]
-    // 					});
-    //
-    // 					i = parseInt(i + 1);
-    // 				}
-    // 			}
-    // 			response.json(data);
-    // 		}
-    // 	);
-    // }
 
     function getEventsBySection(req, res) {
         var event_classification = [];
@@ -147,6 +113,4 @@ var eventController = function(Event) {
         deleteEvent: deleteEvent
     };
 };
-
-
 module.exports = eventController;
