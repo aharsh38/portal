@@ -62,20 +62,20 @@
         <div ng-bind-html="eec.judging_criteria"></div>
         <br/>
       </div>
-      <div layout="row" flex ng-repeat="each in eec.myEvent.managers">
-        <div layout="row" class="margin-2">
+      <div layout="row" flex ng-repeat="each in eec.myEvent.managers" class="margin-1">
+        <div layout="row" class="margin-1">
           <label>Event Manager {{ $index + 1 }}</label>
         </div>
-        <div layout="row" flex>
-          <div layout="row" flex="30" class="margin-1">
-             <p><label>Name : </label>{{ each.manager_name }}</p>
-
+        <div layout="row" class="margin-3" flex>
+          <div layout="row" flex="30" >
+             <label>Name : </label>
+               {{ each.manager_name }}
           </div>
-          <div layout="row" flex="30" class="margin-1">
+          <div layout="row" flex="30" >
              <label>Email : </label>
              {{ each.email_id }}
           </div>
-          <div layout="row" flex="30" class="margin-1">
+          <div layout="row" flex="30" >
              <label>Mobile : </label>
              {{ each.contact_number }}
           </div>
