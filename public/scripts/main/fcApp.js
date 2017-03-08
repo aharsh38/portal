@@ -9,16 +9,6 @@
 	'use strict';
 
 	angular
-		.module('fct_app', [
-			'fct.api',
-			'fct.core'
-		]);
-})();
-
-(function () {
-	'use strict';
-
-	angular
 		.module('fct.core', [
 			'ngAnimate',
 			'ngMessages',
@@ -68,6 +58,16 @@
 			}
 		}
 	}
+})();
+
+(function () {
+	'use strict';
+
+	angular
+		.module('fct_app', [
+			'fct.api',
+			'fct.core'
+		]);
 })();
 
 	(function () {
@@ -717,9 +717,9 @@
 		.module('fct.api')
 		.factory('memberService', memberService);
 
-	memberService.$inject = ['$http'];
+	memberService.$inject = ['$http', '$mdDialog'];
 
-	function memberService($http) {
+	function memberService($http, $mdDialog) {
 		var service = {
 			getAllFacultyCoordinators: getAllFacultyCoordinators,
 			verifyFaculty: verifyFaculty,
@@ -752,7 +752,7 @@
 		}
 
 		function uploadFiles() {
-			
+
 		}
 
 		function getDeleteModal() {
@@ -1526,9 +1526,9 @@
       .module('fct.core')
       .controller('AddEventController', AddEventController);
 
-    AddEventController.$inject = ['$stateParams', 'eventService', '$rootScope', '$timeout', 'Upload', '$state'];
+    AddEventController.$inject = ['$stateParams', 'eventService', '$rootScope', '$timeout', 'Upload', '$state', 'fctToast', '$filter'];
 
-    function AddEventController(stateParams, eventService, $rootScope, $timeout, Upload, $state) {
+    function AddEventController(stateParams, eventService, $rootScope, $timeout, Upload, $state, fctToast, $filter) {
         var vm = this;
         vm.isUpdate = false;
         vm.myEvent = {
@@ -1536,6 +1536,7 @@
           'event': "Add",
         };
         vm.myEvent.attachments = [];
+        vm.files = [];
 
         angular.extend(vm, {
             save: save,
@@ -1559,11 +1560,10 @@
         }
 
         function save() {
-          console.log(JSON.stringify(vm.myEvent));
           vm.myEvent.rules = CKEDITOR.instances["editorRules"].getData();
           vm.myEvent.specification = CKEDITOR.instances["editorSpecification"].getData();
           vm.myEvent.judging_criteria = CKEDITOR.instances["editorJudgingCriteria"].getData();
-
+          console.log(vm.myEvent);
     		  if(vm.myEvent.isUpdate) {
       			return eventService.updateEvent(vm.myEvent).then(registerSuccess).catch(registerFailure);
     		  } else {
@@ -1572,19 +1572,19 @@
         }
 
     		function registerSuccess(event) {
-            asToast.showToast("Event Registered.",true);
+            fctToast.showToast("Event Registered.",true);
             $timeout(function () {
     					$state.go('in_tc.showEvent');
     				});
         }
 
         function registerFailure(event, error) {
-            asToast.showToast(error.data.message);
+            fctToast.showToast(error.data.message);
         }
 
         function uploadFiles(files, errFiles) {
           angular.forEach(files, function(file) {
-            vm.myEvent.attachments.push(file);
+            vm.files.push(file);
             file.upload = Upload.upload({
               url: '/api/members/upload',
               data: {file: file}
@@ -1592,6 +1592,11 @@
             file.upload.then(function (response) {
                $timeout(function () {
                  file.result = response.data;
+                 var attach = {
+                   doc_name: file.name,
+                   link: file.result.path,
+                 };
+                 vm.myEvent.attachments.push(attach);
                });
              }, function (response) {
                if (response.status > 0)
@@ -1708,7 +1713,7 @@
 
         function getEventSuccess(response) {
           console.log(response);
-          vm.myEvent = response.data;console.log(vm.myEvent);
+          vm.myEvent = response.data;
           vm.rules = $sce.trustAsHtml(vm.myEvent.rules);
           vm.judging_criteria = $sce.trustAsHtml(vm.myEvent.judging_criteria);
           vm.specification = $sce.trustAsHtml(vm.myEvent.specification);
@@ -1727,9 +1732,9 @@
       .module('fct.core')
       .controller('EventCardController', EventCardController);
 
-    EventCardController.$inject = ['eventService', '$mdDialog'];
+    EventCardController.$inject = ['eventService', '$mdDialog', 'memberService', '$scope'];
 
-    function EventCardController(eventService, $mdDialog) {
+    function EventCardController(eventService, $mdDialog, memberService, $scope) {
         var vm = this;
         vm.openCard = false;
         vm.caret = 'expand_less';
@@ -1746,7 +1751,8 @@
 
         function deleteEvent(id) {
           if(id !== undefined && id !== null) {
-            return eventService.getDeleteModal()
+            vm.deleteId = id;
+            return memberService.getDeleteModal()
               .then(confirmedDelete)
               .catch(unconfirmedDelete);
           }
@@ -1754,7 +1760,7 @@
         }
 
         function confirmedDelete() {
-          return eventService.deleteEvent(id)
+          return eventService.deleteEvent(vm.deleteId)
             .then(deleteEventSuccess)
             .catch(deleteEventFailure);
         }
@@ -1765,7 +1771,8 @@
 
         function deleteEventSuccess(response) {
           console.log(response);
-          vm.reload();
+          $scope.reload();
+          // vm.reload();
         }
 
         function deleteEventFailure(error) {
@@ -1997,10 +2004,16 @@
         vm.myEvent = {
           'managers':[],
         };
+        vm.myEvent.attachments = [];
+        vm.files = [];
+        vm.feeDisabled = false;
+        vm.myEvent.do_payment = false;
 
         angular.extend(vm, {
             save: save,
             openManagersModal: openManagersModal,
+            uploadFiles: uploadFiles,
+            feeTypeChanged: feeTypeChanged
         });
 
         activate();
@@ -2019,6 +2032,31 @@
           }
         }
 
+        function uploadFiles(files, errFiles) {
+          angular.forEach(files, function(file) {
+            vm.files.push(file);
+            file.upload = Upload.upload({
+              url: '/api/members/upload',
+              data: {file: file}
+            });
+            file.upload.then(function (response) {
+               $timeout(function () {
+                 file.result = response.data;
+                 var attach = {
+                   doc_name: file.name,
+                   link: file.result.path,
+                 };
+                 vm.myEvent.attachments.push(attach);
+               });
+             }, function (response) {
+               if (response.status > 0)
+                 vm.errorMsg = response.status + ': ' + response.data;
+             }, function (evt) {
+               file.progress = Math.min(100, parseInt(100.0 * evt.loaded / evt.total));
+             });
+          });
+        }
+
         function checkEventId() {
           if(stateParams.eventId !== undefined && stateParams.eventId !== null) {
               vm.eventId = stateParams.eventId;
@@ -2034,6 +2072,10 @@
           console.log(eventData);
           vm.myEvent = eventData.data;
           vm.myEvent.event = "Update";
+          vm.files = vm.myEvent.attachments;
+          return [CKEDITOR.instances['editorRules'].setData(vm.myEvent.rules),
+          CKEDITOR.instances['editorSpecification'].setData(vm.myEvent.specification),
+          CKEDITOR.instances['editorJudgingCriteria'].setData(vm.myEvent.judging_criteria)];
         }
 
         function onEventGetFailure(error) {
@@ -2041,10 +2083,26 @@
           //redirect
         }
 
+        function feeTypeChanged() {
+          switch (vm.myEvent.fees_type) {
+            case "no_payment":
+              vm.myEvent.fees = 0;
+              vm.feeDisabled = true;
+              vm.myEvent.do_payment = false;
+              break;
+            case "do_payment":
+              vm.myEvent.do_payment = true;
+              break;
+            case "late_payment":
+              vm.myEvent.do_payment = false;
+              break;
+          }
+        }
+
         function save() {
-          vm.myEvent.rules = CKEDITOR.instances["editorRules"].getData();
-          vm.myEvent.specification = CKEDITOR.instances["editorSpecification"].getData();
-          vm.myEvent.judging_criteria = CKEDITOR.instances["editorJudgingCriteria"].getData();
+          vm.myEvent.rules = CKEDITOR.instances['editorRules'].getData();
+          vm.myEvent.specification = CKEDITOR.instances['editorSpecification'].getData();
+          vm.myEvent.judging_criteria = CKEDITOR.instances['editorJudgingCriteria'].getData();
           console.log(JSON.stringify(vm.myEvent));
           return eventService.updateEvent(vm.eventId, vm.myEvent)
             .then(onUpdateSuccess)

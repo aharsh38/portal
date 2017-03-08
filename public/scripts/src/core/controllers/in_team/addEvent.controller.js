@@ -5,9 +5,9 @@
       .module('fct.core')
       .controller('AddEventController', AddEventController);
 
-    AddEventController.$inject = ['$stateParams', 'eventService', '$rootScope', '$timeout', 'Upload', '$state'];
+    AddEventController.$inject = ['$stateParams', 'eventService', '$rootScope', '$timeout', 'Upload', '$state', 'fctToast', '$filter'];
 
-    function AddEventController(stateParams, eventService, $rootScope, $timeout, Upload, $state) {
+    function AddEventController(stateParams, eventService, $rootScope, $timeout, Upload, $state, fctToast, $filter) {
         var vm = this;
         vm.isUpdate = false;
         vm.myEvent = {
@@ -15,6 +15,7 @@
           'event': "Add",
         };
         vm.myEvent.attachments = [];
+        vm.files = [];
 
         angular.extend(vm, {
             save: save,
@@ -38,11 +39,10 @@
         }
 
         function save() {
-          console.log(JSON.stringify(vm.myEvent));
           vm.myEvent.rules = CKEDITOR.instances["editorRules"].getData();
           vm.myEvent.specification = CKEDITOR.instances["editorSpecification"].getData();
           vm.myEvent.judging_criteria = CKEDITOR.instances["editorJudgingCriteria"].getData();
-
+          console.log(vm.myEvent);
     		  if(vm.myEvent.isUpdate) {
       			return eventService.updateEvent(vm.myEvent).then(registerSuccess).catch(registerFailure);
     		  } else {
@@ -51,19 +51,19 @@
         }
 
     		function registerSuccess(event) {
-            asToast.showToast("Event Registered.",true);
+            fctToast.showToast("Event Registered.",true);
             $timeout(function () {
     					$state.go('in_tc.showEvent');
     				});
         }
 
         function registerFailure(event, error) {
-            asToast.showToast(error.data.message);
+            fctToast.showToast(error.data.message);
         }
 
         function uploadFiles(files, errFiles) {
           angular.forEach(files, function(file) {
-            vm.myEvent.attachments.push(file);
+            vm.files.push(file);
             file.upload = Upload.upload({
               url: '/api/members/upload',
               data: {file: file}
@@ -71,6 +71,11 @@
             file.upload.then(function (response) {
                $timeout(function () {
                  file.result = response.data;
+                 var attach = {
+                   doc_name: file.name,
+                   link: file.result.path,
+                 };
+                 vm.myEvent.attachments.push(attach);
                });
              }, function (response) {
                if (response.status > 0)

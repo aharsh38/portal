@@ -5,9 +5,9 @@
 		.module('fct.api')
 		.factory('memberService', memberService);
 
-	memberService.$inject = ['$http'];
+	memberService.$inject = ['$http', '$mdDialog'];
 
-	function memberService($http) {
+	function memberService($http, $mdDialog) {
 		var service = {
 			getAllFacultyCoordinators: getAllFacultyCoordinators,
 			verifyFaculty: verifyFaculty,
@@ -40,7 +40,7 @@
 		}
 
 		function uploadFiles() {
-			
+
 		}
 
 		function getDeleteModal() {

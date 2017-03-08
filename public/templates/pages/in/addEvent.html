@@ -52,25 +52,28 @@
               </div>
             </md-input-container>
             <md-input-container>
-              <label>Fees</label>
-              <input required="" ng-model="ec.myEvent.fees" name="fees">
-              <div ng-messages="myEvent.fees.$error">
-                <div ng-message="required">This Field Is Required.</div>
-                <div ng-message="number">Please Enter A Valid Amount.</div>
-              </div>
-            </md-input-container>
-            <md-input-container>
               <label>Fee Type</label>
-              <md-select ng-model="ec.myEvent.fee_type" name="fee_type" required="">
-                <md-option value="ce">Cash</md-option>
-                <md-option value="it">Paytm</md-option>
+              <md-select ng-model="ec.myEvent.fees_type" name="fees_type" required=""
+                ng-change="ec.feeTypeChanged()">
+                <md-option value="no_payment">No Payment</md-option>
+                <md-option value="do_payment">Do Payment</md-option>
+                <md-option value="late_payment">Late Payment</md-option>
               </md-select>
               <div ng-messages="myEvent.feeType.$error">
                 <div ng-message="required">This Field Is Required.</div>
               </div>
             </md-input-container>
+            <md-input-container>
+              <label>Fees</label>
+              <input required="" ng-model="ec.myEvent.fees" name="fees"
+                ng-disabled="ec.feeDisabled">
+              <div ng-messages="myEvent.fees.$error">
+                <div ng-message="required">This Field Is Required.</div>
+                <div ng-message="number">Please Enter A Valid Amount.</div>
+              </div>
+            </md-input-container>
               Do Payment
-              <md-switch ng-model="ec.myEvent.do_payment" aria-label="Switch 1">
+              <md-switch ng-model="ec.myEvent.do_payment" aria-label="Switch 1" ng-disabled="true">
             </md-switch>
             <md-input-container>
               <label>Event Section</label>
@@ -133,7 +136,9 @@
           </div>
           <div class="margin-1">
           <ul>
-            <li ng-repeat="f in ec.myEvent.attachments" style="font:smaller">{{f.name}} {{f.$errorParam}}
+            <li ng-repeat="f in ec.files" style="font:smaller">
+              <span>{{f.name}} {{f.$errorParam}}</span>
+              <span ng-show="ec.isUpdate">{{f.doc_name}} {{f.$errorParam}}</span>
               <md-button class="md-icon-button md-raised md-primary" ng-click="ec.files.splice($index, 1)"
                 md-no-ink="true">
                   <ng-md-icon icon="delete" size="20">
