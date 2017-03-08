@@ -29,6 +29,7 @@
     "angular-underscore-module": "^1.0.3",
     "angular-moment": "^1.0.1",
     "moment-timezone": "^0.5.11",
-    "ckeditor": "^4.6.2"
+    "ckeditor": "^4.6.2",
+    "angular-multiple-file-upload": "^1.5.10"
   }
 }

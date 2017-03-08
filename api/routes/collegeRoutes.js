@@ -6,6 +6,7 @@ var collegeRoutes = function (College) {
 
     collegeRouter.get('/importCollege', collegeController.importCollege);
     collegeRouter.get('/getAllCollege', collegeController.getAllCollege);
+    collegeRouter.get('/searchFacultyByCity', collegeController.searchFacultyByCity);
     return collegeRouter;
 };
 

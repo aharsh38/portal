@@ -3,6 +3,7 @@ var random = require('random-key');
 var config = require('../config/config');
 var mailController = require('./mailController')();
 
+
 var authController = function (Faculty, Member) {
 
 	function throwError(response, error, status, message, errorFor) {
@@ -193,17 +194,21 @@ var authController = function (Faculty, Member) {
 					member.forgot_password = true;
 					member.forgot_password_token = random.generate(32);
 
-					var data = [{
-						name: member.name,
+					var dataToSend = [{
+
 						email: member.email,
-						link: 'http://portal.gtu.ac.in/member/forgotPasswordSet?token=' + member.forgot_password_token + '&id=' + member._id
+						data: {
+							name: member.name,
+							link: 'http://portal.gtu.ac.in/member/forgotPasswordSet?token=' + member.forgot_password_token + '&id=' + member._id
+						}
+
 					}];
 
 					member.save(function (error) {
 						if (error) {
 							throwError(response, error, 500, 'Internal Server Error', 'Member Change Password');
 						} else {
-							mailController.sendMails(data, 'Reset Password', 'mailForgotPassword');
+							mailController.sendMails(dataToSend, 'Reset Password', 'mailForgotPassword');
 							response.status(202).json({
 								"message": "Mail Send Successfully"
 							});

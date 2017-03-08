@@ -31,6 +31,7 @@
 				var authHead = 'Bearer ' + token;
 				config.headers['Authorization'] = authHead;
 			}
+			console.log(config);
 			return config;
 		}
 

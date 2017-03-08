@@ -38,6 +38,8 @@ var mailController = function () {
 				}
 			};
 
+			console.log("ELEMENT DATA");
+
 			client.sendMail(email_obj, function (err, info) {
 				if (err) {
 					console.log(err);

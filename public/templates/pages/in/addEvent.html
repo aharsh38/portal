@@ -1,13 +1,20 @@
 <!DOCTYPE html>
 <div class="margin-tb-gt-xs-4 margin-lr-gt-xs-2 bg-white margin-xs-1 padding-tb-3 padding-lr-2 page" md-whiteframe="5">
-    <h2>Add Event</h2>
+    <div flex layout="row">
+      <md-button class="md-icon-button md-raised md-primary" ui-sref="in_tc.showEvent" md-no-ink="true"
+        ng-show="ec.isUpdate">
+          <ng-md-icon icon="arrow_back" size="20">
+          </ng-md-icon>
+      </md-button>
+      <h2>{{ ec.myEvent.event }} Event</h2>
+    </div>
     <form class="al-add-event-page margin-top-2" layout-gt-xs="row" layout-xs="column"
       name="myEvent" layout-wrap>
         <div layout="column" flex="100">
             <md-input-container>
               <label>Event Name</label>
               <input name="eventName" required="" md-maxlength="100"
-                ng-model="aec.myEvent.name">
+                ng-model="ec.myEvent.name">
               <div ng-messages="myEvent.eventName.$error">
                 <div ng-message="required">This Field Is Required.</div>
                 <div ng-message="md-maxlength">The event name has to be less than 100 characters long.</div>
@@ -16,7 +23,7 @@
             <md-input-container>
               <label>Tag Line</label>
               <input name="tagLine" required="" md-maxlength="200"
-                ng-model="aec.myEvent.tagline">
+                ng-model="ec.myEvent.tagline">
               <div ng-messages="myEvent.tagLine.$error">
                 <div ng-message="required">This Field Is Required.</div>
                 <div ng-message="md-maxlength">The event name has to be less than 100 characters long.</div>
@@ -24,7 +31,7 @@
             </md-input-container>
             <md-input-container class="md-block">
               <label>Description</label>
-              <textarea name="description" ng-model="aec.myEvent.description" md-maxlength="1000" rows="5"></textarea>
+              <textarea name="description" ng-model="ec.myEvent.description" md-maxlength="1000" rows="5"></textarea>
               <div ng-messages="myEvent.description.$error">
                 <div ng-message="required">This Field Is Required.</div>
                 <div ng-message="md-maxlength">The event name has to be less than 100 characters long.</div>
@@ -32,64 +39,117 @@
             </md-input-container>
             <md-input-container>
               <label>Problem Statement</label>
-              <input required="" ng-model="aec.myEvent.problemStatement" name="problemStatement">
+              <input required="" ng-model="ec.myEvent.problem_statement" name="problemStatement">
               <div ng-messages="myEvent.problemStatement.$error">
                 <div ng-message="required">This Field Is Required.</div>
               </div>
             </md-input-container>
             <md-input-container>
               <label>Event Short Code</label>
-              <input required="" ng-model="aec.myEvent.eventCode" name="eventCode">
+              <input required="" ng-model="ec.myEvent.shortcode" name="eventCode">
               <div ng-messages="myEvent.eventCode.$error">
                 <div ng-message="required">This Field Is Required.</div>
               </div>
             </md-input-container>
             <md-input-container>
+              <label>Fee Type</label>
+              <md-select ng-model="ec.myEvent.fees_type" name="fees_type" required=""
+                ng-change="ec.feeTypeChanged()">
+                <md-option value="no_payment">No Payment</md-option>
+                <md-option value="do_payment">Do Payment</md-option>
+                <md-option value="late_payment">Late Payment</md-option>
+              </md-select>
+              <div ng-messages="myEvent.feeType.$error">
+                <div ng-message="required">This Field Is Required.</div>
+              </div>
+            </md-input-container>
+            <md-input-container>
               <label>Fees</label>
-              <input required="" ng-model="aec.myEvent.fee" name="fee">
-              <div ng-messages="myEvent.fee.$error">
+              <input required="" ng-model="ec.myEvent.fees" name="fees"
+                ng-disabled="ec.feeDisabled">
+              <div ng-messages="myEvent.fees.$error">
                 <div ng-message="required">This Field Is Required.</div>
                 <div ng-message="number">Please Enter A Valid Amount.</div>
               </div>
             </md-input-container>
+              Do Payment
+              <md-switch ng-model="ec.myEvent.do_payment" aria-label="Switch 1" ng-disabled="true">
+            </md-switch>
             <md-input-container>
               <label>Event Section</label>
-              <md-select ng-model="aec.myEvent.eventSection" name="eventSection" required="">
-                <md-option value="ce">Computer</md-option>
-                <md-option value="it">IT</md-option>
-              </md-select>
+              <input required="" ng-model="ec.myEvent.section" name="eventSection">
               <div ng-messages="myEvent.eventSection.$error">
                 <div ng-message="required">This Field Is Required.</div>
               </div>
             </md-input-container>
             <md-input-container>
-              <label>Team Leader Name</label>
-              <input required="" ng-model="aec.myEvent.leaderName" name="leaderName">
-              <div ng-messages="myEvent.leaderName.$error">
-                <div ng-message="required">This Field Is Required.</div>
-              </div>
+              <label>Number Of Managers</label>
+              <md-select ng-model="ec.myEvent.totalManager"
+                ng-change="ec.openManagersModal(ec.myEvent.totalManager)" name="eventSection">
+                <md-option value="1">1</md-option>
+                <md-option value="2">2</md-option>
+                <md-option value="3">3</md-option>
+              </md-select>
             </md-input-container>
-            <div layout="row" layout-align="space-between" layout-wrap>
-              <md-input-container flex-gt-xs="50">
-                <label>Email</label>
-                <input required="" ng-model="aec.myEvent.email" name="email">
-                <div ng-messages="myEvent.email.$error">
+            <div ng-repeat="each in ec.myEvent.managers" layout="row" flex>
+              <md-input-container flex="33">
+                <label>Manager Name</label>
+                <input required="" ng-model="each.manager_name" name="leaderName">
+                <div ng-messages="myEvent.leaderName.$error">
                   <div ng-message="required">This Field Is Required.</div>
                   <div ng-message="email">Please Enter Valid Email Address.</div>
                 </div>
               </md-input-container>
-              <md-input-container flex-gt-xs="50">
+              <md-input-container flex="33">
                 <label>Contact Number</label>
-                <input required="" ng-model="aec.myEvent.contactNumber"
-                  ng-pattern="/^[(][0-9]{3}[)] [0-9]{3}-[0-9]{4}$/" name="contactNumber">
+                <input required="" ng-model="each.contact_number"
+                  ng-pattern="/^[0-9]{10}$/" name="contactNumber">
                 <div ng-messages="myEvent.contactNumber.$error">
                   <div ng-message="required">This Field Is Required.</div>
                   <div ng-message="pattern">Please Enter Valid Phone Number.</div>
                 </div>
               </md-input-container>
+              <md-input-container flex="33">
+                <label>Email</label>
+                <input required="" ng-model="each.email_id" name="email">
+                <div ng-messages="myEvent.email.$error">
+                  <div ng-message="required">This Field Is Required.</div>
+                  <div ng-message="email">Please Enter Valid Email Address.</div>
+                </div>
+              </md-input-container>
             </div>
+            <div flex>
+          <div flex layout="row">
+            <md-button ngf-select="ec.uploadFiles($files, $invalidFiles)" multiple
+                class="md-raised md-primary" flex="20"
+                accept="application/pdf,application/msword,
+                  application/vnd.openxmlformats-officedocument.wordprocessingml.document"
+                ngf-max-size="10MB">
+                Upload Files
+            </md-button>
+          </div>
+          <div class="margin-1">
+          <ul>
+            <li ng-repeat="f in ec.files" style="font:smaller">
+              <span>{{f.name}} {{f.$errorParam}}</span>
+              <span ng-show="ec.isUpdate">{{f.doc_name}} {{f.$errorParam}}</span>
+              <md-button class="md-icon-button md-raised md-primary" ng-click="ec.files.splice($index, 1)"
+                md-no-ink="true">
+                  <ng-md-icon icon="delete" size="20">
+                  </ng-md-icon>
+              </md-button>
+              <br/>
+              <span class="progress margin-1" ng-show="f.progress >= 0">
+                <div style="width:{{f.progress}}%;" flex="100" ng-bind="f.progress + '%'"></div>
+              </span>
+            </li>
+            <li ng-repeat="f in ec.errFiles" style="font:smaller">{{f.name}} {{f.$error}} {{f.$errorParam}}
+            </li>
+          </ul>
         </div>
-        <div layout="column" flex="100">
+        </div>
+      </div>
+        <div layout="column" flex="100" class="margin-2">
           <h3>Rules</h3>
           <div id="editorRules">
       		</div>
@@ -104,6 +164,8 @@
           <div id="editorJudgingCriteria">
       		</div>
         </div>
-        <md-button class="md-primary md-raised" type="submit" ng-click="aec.register()">{{ aec.myEvent.event }}</md-button>
+        <md-button class="md-primary md-raised" type="submit" ng-disabled="myEvent.$invalid" ng-click="ec.save()">
+          {{ ec.myEvent.event }}
+        </md-button>
     </form>
 </div>
