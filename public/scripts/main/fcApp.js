@@ -2,6 +2,23 @@
 	'use strict';
 
 	angular
+		.module('fct.api', []);
+})();
+
+(function () {
+	'use strict';
+
+	angular
+		.module('fct_app', [
+			'fct.api',
+			'fct.core'
+		]);
+})();
+
+(function () {
+	'use strict';
+
+	angular
 		.module('fct.core', [
 			'ngAnimate',
 			'ngMessages',
@@ -50,23 +67,6 @@
 			}
 		}
 	}
-})();
-
-(function () {
-	'use strict';
-
-	angular
-		.module('fct.api', []);
-})();
-
-(function () {
-	'use strict';
-
-	angular
-		.module('fct_app', [
-			'fct.api',
-			'fct.core'
-		]);
 })();
 
 (function () {
@@ -168,22 +168,34 @@
 					controller: 'MemberRegistrationController',
 					controllerAs: 'mrc'
 				})
+				.state('out.member_forgotPasswordSet', {
+					url: '/member/forgotPasswordSet?token&id',
+					templateUrl: '/templates/pages/out/member/forgotPasswordSet.html',
+					controller: 'MemberForgotPasswordSetController',
+					controllerAs: 'mfpsc'
+				})
+				.state('out.member_forgotPasswordApply', {
+					url: '/member/forgotPasswordApply',
+					templateUrl: '/templates/pages/out/member/forgotPasswordApply.html',
+					controller: 'MemberForgotPasswordApplyController',
+					controllerAs: 'mfpac'
+				})
 				.state('in_tc.verifyCoordinator', {
-					url: '/verifyCoordinator',
+					url: '/member/verifyCoordinator',
 					templateUrl: '/templates/pages/in/verifyCoordinator.html',
 					controller: 'VerifyCoordinatorController',
 					controllerAs: 'vcc'
 				})
 				.state('in_tc.collegeList', {
-					url: '/collegeList',
+					url: '/member/collegeList',
 					templateUrl: '/templates/pages/in/collegeList.html'
 				})
 				.state('in_tc.eventRegistrations', {
-					url: '/eventRegistration',
+					url: '/member/eventRegistration',
 					templateUrl: '/templates/pages/in/eventRegistration.html'
 				})
 				.state('in_tc.addEvent', {
-					url: '/addEvent',
+					url: '/member/addEvent',
 					templateUrl: '/templates/pages/in/addEvent.html',
 					controller: 'AddEventController',
 					controllerAs: 'aec',
@@ -311,39 +323,6 @@
 		return defer.promise;
 	}
 
-})();
-
-(function () {
-	'use strict';
-
-	angular
-		.module('fct.core')
-		.factory('fctToast', fctToast);
-
-	fctToast.$inject = ['$mdToast'];
-
-	function fctToast($mdToast) {
-		var service = {
-			showToast: showToast
-		};
-
-		return service;
-
-		function showToast(data, success) {
-			var toasterClass = 'md-toast-warn';
-
-			if (success) {
-				toasterClass = 'md-toast-success';
-			}
-
-			var toaster = $mdToast.simple()
-				.textContent(data)
-				.position('bottom right')
-				.hideDelay(3000)
-				.toastClass(toasterClass);
-			$mdToast.show(toaster);
-		}
-	}
 })();
 
 (function () {
@@ -847,6 +826,39 @@
 })();
 
 (function () {
+	'use strict';
+
+	angular
+		.module('fct.core')
+		.factory('fctToast', fctToast);
+
+	fctToast.$inject = ['$mdToast'];
+
+	function fctToast($mdToast) {
+		var service = {
+			showToast: showToast
+		};
+
+		return service;
+
+		function showToast(data, success) {
+			var toasterClass = 'md-toast-warn';
+
+			if (success) {
+				toasterClass = 'md-toast-success';
+			}
+
+			var toaster = $mdToast.simple()
+				.textContent(data)
+				.position('bottom right')
+				.hideDelay(3000)
+				.toastClass(toasterClass);
+			$mdToast.show(toaster);
+		}
+	}
+})();
+
+(function () {
   'use strict';
 
   angular
@@ -900,6 +912,250 @@
   }
 
 })();
+
+(function () {
+    'use strict';
+
+    angular
+      .module('fct.core')
+      .controller('AddEventController', AddEventController);
+
+    AddEventController.$inject = ['$stateParams', 'eventService', '$rootScope'];
+
+    function AddEventController(stateParams, eventService, $rootScope) {
+        var vm = this;
+        vm.myEvent = {};
+
+        angular.extend(vm, {
+            register: register
+        });
+
+        activate();
+
+        function activate() {
+          initializeCKEditor();
+        }
+
+        function register() {alert(JSON.stringify(vm.myEvent));
+          //eventService.addEvent(vm.myEvent);
+        }
+
+    		$rootScope.$on('registerSuccess', registerSuccess);
+        $rootScope.$on('registerFailure', registerFailure);
+
+    		function registerSuccess(event) {
+            asToast.showToast("Registered",true);
+
+        }
+
+        function registerFailure(event, error) {
+            asToast.showToast(error.data.message);
+        }
+
+        function initializeCKEditor() {
+          if(stateParams.editData !== undefined &&
+              stateParams.editData !== null) {
+            vm.myEvent = stateParams.editData;
+            vm.myEvent.event = "Insert";
+          } else {
+            vm.myEvent.event = "Update";
+          }
+
+          if ( CKEDITOR.env.ie && CKEDITOR.env.version < 9 )
+          	CKEDITOR.tools.enableHtml5Elements( document );
+
+          // The trick to keep the editor in the sample quite small
+          // unless user specified own height.
+          CKEDITOR.config.height = 150;
+          CKEDITOR.config.width = 'auto';
+
+          var initSample = ( function() {
+          	var wysiwygareaAvailable = isWysiwygareaAvailable();
+
+          	return function() {
+          		var editorElement = CKEDITOR.document.getById( 'editor' );
+
+          		// Depending on the wysiwygare plugin availability initialize classic or inline editor.
+          		if ( wysiwygareaAvailable ) {
+          			CKEDITOR.replace( 'editorRules' );
+          			CKEDITOR.replace( 'editorSpecification' );
+          			CKEDITOR.replace( 'editorJudgingCriteria' );
+          		} else {
+          			editorElement.setAttribute( 'contenteditable', 'true' );
+          			CKEDITOR.inline( 'editorRules' );
+          			CKEDITOR.inline( 'editorSpecification' );
+          			CKEDITOR.inline( 'editorJudgingCriteria' );
+
+          			// TODO we can consider displaying some info box that
+          			// without wysiwygarea the classic editor may not work.
+          		}
+
+          		//CKEDITOR.instances["editor"].getData()
+          		//to get the data
+          	};
+
+          	function isWysiwygareaAvailable() {
+          		// If in development mode, then the wysiwygarea must be available.
+          		// Split REV into two strings so builder does not replace it :D.
+          		if ( CKEDITOR.revision == ( '%RE' + 'V%' ) ) {
+          			return true;
+          		}
+
+          		return !!CKEDITOR.plugins.get( 'wysiwygarea' );
+          	}
+          } )();
+          initSample();
+        }
+    }
+})();
+
+(function () {
+	'use strict';
+
+	angular
+		.module('fct.core')
+		.controller('DashboardController', DashboardController);
+
+	DashboardController.$inject = ['$rootScope', 'memberService'];
+
+	function DashboardController($rootScope, memberService) {
+		var vm = this;
+
+		angular.extend(vm, {
+			func: func
+		});
+
+		activate();
+
+		function activate() {
+
+		}
+
+		function func() {
+
+		}
+	}
+})();
+
+(function () {
+	'use strict';
+
+	angular
+		.module('fct.core')
+		.controller('MemberSettingsController', MemberSettingsController);
+
+	MemberSettingsController.$inject = ['memberAuthService', 'fctToast', '$scope', '$rootScope', '$timeout'];
+
+	function MemberSettingsController(memberAuthService, fctToast, $scope, $rootScope, $timeout) {
+		var vm = this;
+		vm.updateInfo = false;
+		$scope.changePasswordForm = {};
+		vm.user = {};
+
+		angular.extend(vm, {
+			changePassword: changePassword
+		});
+
+		activate();
+
+		function activate() {
+
+		}
+
+		function changePassword(event) {
+			if (vm.updateInfo) {
+				event.preventDefault();
+			} else {
+				vm.updateInfo = true;
+				memberAuthService.changeMemberPassword(vm.user);
+			}
+		}
+
+		$rootScope.$on('MemberChangePasswordSuccess', MemberChangePasswordSuccess);
+		$rootScope.$on('MemberChangePasswordFailure', MemberChangePasswordFailure);
+
+		function MemberChangePasswordSuccess(event) {
+			fctToast.showToast("Password Changed Successfully", true);
+			$timeout(function () {
+				resetForm();
+			});
+
+		}
+
+		function MemberChangePasswordFailure(event, error) {
+			fctToast.showToast(error.data.message);
+			$timeout(function () {
+				resetForm();
+			});
+		}
+
+		function resetForm() {
+			vm.user = {};
+			vm.updateInfo = false;
+			$scope.changePasswordForm.$setPristine();
+			$scope.changePasswordForm.$setUntouched();
+		}
+	}
+})();
+
+(function () {
+    'use strict';
+
+    angular
+      .module('fct.core')
+      .controller('ShowEventController', ShowEventController);
+
+    ShowEventController.$inject = [];
+    
+    function ShowEventController() {
+        var vm = this;
+
+        activate();
+        var joinedDate = "ab";
+
+        function activate() {
+
+          vm.dummyEvents = [{
+            teamId: '32049',
+            teamName: 'Mona Lisa',
+            leaderName: 'Monit',
+            contactNumber: '9329239499',
+            eventName: 'Scrabble+',
+            email: 'abc@123.com',
+            eventSection: 'IT Department'
+          },
+          {
+            teamId: '32048',
+            teamName: 'Mango',
+            leaderName: 'Monit',
+            contactNumber: '9329239499',
+            eventName: 'Scrabble+',
+            email: 'abc@123.com',
+            eventSection: 'IT Department'
+          },
+          {
+            teamId: '32047',
+            teamName: 'Rascals',
+            leaderName: 'Monit',
+            contactNumber: '9329239499',
+            eventName: 'Scrabble+',
+            email: 'abc@123.com',
+            eventSection: 'IT Department'
+          },
+          {
+            teamId: '32046',
+            teamName: 'Rockerstar',
+            leaderName: 'Monit',
+            contactNumber: '9329239499',
+            eventName: 'Scrabble+',
+            email: 'abc@123.com',
+            eventSection: 'IT Department'
+          },];
+
+        }
+    }
+})();
+
 
 (function () {
 	'use strict';
@@ -1231,115 +1487,28 @@
 })();
 
 (function () {
-    'use strict';
-
-    angular
-      .module('fct.core')
-      .controller('AddEventController', AddEventController);
-
-    AddEventController.$inject = ['$stateParams', 'eventService', '$rootScope'];
-
-    function AddEventController(stateParams, eventService, $rootScope) {
-        var vm = this;
-        vm.myEvent = {};
-
-        angular.extend(vm, {
-            register: register
-        });
-
-        activate();
-
-        function activate() {
-          initializeCKEditor();
-        }
-
-        function register() {alert(JSON.stringify(vm.myEvent));
-          //eventService.addEvent(vm.myEvent);
-        }
-
-    		$rootScope.$on('registerSuccess', registerSuccess);
-        $rootScope.$on('registerFailure', registerFailure);
-
-    		function registerSuccess(event) {
-            asToast.showToast("Registered",true);
-
-        }
-
-        function registerFailure(event, error) {
-            asToast.showToast(error.data.message);
-        }
-
-        function initializeCKEditor() {
-          if(stateParams.editData !== undefined &&
-              stateParams.editData !== null) {
-            vm.myEvent = stateParams.editData;
-            vm.myEvent.event = "Insert";
-          } else {
-            vm.myEvent.event = "Update";
-          }
-
-          if ( CKEDITOR.env.ie && CKEDITOR.env.version < 9 )
-          	CKEDITOR.tools.enableHtml5Elements( document );
-
-          // The trick to keep the editor in the sample quite small
-          // unless user specified own height.
-          CKEDITOR.config.height = 150;
-          CKEDITOR.config.width = 'auto';
-
-          var initSample = ( function() {
-          	var wysiwygareaAvailable = isWysiwygareaAvailable();
-
-          	return function() {
-          		var editorElement = CKEDITOR.document.getById( 'editor' );
-
-          		// Depending on the wysiwygare plugin availability initialize classic or inline editor.
-          		if ( wysiwygareaAvailable ) {
-          			CKEDITOR.replace( 'editorRules' );
-          			CKEDITOR.replace( 'editorSpecification' );
-          			CKEDITOR.replace( 'editorJudgingCriteria' );
-          		} else {
-          			editorElement.setAttribute( 'contenteditable', 'true' );
-          			CKEDITOR.inline( 'editorRules' );
-          			CKEDITOR.inline( 'editorSpecification' );
-          			CKEDITOR.inline( 'editorJudgingCriteria' );
-
-          			// TODO we can consider displaying some info box that
-          			// without wysiwygarea the classic editor may not work.
-          		}
-
-          		//CKEDITOR.instances["editor"].getData()
-          		//to get the data
-          	};
-
-          	function isWysiwygareaAvailable() {
-          		// If in development mode, then the wysiwygarea must be available.
-          		// Split REV into two strings so builder does not replace it :D.
-          		if ( CKEDITOR.revision == ( '%RE' + 'V%' ) ) {
-          			return true;
-          		}
-
-          		return !!CKEDITOR.plugins.get( 'wysiwygarea' );
-          	}
-          } )();
-          initSample();
-        }
-    }
-})();
-
-(function () {
 	'use strict';
 
 	angular
 		.module('fct.core')
-		.controller('DashboardController', DashboardController);
+		.controller('FacultyLayoutController', FacultyLayoutController)
+		.controller('ContactDialogController', ContactDialogController);
 
-	DashboardController.$inject = ['$rootScope', 'memberService'];
+	FacultyLayoutController.$inject = ['facultyAuthService', '$mdSidenav', '$rootScope', 'fctToast', '$state', '$mdDialog', '$mdMedia', '$scope'];
 
-	function DashboardController($rootScope, memberService) {
+	function FacultyLayoutController(facultyAuthService, $mdSidenav, $rootScope, fctToast, $state, $mdDialog, $mdMedia, $scope) {
 		var vm = this;
 
+		$scope.$watch(function () {
+			return $mdMedia('xs') || $mdMedia('sm');
+		});
+
 		angular.extend(vm, {
-			func: func
+			logout: logout,
+			openLeftSidenav: openLeftSidenav,
+			isOpenLeftSidenav: isOpenLeftSidenav,
+			closeLeftSidenav: closeLeftSidenav,
+			contact: contact
 		});
 
 		activate();
@@ -1348,9 +1517,52 @@
 
 		}
 
-		function func() {
-
+		function logout() {
+			facultyAuthService.logout();
 		}
+
+		$rootScope.$on('logoutSuccessful', logoutSuccessful);
+
+		function logoutSuccessful(event) {
+			fctToast.showToast("Succesfully Logged out", true);
+			$state.go('out.login');
+		}
+
+		function openLeftSidenav() {
+			$mdSidenav('left').open();
+		}
+
+		function isOpenLeftSidenav() {
+			return $mdSidenav('left').isOpen();
+		}
+
+		function closeLeftSidenav() {
+			$mdSidenav('left').close();
+		}
+
+		function contact(ev) {
+			var useFullScreen = $mdMedia('sm') || $mdMedia('xs');
+			$mdDialog.show({
+				controller: 'ContactDialogController',
+				templateUrl: '/templates/components/dialogs/contact.html',
+				parent: angular.element(document.body),
+				targetEvent: ev,
+				clickOutsideToClose: true,
+				fullscreen: useFullScreen // Only for -xs, -sm breakpoints.
+			});
+		}
+	}
+
+	ContactDialogController.$inject = ['$scope', '$mdDialog'];
+
+	function ContactDialogController($scope, $mdDialog) {
+		$scope.cancel = function () {
+			$mdDialog.cancel();
+		};
+
+		$scope.hide = function () {
+			$mdDialog.hide();
+		};
 	}
 })();
 
@@ -1359,18 +1571,18 @@
 
 	angular
 		.module('fct.core')
-		.controller('MemberSettingsController', MemberSettingsController);
+		.controller('MemberLayoutController', MemberLayoutController);
 
-	MemberSettingsController.$inject = ['memberAuthService', 'fctToast', '$scope', '$rootScope', '$timeout'];
+	MemberLayoutController.$inject = ['memberAuthService', '$mdSidenav', '$rootScope', 'fctToast', '$state', '$scope'];
 
-	function MemberSettingsController(memberAuthService, fctToast, $scope, $rootScope, $timeout) {
+	function MemberLayoutController(memberAuthService, $mdSidenav, $rootScope, fctToast, $state, $scope) {
 		var vm = this;
-		vm.updateInfo = false;
-		$scope.changePasswordForm = {};
-		vm.user = {};
 
 		angular.extend(vm, {
-			changePassword: changePassword
+			logout: logout,
+			openLeftSidenav: openLeftSidenav,
+			isOpenLeftSidenav: isOpenLeftSidenav,
+			closeLeftSidenav: closeLeftSidenav,
 		});
 
 		activate();
@@ -1379,100 +1591,31 @@
 
 		}
 
-		function changePassword(event) {
-			if (vm.updateInfo) {
-				event.preventDefault();
-			} else {
-				vm.updateInfo = true;
-				memberAuthService.changeMemberPassword(vm.user);
-			}
+		function logout() {
+			memberAuthService.logout();
 		}
 
-		$rootScope.$on('MemberChangePasswordSuccess', MemberChangePasswordSuccess);
-		$rootScope.$on('MemberChangePasswordFailure', MemberChangePasswordFailure);
+		$rootScope.$on('logoutSuccessful', logoutSuccessful);
 
-		function MemberChangePasswordSuccess(event) {
-			fctToast.showToast("Password Changed Successfully", true);
-			$timeout(function () {
-				resetForm();
-			});
-
+		function logoutSuccessful(event) {
+			fctToast.showToast("Succesfully Logged out", true);
+			$state.go('out.member_login');
 		}
 
-		function MemberChangePasswordFailure(event, error) {
-			fctToast.showToast(error.data.message);
-			$timeout(function () {
-				resetForm();
-			});
+		function openLeftSidenav() {
+			$mdSidenav('left').open();
 		}
 
-		function resetForm() {
-			vm.user = {};
-			vm.updateInfo = false;
-			$scope.changePasswordForm.$setPristine();
-			$scope.changePasswordForm.$setUntouched();
+		function isOpenLeftSidenav() {
+			return $mdSidenav('left').isOpen();
+		}
+
+		function closeLeftSidenav() {
+			$mdSidenav('left').close();
 		}
 	}
+
 })();
-
-(function () {
-    'use strict';
-
-    angular
-      .module('fct.core')
-      .controller('ShowEventController', ShowEventController);
-
-    ShowEventController.$inject = [];
-    
-    function ShowEventController() {
-        var vm = this;
-
-        activate();
-        var joinedDate = "ab";
-
-        function activate() {
-
-          vm.dummyEvents = [{
-            teamId: '32049',
-            teamName: 'Mona Lisa',
-            leaderName: 'Monit',
-            contactNumber: '9329239499',
-            eventName: 'Scrabble+',
-            email: 'abc@123.com',
-            eventSection: 'IT Department'
-          },
-          {
-            teamId: '32048',
-            teamName: 'Mango',
-            leaderName: 'Monit',
-            contactNumber: '9329239499',
-            eventName: 'Scrabble+',
-            email: 'abc@123.com',
-            eventSection: 'IT Department'
-          },
-          {
-            teamId: '32047',
-            teamName: 'Rascals',
-            leaderName: 'Monit',
-            contactNumber: '9329239499',
-            eventName: 'Scrabble+',
-            email: 'abc@123.com',
-            eventSection: 'IT Department'
-          },
-          {
-            teamId: '32046',
-            teamName: 'Rockerstar',
-            leaderName: 'Monit',
-            contactNumber: '9329239499',
-            eventName: 'Scrabble+',
-            email: 'abc@123.com',
-            eventSection: 'IT Department'
-          },];
-
-        }
-    }
-})();
-
 
 (function () {
 	'use strict';
@@ -1495,9 +1638,10 @@
 			submit: submit
 		});
 
+        console.log("HHHIII");
 
-
-		function submit() {
+		function submit(event) {
+            console.log("222");
 			if (vm.submitButtonClicked) {
 				event.preventDefault();
 			} else {
@@ -1794,7 +1938,8 @@
 			submit: submit
 		});
 
-		function submit() {
+		function submit(event) {
+			console.log("HIII");
 			if (vm.submitButtonClicked) {
 				event.preventDefault();
 			} else {
@@ -2021,135 +2166,4 @@
 			$scope.registerForm.$setUntouched();
 		}
 	}
-})();
-
-(function () {
-	'use strict';
-
-	angular
-		.module('fct.core')
-		.controller('FacultyLayoutController', FacultyLayoutController)
-		.controller('ContactDialogController', ContactDialogController);
-
-	FacultyLayoutController.$inject = ['facultyAuthService', '$mdSidenav', '$rootScope', 'fctToast', '$state', '$mdDialog', '$mdMedia', '$scope'];
-
-	function FacultyLayoutController(facultyAuthService, $mdSidenav, $rootScope, fctToast, $state, $mdDialog, $mdMedia, $scope) {
-		var vm = this;
-
-		$scope.$watch(function () {
-			return $mdMedia('xs') || $mdMedia('sm');
-		});
-
-		angular.extend(vm, {
-			logout: logout,
-			openLeftSidenav: openLeftSidenav,
-			isOpenLeftSidenav: isOpenLeftSidenav,
-			closeLeftSidenav: closeLeftSidenav,
-			contact: contact
-		});
-
-		activate();
-
-		function activate() {
-
-		}
-
-		function logout() {
-			facultyAuthService.logout();
-		}
-
-		$rootScope.$on('logoutSuccessful', logoutSuccessful);
-
-		function logoutSuccessful(event) {
-			fctToast.showToast("Succesfully Logged out", true);
-			$state.go('out.login');
-		}
-
-		function openLeftSidenav() {
-			$mdSidenav('left').open();
-		}
-
-		function isOpenLeftSidenav() {
-			return $mdSidenav('left').isOpen();
-		}
-
-		function closeLeftSidenav() {
-			$mdSidenav('left').close();
-		}
-
-		function contact(ev) {
-			var useFullScreen = $mdMedia('sm') || $mdMedia('xs');
-			$mdDialog.show({
-				controller: 'ContactDialogController',
-				templateUrl: '/templates/components/dialogs/contact.html',
-				parent: angular.element(document.body),
-				targetEvent: ev,
-				clickOutsideToClose: true,
-				fullscreen: useFullScreen // Only for -xs, -sm breakpoints.
-			});
-		}
-	}
-
-	ContactDialogController.$inject = ['$scope', '$mdDialog'];
-
-	function ContactDialogController($scope, $mdDialog) {
-		$scope.cancel = function () {
-			$mdDialog.cancel();
-		};
-
-		$scope.hide = function () {
-			$mdDialog.hide();
-		};
-	}
-})();
-
-(function () {
-	'use strict';
-
-	angular
-		.module('fct.core')
-		.controller('MemberLayoutController', MemberLayoutController);
-
-	MemberLayoutController.$inject = ['memberAuthService', '$mdSidenav', '$rootScope', 'fctToast', '$state', '$scope'];
-
-	function MemberLayoutController(memberAuthService, $mdSidenav, $rootScope, fctToast, $state, $scope) {
-		var vm = this;
-
-		angular.extend(vm, {
-			logout: logout,
-			openLeftSidenav: openLeftSidenav,
-			isOpenLeftSidenav: isOpenLeftSidenav,
-			closeLeftSidenav: closeLeftSidenav,
-		});
-
-		activate();
-
-		function activate() {
-
-		}
-
-		function logout() {
-			memberAuthService.logout();
-		}
-
-		$rootScope.$on('logoutSuccessful', logoutSuccessful);
-
-		function logoutSuccessful(event) {
-			fctToast.showToast("Succesfully Logged out", true);
-			$state.go('out.member_login');
-		}
-
-		function openLeftSidenav() {
-			$mdSidenav('left').open();
-		}
-
-		function isOpenLeftSidenav() {
-			return $mdSidenav('left').isOpen();
-		}
-
-		function closeLeftSidenav() {
-			$mdSidenav('left').close();
-		}
-	}
-
 })();

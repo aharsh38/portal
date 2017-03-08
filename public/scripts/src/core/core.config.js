@@ -97,22 +97,34 @@
 					controller: 'MemberRegistrationController',
 					controllerAs: 'mrc'
 				})
+				.state('out.member_forgotPasswordSet', {
+					url: '/member/forgotPasswordSet?token&id',
+					templateUrl: '/templates/pages/out/member/forgotPasswordSet.html',
+					controller: 'MemberForgotPasswordSetController',
+					controllerAs: 'mfpsc'
+				})
+				.state('out.member_forgotPasswordApply', {
+					url: '/member/forgotPasswordApply',
+					templateUrl: '/templates/pages/out/member/forgotPasswordApply.html',
+					controller: 'MemberForgotPasswordApplyController',
+					controllerAs: 'mfpac'
+				})
 				.state('in_tc.verifyCoordinator', {
-					url: '/verifyCoordinator',
+					url: '/member/verifyCoordinator',
 					templateUrl: '/templates/pages/in/verifyCoordinator.html',
 					controller: 'VerifyCoordinatorController',
 					controllerAs: 'vcc'
 				})
 				.state('in_tc.collegeList', {
-					url: '/collegeList',
+					url: '/member/collegeList',
 					templateUrl: '/templates/pages/in/collegeList.html'
 				})
 				.state('in_tc.eventRegistrations', {
-					url: '/eventRegistration',
+					url: '/member/eventRegistration',
 					templateUrl: '/templates/pages/in/eventRegistration.html'
 				})
 				.state('in_tc.addEvent', {
-					url: '/addEvent',
+					url: '/member/addEvent',
 					templateUrl: '/templates/pages/in/addEvent.html',
 					controller: 'AddEventController',
 					controllerAs: 'aec',

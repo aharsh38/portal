@@ -42,27 +42,6 @@ var eventController = function (Event) {
 	function getEventsBySection(req, res) {
 		var i = 0;
 		var event_classification = [];
-
-		// Event.find().exec(function (error, events) {
-		// 	if (error) {
-		// 		throwError(response, "Finding All Events", error);
-		// 	} else {
-		// 		if (events.length !== 0) {
-		// 			var objToSend = [];
-		// 			_.each(eventSections, function (el) {
-		// 				objToSend.push({
-		// 					"section": el,
-		// 					"events": []
-		// 				});
-		// 			});
-		//
-		// 			_.each(events, function (element, index, list) {
-		//
-		// 			});
-		// 		}
-		// 	}
-		// });
-
 		Event.aggregate(
 			[{
 				$group: {
@@ -87,6 +66,7 @@ var eventController = function (Event) {
 						i = parseInt(i + 1);
 					}
 				}
+
 				response.json(data);
 			}
 		);
@@ -142,7 +122,8 @@ var eventController = function (Event) {
 		createEvent: createEvent,
 		getSingleEvent: getSingleEvent,
 		updateEvent: updateEvent,
-		deleteEvent: deleteEvent
+		deleteEvent: deleteEvent,
+		upload: upload
 	};
 };
 
