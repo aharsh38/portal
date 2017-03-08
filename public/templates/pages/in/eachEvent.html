@@ -58,21 +58,21 @@
         <label>Rules:&nbsp;&nbsp;&nbsp;&nbsp;</label>
         {{ eec.myEvent.judging_criteria }}
       </div>
-      <div layout="column" flex ng-repeat="each in eec.myEvent.managers">
-        <div layout="row" class="margin-1">
+      <div layout="row" flex ng-repeat="each in eec.myEvent.managers">
+        <div layout="row" class="margin-2">
           <label>Event Manager {{ $index + 1 }}</label>
         </div>
-        <div layout="row">
+        <div layout="row" flex>
           <div layout="row" flex="30" class="margin-1">
-             <p><strong>Name:</strong>{{ each.manager_name }}</p>
+             <p><label>Name : </label>{{ each.manager_name }}</p>
 
           </div>
           <div layout="row" flex="30" class="margin-1">
-             <label>Email</label>
+             <label>Email : </label>
              {{ each.email_id }}
           </div>
           <div layout="row" flex="30" class="margin-1">
-             <label>Mobile</label>
+             <label>Mobile : </label>
              {{ each.contact_number }}
           </div>
         </div>

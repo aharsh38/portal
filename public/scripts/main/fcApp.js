@@ -374,63 +374,6 @@
 	'use strict';
 
 	angular
-		.module('fct.api')
-		.factory('authInterceptor', authInterceptor);
-
-	authInterceptor.$inject = ['$window', '$q', '$location'];
-
-	function authInterceptor($window, $q, $location) {
-		var service = {
-			request: request,
-			requestError: requestError,
-			response: response,
-			responseError: responseError
-		};
-
-		return service;
-
-		function getToken() {
-			if ($window.localStorage['auth-token']) {
-				return $window.localStorage['auth-token'];
-			} else {
-				return null;
-			}
-		}
-
-		function request(config) {
-			var token = getToken();
-			if (token !== null) {
-				var authHead = 'Bearer ' + token;
-				config.headers['Authorization'] = authHead;
-			}
-			console.log(config);
-			return config;
-		}
-
-		function requestError(rejection) {
-			// console.log("Request Rejection",rejection);
-			return $q.reject(rejection);
-		}
-
-		function response(response) {
-			// console.log("response",response);
-			return response || $q.when(response);
-		}
-
-		function responseError(rejection) {
-			console.log("response rejection", rejection);
-			if (rejection.status == 403) {
-				$location.path('/login');
-			}
-			return $q.reject(rejection);
-		}
-	}
-})();
-
-(function () {
-	'use strict';
-
-	angular
 	  .module('fct.core')
 	  .factory('eventService', eventService);
 
@@ -911,6 +854,63 @@
 		function logout() {
 			removeToken();
 			$rootScope.$broadcast('logoutSuccessful');
+		}
+	}
+})();
+
+(function () {
+	'use strict';
+
+	angular
+		.module('fct.api')
+		.factory('authInterceptor', authInterceptor);
+
+	authInterceptor.$inject = ['$window', '$q', '$location'];
+
+	function authInterceptor($window, $q, $location) {
+		var service = {
+			request: request,
+			requestError: requestError,
+			response: response,
+			responseError: responseError
+		};
+
+		return service;
+
+		function getToken() {
+			if ($window.localStorage['auth-token']) {
+				return $window.localStorage['auth-token'];
+			} else {
+				return null;
+			}
+		}
+
+		function request(config) {
+			var token = getToken();
+			if (token !== null) {
+				var authHead = 'Bearer ' + token;
+				config.headers['Authorization'] = authHead;
+			}
+			console.log(config);
+			return config;
+		}
+
+		function requestError(rejection) {
+			// console.log("Request Rejection",rejection);
+			return $q.reject(rejection);
+		}
+
+		function response(response) {
+			// console.log("response",response);
+			return response || $q.when(response);
+		}
+
+		function responseError(rejection) {
+			console.log("response rejection", rejection);
+			if (rejection.status == 403) {
+				$location.path('/login');
+			}
+			return $q.reject(rejection);
 		}
 	}
 })();
@@ -1513,587 +1513,6 @@
 			}
 		}
 	}
-})();
-
-(function () {
-    'use strict';
-
-    angular
-      .module('fct.core')
-      .controller('AddEventController', AddEventController);
-
-    AddEventController.$inject = ['$stateParams', 'eventService', '$rootScope', '$timeout', 'Upload'];
-
-    function AddEventController(stateParams, eventService, $rootScope, $timeout, Upload) {
-        var vm = this;
-        vm.isUpdate = false;
-        vm.myEvent = {
-          'managers':[],
-          'event': "Add",
-        };
-        vm.files = [];
-        vm.images = [];
-
-        angular.extend(vm, {
-            save: save,
-            openManagersModal: openManagersModal,
-            uploadFiles: uploadFiles
-        });
-
-        activate();
-
-        function activate() {
-          initializeCKEditor();
-        }
-
-        function openManagersModal(total) {
-          vm.myEvent.managers = [];
-          while(total > 0) {
-            var each = {"index":1};
-            vm.myEvent.managers.push(each);
-            total--;
-          }
-        }
-
-        function save() {
-          console.log(JSON.stringify(vm.myEvent));
-          vm.myEvent.rules = CKEDITOR.instances["editorRules"].getData();
-          vm.myEvent.specification = CKEDITOR.instances["editorSpecification"].getData();
-          vm.myEvent.judging_criteria = CKEDITOR.instances["editorJudgingCriteria"].getData();
-
-    		  if(vm.myEvent.isUpdate) {
-      			return eventService.updateEvent(vm.myEvent).then(onRegisterSuccess).catch(onRegisterFailure);
-    		  } else {
-      			return eventService.addEvent(vm.myEvent).then(onRegisterSuccess).catch(onRegisterFailure);
-    		  }
-        }
-
-    		function registerSuccess(event) {
-            asToast.showToast("Registered",true);
-
-        }
-
-        function registerFailure(event, error) {
-            asToast.showToast(error.data.message);
-        }
-
-
-        function uploadFiles(files, errFiles) {alert('ccc');
-                vm.files = files;
-                vm.errFiles = errFiles;
-                angular.forEach(files, function(file) {
-                    file.upload = Upload.upload({
-                        url: '/api/members/upload',
-                        data: {file: file}
-                    });
-
-                    file.upload.then(function (response) {
-                        $timeout(function () {alert('uploaded');
-                            file.result = response.data;
-                        });
-                    }, function (response) {
-                        if (response.status > 0) {
-                            //alert(response.status + ': ' + response.data);
-                            vm.myEvent.files = response.data.file.result.path;
-                          }
-                    }, function (evt) {
-                        file.progress = Math.min(100, parseInt(100.0 *
-                                                 evt.loaded / evt.total));
-                    });
-                });
-            }
-
-
-
-        function initializeCKEditor() {
-          if ( CKEDITOR.env.ie && CKEDITOR.env.version < 9 )
-          	CKEDITOR.tools.enableHtml5Elements( document );
-
-          // The trick to keep the editor in the sample quite small
-          // unless user specified own height.
-          CKEDITOR.config.height = 150;
-          CKEDITOR.config.width = 'auto';
-
-          var initSample = ( function() {
-          	var wysiwygareaAvailable = isWysiwygareaAvailable();
-
-          	return function() {
-          		var editorElement = CKEDITOR.document.getById( 'editor' );
-
-          		// Depending on the wysiwygare plugin availability initialize classic or inline editor.
-          		if ( wysiwygareaAvailable ) {
-          			CKEDITOR.replace( 'editorRules' );
-          			CKEDITOR.replace( 'editorSpecification' );
-          			CKEDITOR.replace( 'editorJudgingCriteria' );
-          		} else {
-          			editorElement.setAttribute( 'contenteditable', 'true' );
-          			CKEDITOR.inline( 'editorRules' );
-          			CKEDITOR.inline( 'editorSpecification' );
-          			CKEDITOR.inline( 'editorJudgingCriteria' );
-
-          			// TODO we can consider displaying some info box that
-          			// without wysiwygarea the classic editor may not work.
-          		}
-
-          		//CKEDITOR.instances["editor"].getData()
-          		//to get the data
-          	};
-
-          	function isWysiwygareaAvailable() {
-          		// If in development mode, then the wysiwygarea must be available.
-          		// Split REV into two strings so builder does not replace it :D.
-          		if ( CKEDITOR.revision == ( '%RE' + 'V%' ) ) {
-          			return true;
-          		}
-
-          		return !!CKEDITOR.plugins.get( 'wysiwygarea' );
-          	}
-          } )();
-          initSample();
-        }
-    }
-})();
-
-(function () {
-	'use strict';
-
-	angular
-		.module('fct.core')
-		.controller('DashboardController', DashboardController);
-
-	DashboardController.$inject = ['$rootScope', 'memberService'];
-
-	function DashboardController($rootScope, memberService) {
-		var vm = this;
-
-		angular.extend(vm, {
-			func: func
-		});
-
-		activate();
-
-		function activate() {
-
-		}
-
-		function func() {
-
-		}
-	}
-})();
-
-(function () {
-    'use strict';
-
-    angular
-      .module('fct.core')
-      .controller('EachEventController', EachEventController);
-
-    EachEventController.$inject = ['$stateParams', 'eventService'];
-
-    function EachEventController(stateParams, eventService) {
-        var vm = this;
-
-        activate();
-
-        function activate() {
-          if(stateParams.eventId !== undefined && stateParams.eventId !== null) {
-            vm.eventId = stateParams.eventId;
-            getEvent();
-          }
-		    }
-
-        function getEvent() {
-          return eventService.getSingleEvent(vm.eventId)
-            .then(getEventSuccess)
-            .catch(getEventFailure);
-        }
-
-        function getEventSuccess(response) {
-          console.log(response);
-          vm.myEvent = response.data;
-          //todo: redirect
-        }
-
-        function getEventFailure(error) {
-          console.log(error);
-        }
-    }
-})();
-
-(function () {
-    'use strict';
-
-    angular
-      .module('fct.core')
-      .controller('EventCardController', EventCardController);
-
-    EventCardController.$inject = ['eventService', '$mdDialog'];
-
-    function EventCardController(eventService, $mdDialog) {
-        var vm = this;
-        vm.openCard = false;
-        vm.caret = 'expand_less';
-
-        angular.extend(vm, {
-            deleteEvent: deleteEvent,
-        });
-
-        activate();
-
-        function activate() {
-
-        }
-
-        function deleteEvent(id) {
-          if(id !== undefined && id !== null) {
-            return eventService.getDeleteModal()
-              .then(confirmedDelete)
-              .catch(unconfirmedDelete);
-          }
-          return null;
-        }
-
-        function confirmedDelete() {
-          return eventService.deleteEvent(id)
-            .then(deleteEventSuccess)
-            .catch(deleteEventFailure);
-        }
-
-        function unconfirmedDelete() {
-          //
-        }
-
-        function deleteEventSuccess(response) {
-          console.log(response);
-          vm.reload();
-        }
-
-        function deleteEventFailure(error) {
-          console.log(error);
-          //redirect
-        }
-    }
-})();
-
-(function () {
-	'use strict';
-
-	angular
-		.module('fct.core')
-		.controller('EventRegistrationController', EventRegistrationController);
-
-	EventRegistrationController.$inject = ['memberService'];
-
-	function EventRegistrationController(memberService) {
-		var vm = this;
-
-		// angular.extend(vm, {
-		// 	func: func
-		// });
-
-		activate();
-
-		function activate() {
-			console.log(JSON.stringify(getRegistration()));
-		}
-
-		function getRegistration() {
-			return memberService.getTotalRegistrations();
-		}
-	}
-})();
-
-(function () {
-	'use strict';
-
-	angular
-		.module('fct.core')
-		.controller('MemberSettingsController', MemberSettingsController);
-
-	MemberSettingsController.$inject = ['memberAuthService', 'fctToast', '$scope', '$rootScope', '$timeout'];
-
-	function MemberSettingsController(memberAuthService, fctToast, $scope, $rootScope, $timeout) {
-		var vm = this;
-		vm.updateInfo = false;
-		$scope.changePasswordForm = {};
-		vm.user = {};
-
-		angular.extend(vm, {
-			changePassword: changePassword
-		});
-
-		activate();
-
-		function activate() {
-
-		}
-
-		function changePassword(event) {
-			if (vm.updateInfo) {
-				event.preventDefault();
-			} else {
-				vm.updateInfo = true;
-				memberAuthService.changeMemberPassword(vm.user);
-			}
-		}
-
-		$rootScope.$on('MemberChangePasswordSuccess', MemberChangePasswordSuccess);
-		$rootScope.$on('MemberChangePasswordFailure', MemberChangePasswordFailure);
-
-		function MemberChangePasswordSuccess(event) {
-			fctToast.showToast("Password Changed Successfully", true);
-			$timeout(function () {
-				resetForm();
-			});
-
-		}
-
-		function MemberChangePasswordFailure(event, error) {
-			fctToast.showToast(error.data.message);
-			$timeout(function () {
-				resetForm();
-			});
-		}
-
-		function resetForm() {
-			vm.user = {};
-			vm.updateInfo = false;
-			$scope.changePasswordForm.$setPristine();
-			$scope.changePasswordForm.$setUntouched();
-		}
-	}
-})();
-
-(function () {
-	'use strict';
-
-	angular
-		.module('fct.core')
-		.controller('ParticipantRegistrationController', ParticipantRegistrationController);
-
-	ParticipantRegistrationController.$inject = ['$http'];
-
-	function ParticipantRegistrationController($http) {
-		var vm = this;
-		vm.myParticipant = {
-			eventObject: {
-				event_id: 123123,
-				event_shortcode: 'EVET'
-			},
-			other_participants: []
-		};
-    vm.otherParticipants = [];
-		vm.myParticipant.other_participants = [];
-    vm.maxParticipants = 4;
-    vm.eventPrice = 50;
-    vm.esflag = false;
-    vm.nopflag = false;
-
-		angular.extend(vm, {
-      getParticipantLength : getParticipantLength,
-      save : save,
-      openParticipantModule : openParticipantModule,
-		});
-
-		activate();
-
-		function activate() {
-			var x = '{"eventObject": {"event_id": "123123","event_shortcode": "EVET","event_section": "1","event_name": "1"},"other_participants": [{"title": "Team Member","leaderFlag": false,"$$hashKey": "object:68","name": "cl","email": "d@ddc.c","college_name": "1","branch": "2","semester": "6","mobileno": "43223443223","enrollment": "322342342342343"}],"total_amount": 100,"numberOfParticipant": "2","do_payment": true,"team_leader": {"title": "Team Leader","leaderFlag": true,"$$hashKey": "object:67","name": "fd","email": "s@sd.3","mobileno": "12341232133","college_name": "1","branch": "1","semester": "2","enrollment": "231312312332333"}}';
-			return $http.post('/api/registration/create', x)
-				.then(resolveFunc)
-				.catch(rejectFunc);
-		}
-
-    function openParticipantModule(total) {
-      vm.nopflag = true;
-      var first = true;
-      vm.myParticipant.other_participants = [];
-      while(total > 0) {
-        var each = {"title": (first) ? "Team Leader" : "Team Member",
-                    "leaderFlag": first};
-        vm.myParticipant.other_participants.push(each);
-        first = false;
-        total--;
-      }
-    }
-
-    function getParticipantLength() {
-      return vm.myParticipant.other_participants.length;
-    }
-
-		function save() {
-			vm.myParticipant.do_payment = true;
-			console.log(JSON.stringify(vm.myParticipant));
-			vm.myParticipant.team_leader = vm.myParticipant.other_participants[0];
-			vm.myParticipant.other_participants.splice(0, 1);
-			console.log(JSON.stringify(vm.myParticipant));
-			return $http.post('/api/registration/create', vm.myParticipant)
-				.then(resolveFunc)
-				.catch(rejectFunc);
-		}
-
-		function resolveFunc(response) {
-			console.log(response);
-		}
-
-		function rejectFunc(error) {
-			console.log(error);
-		}
-	}
-})();
-
-(function () {
-    'use strict';
-
-    angular
-      .module('fct.core')
-      .controller('ShowEventController', ShowEventController);
-
-    ShowEventController.$inject = ['eventService'];
-
-    function ShowEventController(eventService) {
-        var vm = this;
-
-        angular.extend(vm, {
-            getEvents: getEvents,
-        });
-
-        activate();
-
-        function activate() {
-          getEvents();
-        }
-
-        function getEvents() {
-            return eventService.getEvent()
-              .then(getEventSuccess)
-              .catch(getEventFailure);
-        }
-
-        function getEventSuccess(response) {
-          console.log(response);
-          vm.dummyEvents = response.data;
-        }
-
-        function getEventFailure(error) {
-          console.log(error);
-        }
-    }
-})();
-
-
-(function () {
-    'use strict';
-
-    angular
-      .module('fct.core')
-      .controller('UpdateEventController', UpdateEventController);
-
-    UpdateEventController.$inject = ['$stateParams', 'eventService', '$rootScope', '$state', 'fctToast'];
-
-    function UpdateEventController(stateParams, eventService, $rootScope, state, fctToast) {
-        var vm = this;
-        vm.isUpdate = true;
-        vm.myEvent = {
-          'managers':[],
-        };
-
-        angular.extend(vm, {
-            save: save,
-            openManagersModal: openManagersModal,
-        });
-
-        activate();
-
-        function activate() {
-          initializeCKEditor();
-          checkEventId();
-        }
-
-        function openManagersModal(total) {
-          vm.myEvent.managers = [];
-          while(total > 0) {
-            var each = {"index":1};
-            vm.myEvent.managers.push(each);
-            total--;
-          }
-        }
-
-        function checkEventId() {
-          if(stateParams.eventId !== undefined && stateParams.eventId !== null) {
-              vm.eventId = stateParams.eventId;
-              return eventService.getSingleEvent(vm.eventId)
-                .then(onEventGetSuccess)
-                .catch(onEventGetFailure);
-
-          }
-          return null;
-        }
-
-        function onEventGetSuccess(eventData) {
-          console.log(eventData);
-          vm.myEvent = eventData.data;
-          vm.myEvent.event = "Update";
-        }
-
-        function onEventGetFailure(error) {
-          console.log(error);
-          //redirect
-        }
-
-        function save() {
-          vm.myEvent.rules = CKEDITOR.instances["editorRules"].getData();
-          vm.myEvent.specification = CKEDITOR.instances["editorSpecification"].getData();
-          vm.myEvent.judging_criteria = CKEDITOR.instances["editorJudgingCriteria"].getData();
-          console.log(JSON.stringify(vm.myEvent));
-          return eventService.updateEvent(vm.eventId, vm.myEvent)
-            .then(onUpdateSuccess)
-            .catch(onUpdateFailure);
-        }
-
-        function onUpdateSuccess(response) {
-          console.log(response);
-          fctToast.showToast("Update Success.", true);
-          state.go('in_tc.showEvent');
-        }
-
-        function onUpdateFailure(error) {
-          console.log(error);
-          fctToast.showToast("Please try again later.");
-        }
-
-        function initializeCKEditor() {
-          if ( CKEDITOR.env.ie && CKEDITOR.env.version < 9 )
-          	CKEDITOR.tools.enableHtml5Elements( document );
-            CKEDITOR.config.height = 150;
-            CKEDITOR.config.width = 'auto';
-            var initSample = ( function() {
-            	var wysiwygareaAvailable = isWysiwygareaAvailable();
-            	return function() {
-            		var editorElement = CKEDITOR.document.getById( 'editor' );
-            		if ( wysiwygareaAvailable ) {
-            			CKEDITOR.replace( 'editorRules' );
-            			CKEDITOR.replace( 'editorSpecification' );
-            			CKEDITOR.replace( 'editorJudgingCriteria' );
-            		} else {
-            			editorElement.setAttribute( 'contenteditable', 'true' );
-            			CKEDITOR.inline( 'editorRules' );
-            			CKEDITOR.inline( 'editorSpecification' );
-            			CKEDITOR.inline( 'editorJudgingCriteria' );
-            		}
-            	};
-
-          	function isWysiwygareaAvailable() {
-          		if ( CKEDITOR.revision == ( '%RE' + 'V%' ) ) {
-          			return true;
-          		}
-          		return !!CKEDITOR.plugins.get( 'wysiwygarea' );
-          	}
-          } )();
-          initSample();
-        }
-    }
 })();
 
 (function () {
@@ -2774,6 +2193,587 @@
 			$scope.registerForm.$setUntouched();
 		}
 	}
+})();
+
+(function () {
+    'use strict';
+
+    angular
+      .module('fct.core')
+      .controller('AddEventController', AddEventController);
+
+    AddEventController.$inject = ['$stateParams', 'eventService', '$rootScope', '$timeout', 'Upload'];
+
+    function AddEventController(stateParams, eventService, $rootScope, $timeout, Upload) {
+        var vm = this;
+        vm.isUpdate = false;
+        vm.myEvent = {
+          'managers':[],
+          'event': "Add",
+        };
+        vm.files = [];
+        vm.images = [];
+
+        angular.extend(vm, {
+            save: save,
+            openManagersModal: openManagersModal,
+            uploadFiles: uploadFiles
+        });
+
+        activate();
+
+        function activate() {
+          initializeCKEditor();
+        }
+
+        function openManagersModal(total) {
+          vm.myEvent.managers = [];
+          while(total > 0) {
+            var each = {"index":1};
+            vm.myEvent.managers.push(each);
+            total--;
+          }
+        }
+
+        function save() {
+          console.log(JSON.stringify(vm.myEvent));
+          vm.myEvent.rules = CKEDITOR.instances["editorRules"].getData();
+          vm.myEvent.specification = CKEDITOR.instances["editorSpecification"].getData();
+          vm.myEvent.judging_criteria = CKEDITOR.instances["editorJudgingCriteria"].getData();
+
+    		  if(vm.myEvent.isUpdate) {
+      			return eventService.updateEvent(vm.myEvent).then(onRegisterSuccess).catch(onRegisterFailure);
+    		  } else {
+      			return eventService.addEvent(vm.myEvent).then(onRegisterSuccess).catch(onRegisterFailure);
+    		  }
+        }
+
+    		function registerSuccess(event) {
+            asToast.showToast("Registered",true);
+
+        }
+
+        function registerFailure(event, error) {
+            asToast.showToast(error.data.message);
+        }
+
+
+        function uploadFiles(files, errFiles) {alert('ccc');
+                vm.files = files;
+                vm.errFiles = errFiles;
+                angular.forEach(files, function(file) {
+                    file.upload = Upload.upload({
+                        url: '/api/members/upload',
+                        data: {file: file}
+                    });
+
+                    file.upload.then(function (response) {
+                        $timeout(function () {alert('uploaded');
+                            file.result = response.data;
+                        });
+                    }, function (response) {
+                        if (response.status > 0) {
+                            //alert(response.status + ': ' + response.data);
+                            vm.myEvent.files = response.data.file.result.path;
+                          }
+                    }, function (evt) {
+                        file.progress = Math.min(100, parseInt(100.0 *
+                                                 evt.loaded / evt.total));
+                    });
+                });
+            }
+
+
+
+        function initializeCKEditor() {
+          if ( CKEDITOR.env.ie && CKEDITOR.env.version < 9 )
+          	CKEDITOR.tools.enableHtml5Elements( document );
+
+          // The trick to keep the editor in the sample quite small
+          // unless user specified own height.
+          CKEDITOR.config.height = 150;
+          CKEDITOR.config.width = 'auto';
+
+          var initSample = ( function() {
+          	var wysiwygareaAvailable = isWysiwygareaAvailable();
+
+          	return function() {
+          		var editorElement = CKEDITOR.document.getById( 'editor' );
+
+          		// Depending on the wysiwygare plugin availability initialize classic or inline editor.
+          		if ( wysiwygareaAvailable ) {
+          			CKEDITOR.replace( 'editorRules' );
+          			CKEDITOR.replace( 'editorSpecification' );
+          			CKEDITOR.replace( 'editorJudgingCriteria' );
+          		} else {
+          			editorElement.setAttribute( 'contenteditable', 'true' );
+          			CKEDITOR.inline( 'editorRules' );
+          			CKEDITOR.inline( 'editorSpecification' );
+          			CKEDITOR.inline( 'editorJudgingCriteria' );
+
+          			// TODO we can consider displaying some info box that
+          			// without wysiwygarea the classic editor may not work.
+          		}
+
+          		//CKEDITOR.instances["editor"].getData()
+          		//to get the data
+          	};
+
+          	function isWysiwygareaAvailable() {
+          		// If in development mode, then the wysiwygarea must be available.
+          		// Split REV into two strings so builder does not replace it :D.
+          		if ( CKEDITOR.revision == ( '%RE' + 'V%' ) ) {
+          			return true;
+          		}
+
+          		return !!CKEDITOR.plugins.get( 'wysiwygarea' );
+          	}
+          } )();
+          initSample();
+        }
+    }
+})();
+
+(function () {
+	'use strict';
+
+	angular
+		.module('fct.core')
+		.controller('DashboardController', DashboardController);
+
+	DashboardController.$inject = ['$rootScope', 'memberService'];
+
+	function DashboardController($rootScope, memberService) {
+		var vm = this;
+
+		angular.extend(vm, {
+			func: func
+		});
+
+		activate();
+
+		function activate() {
+
+		}
+
+		function func() {
+
+		}
+	}
+})();
+
+(function () {
+    'use strict';
+
+    angular
+      .module('fct.core')
+      .controller('EachEventController', EachEventController);
+
+    EachEventController.$inject = ['$stateParams', 'eventService'];
+
+    function EachEventController(stateParams, eventService) {
+        var vm = this;
+
+        activate();
+
+        function activate() {
+          if(stateParams.eventId !== undefined && stateParams.eventId !== null) {
+            vm.eventId = stateParams.eventId;
+            getEvent();
+          }
+		    }
+
+        function getEvent() {
+          return eventService.getSingleEvent(vm.eventId)
+            .then(getEventSuccess)
+            .catch(getEventFailure);
+        }
+
+        function getEventSuccess(response) {
+          console.log(response);
+          vm.myEvent = response.data;
+          //todo: redirect
+        }
+
+        function getEventFailure(error) {
+          console.log(error);
+        }
+    }
+})();
+
+(function () {
+    'use strict';
+
+    angular
+      .module('fct.core')
+      .controller('EventCardController', EventCardController);
+
+    EventCardController.$inject = ['eventService', '$mdDialog'];
+
+    function EventCardController(eventService, $mdDialog) {
+        var vm = this;
+        vm.openCard = false;
+        vm.caret = 'expand_less';
+
+        angular.extend(vm, {
+            deleteEvent: deleteEvent,
+        });
+
+        activate();
+
+        function activate() {
+
+        }
+
+        function deleteEvent(id) {
+          if(id !== undefined && id !== null) {
+            return eventService.getDeleteModal()
+              .then(confirmedDelete)
+              .catch(unconfirmedDelete);
+          }
+          return null;
+        }
+
+        function confirmedDelete() {
+          return eventService.deleteEvent(id)
+            .then(deleteEventSuccess)
+            .catch(deleteEventFailure);
+        }
+
+        function unconfirmedDelete() {
+          //
+        }
+
+        function deleteEventSuccess(response) {
+          console.log(response);
+          vm.reload();
+        }
+
+        function deleteEventFailure(error) {
+          console.log(error);
+          //redirect
+        }
+    }
+})();
+
+(function () {
+	'use strict';
+
+	angular
+		.module('fct.core')
+		.controller('EventRegistrationController', EventRegistrationController);
+
+	EventRegistrationController.$inject = ['memberService'];
+
+	function EventRegistrationController(memberService) {
+		var vm = this;
+
+		// angular.extend(vm, {
+		// 	func: func
+		// });
+
+		activate();
+
+		function activate() {
+			console.log(JSON.stringify(getRegistration()));
+		}
+
+		function getRegistration() {
+			return memberService.getTotalRegistrations();
+		}
+	}
+})();
+
+(function () {
+	'use strict';
+
+	angular
+		.module('fct.core')
+		.controller('MemberSettingsController', MemberSettingsController);
+
+	MemberSettingsController.$inject = ['memberAuthService', 'fctToast', '$scope', '$rootScope', '$timeout'];
+
+	function MemberSettingsController(memberAuthService, fctToast, $scope, $rootScope, $timeout) {
+		var vm = this;
+		vm.updateInfo = false;
+		$scope.changePasswordForm = {};
+		vm.user = {};
+
+		angular.extend(vm, {
+			changePassword: changePassword
+		});
+
+		activate();
+
+		function activate() {
+
+		}
+
+		function changePassword(event) {
+			if (vm.updateInfo) {
+				event.preventDefault();
+			} else {
+				vm.updateInfo = true;
+				memberAuthService.changeMemberPassword(vm.user);
+			}
+		}
+
+		$rootScope.$on('MemberChangePasswordSuccess', MemberChangePasswordSuccess);
+		$rootScope.$on('MemberChangePasswordFailure', MemberChangePasswordFailure);
+
+		function MemberChangePasswordSuccess(event) {
+			fctToast.showToast("Password Changed Successfully", true);
+			$timeout(function () {
+				resetForm();
+			});
+
+		}
+
+		function MemberChangePasswordFailure(event, error) {
+			fctToast.showToast(error.data.message);
+			$timeout(function () {
+				resetForm();
+			});
+		}
+
+		function resetForm() {
+			vm.user = {};
+			vm.updateInfo = false;
+			$scope.changePasswordForm.$setPristine();
+			$scope.changePasswordForm.$setUntouched();
+		}
+	}
+})();
+
+(function () {
+	'use strict';
+
+	angular
+		.module('fct.core')
+		.controller('ParticipantRegistrationController', ParticipantRegistrationController);
+
+	ParticipantRegistrationController.$inject = ['$http'];
+
+	function ParticipantRegistrationController($http) {
+		var vm = this;
+		vm.myParticipant = {
+			eventObject: {
+				event_id: 123123,
+				event_shortcode: 'EVET'
+			},
+			other_participants: []
+		};
+    vm.otherParticipants = [];
+		vm.myParticipant.other_participants = [];
+    vm.maxParticipants = 4;
+    vm.eventPrice = 50;
+    vm.esflag = false;
+    vm.nopflag = false;
+
+		angular.extend(vm, {
+      getParticipantLength : getParticipantLength,
+      save : save,
+      openParticipantModule : openParticipantModule,
+		});
+
+		activate();
+
+		function activate() {
+			var x = '{"eventObject": {"event_id": "123123","event_shortcode": "EVET","event_section": "1","event_name": "1"},"other_participants": [{"title": "Team Member","leaderFlag": false,"$$hashKey": "object:68","name": "cl","email": "d@ddc.c","college_name": "1","branch": "2","semester": "6","mobileno": "43223443223","enrollment": "322342342342343"}],"total_amount": 100,"numberOfParticipant": "2","do_payment": true,"team_leader": {"title": "Team Leader","leaderFlag": true,"$$hashKey": "object:67","name": "fd","email": "s@sd.3","mobileno": "12341232133","college_name": "1","branch": "1","semester": "2","enrollment": "231312312332333"}}';
+			return $http.post('/api/registration/create', x)
+				.then(resolveFunc)
+				.catch(rejectFunc);
+		}
+
+    function openParticipantModule(total) {
+      vm.nopflag = true;
+      var first = true;
+      vm.myParticipant.other_participants = [];
+      while(total > 0) {
+        var each = {"title": (first) ? "Team Leader" : "Team Member",
+                    "leaderFlag": first};
+        vm.myParticipant.other_participants.push(each);
+        first = false;
+        total--;
+      }
+    }
+
+    function getParticipantLength() {
+      return vm.myParticipant.other_participants.length;
+    }
+
+		function save() {
+			vm.myParticipant.do_payment = true;
+			console.log(JSON.stringify(vm.myParticipant));
+			vm.myParticipant.team_leader = vm.myParticipant.other_participants[0];
+			vm.myParticipant.other_participants.splice(0, 1);
+			console.log(JSON.stringify(vm.myParticipant));
+			return $http.post('/api/registration/create', vm.myParticipant)
+				.then(resolveFunc)
+				.catch(rejectFunc);
+		}
+
+		function resolveFunc(response) {
+			console.log(response);
+		}
+
+		function rejectFunc(error) {
+			console.log(error);
+		}
+	}
+})();
+
+(function () {
+    'use strict';
+
+    angular
+      .module('fct.core')
+      .controller('ShowEventController', ShowEventController);
+
+    ShowEventController.$inject = ['eventService'];
+
+    function ShowEventController(eventService) {
+        var vm = this;
+
+        angular.extend(vm, {
+            getEvents: getEvents,
+        });
+
+        activate();
+
+        function activate() {
+          getEvents();
+        }
+
+        function getEvents() {
+            return eventService.getEvent()
+              .then(getEventSuccess)
+              .catch(getEventFailure);
+        }
+
+        function getEventSuccess(response) {
+          console.log(response);
+          vm.dummyEvents = response.data;
+        }
+
+        function getEventFailure(error) {
+          console.log(error);
+        }
+    }
+})();
+
+
+(function () {
+    'use strict';
+
+    angular
+      .module('fct.core')
+      .controller('UpdateEventController', UpdateEventController);
+
+    UpdateEventController.$inject = ['$stateParams', 'eventService', '$rootScope', '$state', 'fctToast'];
+
+    function UpdateEventController(stateParams, eventService, $rootScope, state, fctToast) {
+        var vm = this;
+        vm.isUpdate = true;
+        vm.myEvent = {
+          'managers':[],
+        };
+
+        angular.extend(vm, {
+            save: save,
+            openManagersModal: openManagersModal,
+        });
+
+        activate();
+
+        function activate() {
+          initializeCKEditor();
+          checkEventId();
+        }
+
+        function openManagersModal(total) {
+          vm.myEvent.managers = [];
+          while(total > 0) {
+            var each = {"index":1};
+            vm.myEvent.managers.push(each);
+            total--;
+          }
+        }
+
+        function checkEventId() {
+          if(stateParams.eventId !== undefined && stateParams.eventId !== null) {
+              vm.eventId = stateParams.eventId;
+              return eventService.getSingleEvent(vm.eventId)
+                .then(onEventGetSuccess)
+                .catch(onEventGetFailure);
+
+          }
+          return null;
+        }
+
+        function onEventGetSuccess(eventData) {
+          console.log(eventData);
+          vm.myEvent = eventData.data;
+          vm.myEvent.event = "Update";
+        }
+
+        function onEventGetFailure(error) {
+          console.log(error);
+          //redirect
+        }
+
+        function save() {
+          vm.myEvent.rules = CKEDITOR.instances["editorRules"].getData();
+          vm.myEvent.specification = CKEDITOR.instances["editorSpecification"].getData();
+          vm.myEvent.judging_criteria = CKEDITOR.instances["editorJudgingCriteria"].getData();
+          console.log(JSON.stringify(vm.myEvent));
+          return eventService.updateEvent(vm.eventId, vm.myEvent)
+            .then(onUpdateSuccess)
+            .catch(onUpdateFailure);
+        }
+
+        function onUpdateSuccess(response) {
+          console.log(response);
+          fctToast.showToast("Update Success.", true);
+          state.go('in_tc.showEvent');
+        }
+
+        function onUpdateFailure(error) {
+          console.log(error);
+          fctToast.showToast("Please try again later.");
+        }
+
+        function initializeCKEditor() {
+          if ( CKEDITOR.env.ie && CKEDITOR.env.version < 9 )
+          	CKEDITOR.tools.enableHtml5Elements( document );
+            CKEDITOR.config.height = 150;
+            CKEDITOR.config.width = 'auto';
+            var initSample = ( function() {
+            	var wysiwygareaAvailable = isWysiwygareaAvailable();
+            	return function() {
+            		var editorElement = CKEDITOR.document.getById( 'editor' );
+            		if ( wysiwygareaAvailable ) {
+            			CKEDITOR.replace( 'editorRules' );
+            			CKEDITOR.replace( 'editorSpecification' );
+            			CKEDITOR.replace( 'editorJudgingCriteria' );
+            		} else {
+            			editorElement.setAttribute( 'contenteditable', 'true' );
+            			CKEDITOR.inline( 'editorRules' );
+            			CKEDITOR.inline( 'editorSpecification' );
+            			CKEDITOR.inline( 'editorJudgingCriteria' );
+            		}
+            	};
+
+          	function isWysiwygareaAvailable() {
+          		if ( CKEDITOR.revision == ( '%RE' + 'V%' ) ) {
+          			return true;
+          		}
+          		return !!CKEDITOR.plugins.get( 'wysiwygarea' );
+          	}
+          } )();
+          initSample();
+        }
+    }
 })();
 
 (function() {
