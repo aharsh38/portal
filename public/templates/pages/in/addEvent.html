@@ -134,6 +134,7 @@
                 Upload Files
             </md-button>
           </div>
+          <div class="margin-1">
           <ul>
             <li ng-repeat="f in ec.files" style="font:smaller">
               <span>{{f.name}} {{f.$errorParam}}</span>
@@ -153,7 +154,8 @@
           </ul>
         </div>
         </div>
-        <div layout="column" flex="100">
+      </div>
+        <div layout="column" flex="100" class="margin-2">
           <h3>Rules</h3>
           <div id="editorRules">
       		</div>
