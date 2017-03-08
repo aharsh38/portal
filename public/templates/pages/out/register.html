@@ -24,7 +24,7 @@
 
             <md-input-container>
                 <label>Mobile no:</label>
-                <input required name="phno" ng-model="frc.user.mobileno" minlength="10" maxlength="10" ng-pattern="/^[7-9]{3}[0-9]{7}$/"/>
+                <input required name="phno" ng-model="frc.user.mobileno" minlength="10" maxlength="10" ng-pattern="/^[0-9]{10}$/"/>
                 <div ng-messages="registerForm.phno.$error" role="alert">
                     <div ng-message="required">This is required.</div>
                     <div ng-message="maxlength">Invalid Mobile No.</div>
