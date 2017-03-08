@@ -48,15 +48,19 @@
       </div>
       <div layout="row" flex class="margin-1">
         <label>Rules:&nbsp;&nbsp;&nbsp;&nbsp;</label>
-        {{ eec.myEvent.rules }}
+        <div ng-bind-html="eec.rules"></div>
+        <br/>
       </div>
       <div layout="row" flex class="margin-1">
         <label>Specification:&nbsp;&nbsp;&nbsp;&nbsp;</label>
-        {{ eec.myEvent.specification }}
+        <div ng-bind-html="eec.specification"></div>
+        <br/>
       </div>
       <div layout="row" flex class="margin-1">
-        <label>Rules:&nbsp;&nbsp;&nbsp;&nbsp;</label>
-        {{ eec.myEvent.judging_criteria }}
+        <label>Judging Criteria:&nbsp;&nbsp;&nbsp;&nbsp;</label>
+        <br/>
+        <div ng-bind-html="eec.judging_criteria"></div>
+        <br/>
       </div>
       <div layout="row" flex ng-repeat="each in eec.myEvent.managers">
         <div layout="row" class="margin-2">

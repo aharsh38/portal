@@ -39,6 +39,10 @@
 
 		}
 
+		function uploadFiles() {
+			
+		}
+
 		function getDeleteModal() {
 			var confirm = $mdDialog.confirm()
 				.title('Delete')

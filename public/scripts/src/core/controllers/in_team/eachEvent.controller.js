@@ -5,9 +5,9 @@
       .module('fct.core')
       .controller('EachEventController', EachEventController);
 
-    EachEventController.$inject = ['$stateParams', 'eventService'];
+    EachEventController.$inject = ['$stateParams', 'eventService', '$sce'];
 
-    function EachEventController(stateParams, eventService) {
+    function EachEventController(stateParams, eventService, $sce) {
         var vm = this;
 
         activate();
@@ -27,8 +27,10 @@
 
         function getEventSuccess(response) {
           console.log(response);
-          vm.myEvent = response.data;
-          //todo: redirect
+          vm.myEvent = response.data;console.log(vm.myEvent);
+          vm.rules = $sce.trustAsHtml(vm.myEvent.rules);
+          vm.judging_criteria = $sce.trustAsHtml(vm.myEvent.judging_criteria);
+          vm.specification = $sce.trustAsHtml(vm.myEvent.specification);
         }
 
         function getEventFailure(error) {

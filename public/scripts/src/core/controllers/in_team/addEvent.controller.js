@@ -5,17 +5,16 @@
       .module('fct.core')
       .controller('AddEventController', AddEventController);
 
-    AddEventController.$inject = ['$stateParams', 'eventService', '$rootScope', '$timeout', 'Upload'];
+    AddEventController.$inject = ['$stateParams', 'eventService', '$rootScope', '$timeout', 'Upload', '$state'];
 
-    function AddEventController(stateParams, eventService, $rootScope, $timeout, Upload) {
+    function AddEventController(stateParams, eventService, $rootScope, $timeout, Upload, $state) {
         var vm = this;
         vm.isUpdate = false;
         vm.myEvent = {
           'managers':[],
           'event': "Add",
         };
-        vm.files = [];
-        vm.images = [];
+        vm.myEvent.attachments = [];
 
         angular.extend(vm, {
             save: save,
@@ -45,48 +44,42 @@
           vm.myEvent.judging_criteria = CKEDITOR.instances["editorJudgingCriteria"].getData();
 
     		  if(vm.myEvent.isUpdate) {
-      			return eventService.updateEvent(vm.myEvent).then(onRegisterSuccess).catch(onRegisterFailure);
+      			return eventService.updateEvent(vm.myEvent).then(registerSuccess).catch(registerFailure);
     		  } else {
-      			return eventService.addEvent(vm.myEvent).then(onRegisterSuccess).catch(onRegisterFailure);
+      			return eventService.addEvent(vm.myEvent).then(registerSuccess).catch(registerFailure);
     		  }
         }
 
     		function registerSuccess(event) {
-            asToast.showToast("Registered",true);
-
+            asToast.showToast("Event Registered.",true);
+            $timeout(function () {
+    					$state.go('in_tc.showEvent');
+    				});
         }
 
         function registerFailure(event, error) {
             asToast.showToast(error.data.message);
         }
 
-
-        function uploadFiles(files, errFiles) {alert('ccc');
-                vm.files = files;
-                vm.errFiles = errFiles;
-                angular.forEach(files, function(file) {
-                    file.upload = Upload.upload({
-                        url: '/api/members/upload',
-                        data: {file: file}
-                    });
-
-                    file.upload.then(function (response) {
-                        $timeout(function () {alert('uploaded');
-                            file.result = response.data;
-                        });
-                    }, function (response) {
-                        if (response.status > 0) {
-                            //alert(response.status + ': ' + response.data);
-                            vm.myEvent.files = response.data.file.result.path;
-                          }
-                    }, function (evt) {
-                        file.progress = Math.min(100, parseInt(100.0 *
-                                                 evt.loaded / evt.total));
-                    });
-                });
-            }
-
-
+        function uploadFiles(files, errFiles) {
+          angular.forEach(files, function(file) {
+            vm.myEvent.attachments.push(file);
+            file.upload = Upload.upload({
+              url: '/api/members/upload',
+              data: {file: file}
+            });
+            file.upload.then(function (response) {
+               $timeout(function () {
+                 file.result = response.data;
+               });
+             }, function (response) {
+               if (response.status > 0)
+                 vm.errorMsg = response.status + ': ' + response.data;
+             }, function (evt) {
+               file.progress = Math.min(100, parseInt(100.0 * evt.loaded / evt.total));
+             });
+          });
+        }
 
         function initializeCKEditor() {
           if ( CKEDITOR.env.ie && CKEDITOR.env.version < 9 )
