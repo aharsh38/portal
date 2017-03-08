@@ -19,6 +19,22 @@ var registrationController = function (Registration) {
 		});
 	}
 
+	function getRegistration(request, response) {
+		Registration.find()
+			.exec(function (error, registration) {
+				if (error) {
+					throwError(response, error, 500, 'Internal Server Error', 'Registration Fetch Failed');
+					return;
+				}
+				if (!registration) {
+					throwError(response, error, 404, 'Not Found', 'Registration not found');
+				} else {
+					response.status(200);
+					response.json(registration);
+				}
+			});
+	}
+
 	function generateSlip(type, teamid, data) {
 		if (type) {
 			fs.readFile('./api/slips/templates/' + type + '.hbs', function (error, file) {
@@ -64,6 +80,7 @@ var registrationController = function (Registration) {
 		}
 	}
 
+
 	function generatePDFTest() {
 		console.log("IN FUNC");
 		var current_date = new Date();
@@ -91,15 +108,31 @@ var registrationController = function (Registration) {
 		console.log("Done");
 	}
 
+
 	function register(request, response) {
-		var registration = new Registration(request.body);
+		var registration = new Registration();
+		registration.eventObject = request.body.eventObject;
+		registration.no_of_participants = request.body.no_of_participants;
+		registration.team_leader = request.body.team_leader;
+		registration.other_participants = request.body.other_participants;
+		registration.total_amount = request.body.total_amount;
+		registration.do_payment = request.body.do_payment;
+
 		registration.teamId = request.body.eventObject.event_shortcode + rand.generateDigits(6);
+		// registration.teamId = "SC" + rand.generateDigits(6);
 		var slip;
 		var dataToGeneratePDF;
 
+		var current_date = new Date();
+		var nd = current_date.toLocaleDateString('en-US', {
+			year: 'numeric',
+			month: 'long',
+			day: 'numeric'
+		});
+
 		if (registration.do_payment) {
 			registration.serialId = rand.generate(12);
-			var current_date = new Date();
+
 			dataToGeneratePDF = {
 				teamId: registration.teamId,
 				serialId: registration.serialId,
@@ -154,11 +187,66 @@ var registrationController = function (Registration) {
 					throwError(response, error, 500, 'Internal Server Error', 'Registration Fetch Failed');
 					return;
 				}
-				if (!registration) {
+				if (!registrations) {
 					throwError(response, error, 404, 'Not Found', 'Registrations not found');
 				} else {
 					response.status(200);
 					response.json(registrations);
+				}
+			});
+	}
+
+	function exportUnconfirmedRegistration(request, response) {
+		Registration.find({
+				confirmation: false
+			})
+			.select({
+				team_leader: 1,
+				eventObject: 1
+			})
+			.exec(function (error, registration) {
+				if (error) {
+					throwError(response, error, 500, 'Internal Server Error', 'Registration Fetch Failed');
+					return;
+				}
+				if (!registration) {
+					throwError(response, error, 404, 'Not Found', 'Registrations not found');
+				} else {
+					var en = "Unconfirmed Registration";
+					var data = [];
+					_.each(registration, function (element, index, list) {
+						var arrayOfRegistration = {
+							sr_no: index + 1,
+							name: element.team_leader.name,
+							email: element.team_leader.email,
+							monbileno: element.team_leader.mobileno,
+							event_section: element.eventObject.event_section,
+							event_name: element.eventObject.event_name
+						};
+						console.log(arrayOfRegistration);
+						data.push(arrayOfRegistration);
+					});
+					console.log(data);
+
+					if (data) {
+						var xls = json2xls(data);
+						fs.writeFileSync('./documents/' + en + '.xlsx', xls, 'binary');
+					}
+					if (fs.existsSync('./documents/' + en + '.xlsx')) {
+						response.download('./documents/' + en + '.xlsx', function (error) {
+							if (error) {
+								console.log(error);
+								//To Add Throwerror
+							} else {
+								response.status(200);
+								response.json("Success");
+								//fs.unlinkSync('./documents/' + en + '.xlsx');
+							}
+						});
+					} else {
+						console.log('File doesn\'t exist');
+						//to add throw error
+					}
 				}
 			});
 	}
@@ -295,6 +383,7 @@ var registrationController = function (Registration) {
 
 	var ac = {};
 	ac.register = register;
+	ac.getRegistration = getRegistration;
 	ac.downloadSlip = downloadSlip;
 	ac.getFacultyRegistrations = getFacultyRegistrations;
 	ac.exportRegistration = exportRegistration;
@@ -303,6 +392,7 @@ var registrationController = function (Registration) {
 	ac.oneTimeEditAllow = oneTimeEditAllow;
 	ac.generateSlip = generateSlip;
 	ac.generatePDFTest = generatePDFTest;
+	ac.exportUnconfirmedRegistration = exportUnconfirmedRegistration;
 	return ac;
 };
 

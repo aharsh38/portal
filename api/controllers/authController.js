@@ -3,6 +3,7 @@ var random = require('random-key');
 var config = require('../config/config');
 var mailController = require('./mailController')();
 
+
 var authController = function (Faculty, Member) {
 
 	function throwError(response, error, status, message, errorFor) {

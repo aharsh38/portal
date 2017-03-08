@@ -116,4 +116,18 @@
             margin-top: 18px;
         }
     }
+
+    .progress {
+        display: inline-block;
+        width: 200px;
+        border: 2px groove #CCC;
+        border-radius: 2px;
+    }
+
+    .progress div {
+        font-size: smaller;
+        text-align: center;
+        background: green;
+        width: 0;
+    }
 }

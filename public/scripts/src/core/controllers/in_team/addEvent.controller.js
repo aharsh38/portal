@@ -5,14 +5,22 @@
       .module('fct.core')
       .controller('AddEventController', AddEventController);
 
-    AddEventController.$inject = ['$stateParams', 'eventService', '$rootScope'];
+    AddEventController.$inject = ['$stateParams', 'eventService', '$rootScope', '$timeout', 'Upload', '$state', 'fctToast', '$filter'];
 
-    function AddEventController(stateParams, eventService, $rootScope) {
+    function AddEventController(stateParams, eventService, $rootScope, $timeout, Upload, $state, fctToast, $filter) {
         var vm = this;
-        vm.myEvent = {};
+        vm.isUpdate = false;
+        vm.myEvent = {
+          'managers':[],
+          'event': "Add",
+        };
+        vm.myEvent.attachments = [];
+        vm.files = [];
 
         angular.extend(vm, {
-            register: register
+            save: save,
+            openManagersModal: openManagersModal,
+            uploadFiles: uploadFiles
         });
 
         activate();
@@ -21,31 +29,64 @@
           initializeCKEditor();
         }
 
-        function register() {alert(JSON.stringify(vm.myEvent));
-          //eventService.addEvent(vm.myEvent);
+        function openManagersModal(total) {
+          vm.myEvent.managers = [];
+          while(total > 0) {
+            var each = {"index":1};
+            vm.myEvent.managers.push(each);
+            total--;
+          }
         }
 
-    		$rootScope.$on('registerSuccess', registerSuccess);
-        $rootScope.$on('registerFailure', registerFailure);
+        function save() {
+          vm.myEvent.rules = CKEDITOR.instances["editorRules"].getData();
+          vm.myEvent.specification = CKEDITOR.instances["editorSpecification"].getData();
+          vm.myEvent.judging_criteria = CKEDITOR.instances["editorJudgingCriteria"].getData();
+          console.log(vm.myEvent);
+    		  if(vm.myEvent.isUpdate) {
+      			return eventService.updateEvent(vm.myEvent).then(registerSuccess).catch(registerFailure);
+    		  } else {
+      			return eventService.addEvent(vm.myEvent).then(registerSuccess).catch(registerFailure);
+    		  }
+        }
 
     		function registerSuccess(event) {
-            asToast.showToast("Registered",true);
-
+            fctToast.showToast("Event Registered.",true);
+            $timeout(function () {
+    					$state.go('in_tc.showEvent');
+    				});
         }
 
         function registerFailure(event, error) {
-            asToast.showToast(error.data.message);
+            fctToast.showToast(error.data.message);
+        }
+
+        function uploadFiles(files, errFiles) {
+          angular.forEach(files, function(file) {
+            vm.files.push(file);
+            file.upload = Upload.upload({
+              url: '/api/members/upload',
+              data: {file: file}
+            });
+            file.upload.then(function (response) {
+               $timeout(function () {
+                 file.result = response.data;
+                 var attach = {
+                   doc_name: file.name,
+                   link: file.result.path,
+                 };
+                 vm.myEvent.attachments.push(attach);
+               });
+             }, function (response) {
+               if (response.status > 0)
+                 vm.errorMsg = response.status + ': ' + response.data;
+             }, function (evt) {
+               file.progress = Math.min(100, parseInt(100.0 * evt.loaded / evt.total));
+             });
+          });
         }
 
         function initializeCKEditor() {
-          if(stateParams.editData !== undefined &&
-              stateParams.editData !== null) {
-            vm.myEvent = stateParams.editData;
-            vm.myEvent.event = "Insert";
-          } else {
-            vm.myEvent.event = "Update";
-          }
-
           if ( CKEDITOR.env.ie && CKEDITOR.env.version < 9 )
           	CKEDITOR.tools.enableHtml5Elements( document );
 

@@ -1,24 +1,29 @@
-<div ng-init="Details=[{name:'ABC',facultycoordinator:'1234567890',code:'012',city:'Ahmedabad'}]">
-  <ng-md-icon class="md-default-theme" icon="search" style="float:right;margin-right:140px;margin-top:10px;" ></ng-md-icon>
-     <input type="text" name="searchbox" ng-model="searchbox" style="float:right;margin-right:10px;margin-top:10px;">
-	  <h1 style="margin-left:140px;margin-top:50px;">Colleges</h1>
+<div class="margin-tb-gt-xs-4 margin-lr-gt-xs-2 bg-white margin-xs-1 padding-tb-3 padding-lr-xs-1 padding-lr-gt-xs-2 page" md-whiteframe="5">
+    <div layout-gt-xs="row" layout-align-gt-xs="space-between center" layout-xs="column" >
+        <h2>Colleges</h2>
+        <md-input-container flex-gt-xs="30">
+            <label>Search</label>
+            <input class="margin-tb-xs-1" type="text" name="search" ng-model="search">
+        </md-input-container>
+    </div>
 
-    <div layout="row"  ng-repeat="detail in Details">
-      <div class="md-parents" layout="column" layout-align="center-center" layout-margin flex>
- <md-whiteframe class="md-whiteframe-9dp" layout-align="center center" style="width:80%">
-   <md-content layout-padding>
-
-  <div flex style="float:left;">
-    <label>  Name :  </label><span>{{detail.name}}</span><br>
-    <label>  Faculty Coordinator:</label><span>{{detail.facultycoordinator}}</span><br>
-  </div>
-  <div flex style="float:right; ">
-    <label>Code:</label><span>{{detail.code}}</span><br>
-    <label>City:</label><span>{{detail.city}}</span><br>
-
-  </div>
- </md-content>
-  </md-whiteframe>
-</div>
-</div>
+    <div layout="column">
+        <div class="faculty-card padding-lr-gt-xs-3 padding-lr-xs-1 margin-tb-2" layout-xs="column"
+          layout-gt-xs="row" layout-wrap layout-align-gt-xs="none center"
+          >
+            <p flex-gt-xs="40">Name: <strong>{{detail.name}}</strong></p>
+            <p flex-gt-xs="55">Faculty Coordinator: <strong>{{detail.collegeId.name}}</strong></p>
+            <p flex-gt-xs="40">Code: <strong>{{detail.mobileno}}</strong></p>
+            <p flex-gt-xs="55">City: <strong>{{detail.email}}</strong></p>
+            <!-- <div flex-gt-xs="100" layout="row" layout-align="center center" class="margin-top-2">
+                <md-button ng-show="!detail.verified" ng-click="vcc.verifyFaculty(detail._id, $index)" class="md-raised md-success margin-lr-1" md-no-ink="true">Verify</md-button>
+                <md-button ng-click="vcc.rejectFaculty(detail._id, $index)" class="md-raised md-warn margin-lr-1" md-no-ink="true">Reject</md-button>
+            </div> -->
+        </div>
+        <div ng-hide="vcc.nomoreFaculty" layout="row" layout-align="space-between center" class="loadmore margin-top-3">
+            <span flex class="border"></span>
+            <a class="margin-lr-2" ng-click="vcc.loadmore()"><b>Load more</b></a>
+            <span flex class="border"></span>
+        </div>
+    </div>
 </div>
