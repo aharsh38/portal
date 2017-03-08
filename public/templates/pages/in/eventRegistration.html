@@ -1,70 +1,30 @@
-<style type="">
-
-  table
-   {
-     width: 100%;
-     border-collapse: collapse;
-     border: 1px solid black;
-    text-align: center;
-
-	}
-    td,th
-   {
-    border: 1px solid black;
-    text-align: center;
-    padding:10px;
-
-   }
-   .th1
-   {
-   	border-right:none;
-   	text-align: left;
-    padding-left: 20px;
-   }
-   tr
-   {
-   	text-align: left;
-   }
-
-  </style>
- 	<div ng-init="Details=[{name:'Galaxy Runner',verified:'50',unverified:'80',export:'link'},{name:'xyz',verified:'50',unverified:'80',export:'link'},{name:'abc',verified:'50',unverified:'80',export:'link'}]">
-
-
-
-      <div class="md-parents" layout="column" layout-align="center-center" layout-margin flex>
- <md-whiteframe class="md-whiteframe-9dp" layout-align="center center" style="width:90%;padding:40px;">
+   	<div ng-init="Details=[{name:'Galaxy Runner',verified:'50',unverified:'80',export:'link'},{name:'xyz',verified:'50',unverified:'80',export:'link'},{name:'abc',verified:'50',unverified:'80',export:'link'}]">
+     <div class="margin-tb-gt-xs-4 margin-lr-gt-xs-2 bg-white margin-xs-1 padding-tb-3 padding-lr-xs-1 padding-lr-gt-xs-2 page" md-whiteframe="5">
+       <div layout-gt-xs="row" layout-align-gt-xs="space-between center" layout-xs="column" >
+           <h2>Registrations</h2>
+           <md-input-container flex-gt-xs="30">
+               <label>Search</label>
+               <input class="margin-tb-xs-1" type="text" name="search" ng-model="search">
+           </md-input-container>
+       </div>
    <md-content>
-   <ng-md-icon class="md-default-theme" icon="search" style="float:right;margin-right:10px;margin-top:10px;"></ng-md-icon>
-     <input type="text" name="searchbox" ng-model="searchbox" style="float:right;margin-right:10px;margin-top:10px;">
-    <h1 style="margin-left:5px;margin-top:5px;">Registration</h1>
-
-  <table class="responsive-table">
-	<thead>
-
-   	</thead>
-
-        <tr>
-        	<th>Event_Name</th>
-        	<th>Verified</th>
-        	<th>Non-Verified</th>
-        	<th>Export_xls</th>
-
-		</tr>
-		<tr>
-			<th class="th1">Event Section</th>
-
-        </tr>
-		<tr ng-repeat="event in Details | filter: searchbox">
-    	<td>{{event.name}}</td>
-		<td>{{event.verified}}</td>
-		<td>{{event.unverified}}</td>
-		<td>{{event.export}}</td>
-
-		</tr>
-
-
-  </table>
-</md-content>
-  </md-whiteframe>
-</div>
-</div>
+    <table class="responsive-table padding-lr-gt-xs-3 padding-lr-xs-1 margin-tb-2">
+          <tr>
+          	<th>Event_Name</th>
+          	<th>Verified</th>
+          	<th>Non-Verified</th>
+          	<th>Export_xls</th>
+  		   </tr>
+  		<tr>
+  			<th class="th1">Event Section</th>
+          </tr>
+  		<tr ng-repeat="event in Details | filter: searchbox">
+          <td>{{event.name}}</td>
+  		    <td>{{event.verified}}</td>
+  		    <td>{{event.unverified}}</td>
+  		    <td>{{event.export}}</td>
+  		</tr>
+    </table>
+  </md-content>
+  </div>
+  </div>

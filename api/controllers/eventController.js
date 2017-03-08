@@ -1,4 +1,10 @@
+<<<<<<< HEAD
 var _und = require(underscore);
+=======
+// var eventSections = require('../config/eventList').event_sections;
+var fs = require('fs');
+
+>>>>>>> modify_updates
 var eventController = function (Event) {
 
 	function throwError(response, errorFor, error) {
@@ -75,13 +81,27 @@ var eventController = function (Event) {
 	}
 
 	function createEvent(request, response) {
-		var event_obj = new Event(request.body);
+		var event_obj = new Event();
+		// event_obj = request.body;
+		event_obj.name = request.body.name;
+		event_obj.tagline = request.body.tagline;
+		event_obj.description = request.body.description;
+		event_obj.rules = request.body.rules;
+		event_obj.specification = request.body.specification;
+		event_obj.problem_statement = request.body.problem_statement;
+		event_obj.judging_criteria = request.body.judging_criteria;
+		event_obj.managers = request.body.managers;
+		event_obj.section = request.body.section;
+		event_obj.fees = request.body.fees;
+		event_obj.fees_type = request.body.fees_type;
+		event_obj.do_payment = request.body.do_payment;
+		event_obj.shortcode = request.body.shortcode;
 		event_obj.save(function (error) {
 			if (error) {
 				throwError(response, "Creating Event", error);
 			} else {
 				response.status(201);
-				response.send(event_obj);
+				response.json(event_obj);
 			}
 		});
 
@@ -95,7 +115,19 @@ var eventController = function (Event) {
 	}
 
 	function updateEvent(request, response) {
-		request.event = request.body;
+		request.event.name = request.body.name;
+		request.event.tagline = request.body.tagline;
+		request.event.description = request.body.description;
+		request.event.rules = request.body.rules;
+		request.event.specification = request.body.specification;
+		request.event.problem_statement = request.body.problem_statement;
+		request.event.judging_criteria = request.body.judging_criteria;
+		request.event.managers = request.body.managers;
+		request.event.section = request.body.section;
+		request.event.fees = request.body.fees;
+		request.event.fees_type = request.body.fees_type;
+		request.event.do_payment = request.body.do_payment;
+		request.event.shortcode = request.body.shortcode;
 		request.event.save(function (error) {
 			if (error) {
 				throwError(response, "Updating Event", error);
@@ -113,6 +145,20 @@ var eventController = function (Event) {
 				response.status(202).send({
 					"message": "Event Removed"
 				});
+			}
+		});
+	}
+
+	function upload(request, response) {
+		var temp_path = request.files.file.path;
+		var target_path = './public/media/temp/' + request.files.file.originalFilename;
+		fs.rename(temp_path, target_path, function (error) {
+			if (error) {
+				response.json(error);
+			} else {
+				var returnObject = {};
+				returnObject.path = target_path.toString().slice(1);
+				response.status(200).json(returnObject);
 			}
 		});
 	}

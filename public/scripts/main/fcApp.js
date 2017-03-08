@@ -28,7 +28,8 @@
 			'ngFileUpload',
 			'validation.match',
 			'ngMdIcons',
-			'angularMoment'
+			'angularMoment',
+			// 'fct.api'
 		]);
 
 	angular
@@ -69,7 +70,7 @@
 	}
 })();
 
-(function () {
+	(function () {
 	'use strict';
 
 	angular
@@ -112,8 +113,7 @@
 				.state('out', {
 					templateUrl: '/templates/layouts/out.html',
 					resolve: {
-						redirectFacultyLoggedIn: redirectFacultyLoggedIn,
-						redirectTeamLoggedIn: redirectTeamLoggedIn
+						redirectLoggedIn: redirectLoggedIn
 					}
 				})
 				.state('in_fc', {
@@ -178,15 +178,21 @@
 					url: '/collegeList',
 					templateUrl: '/templates/pages/in/collegeList.html'
 				})
+				.state('in_tc.dashboard', {
+					url: '/dashboard',
+					templateUrl: '/templates/pages/in/dashboard.html'
+				})
 				.state('in_tc.eventRegistrations', {
 					url: '/eventRegistration',
-					templateUrl: '/templates/pages/in/eventRegistration.html'
+					templateUrl: '/templates/pages/in/eventRegistration.html',
+					controller: 'EventRegistrationController',
+					controllerAs: 'erc'
 				})
 				.state('in_tc.addEvent', {
-					url: '/addEvent',
+					url: '/member/events/create',
 					templateUrl: '/templates/pages/in/addEvent.html',
 					controller: 'AddEventController',
-					controllerAs: 'aec',
+					controllerAs: 'ec',
 					params: {
 						editData: null,
 					}
@@ -197,11 +203,23 @@
 					controller: 'MemberSettingsController',
 					controllerAs: 'msc'
 				})
+				.state('in_tc.updateEvent', {
+					url: '/member/events/:eventId/update',
+					templateUrl: '/templates/pages/in/addEvent.html',
+					controller: 'UpdateEventController',
+					controllerAs: 'ec'
+				})
 				.state('in_tc.showEvent', {
-					url: '/showEvent',
+					url: '/member/events',
 					templateUrl: '/templates/pages/in/showEvent.html',
 					controller: 'ShowEventController',
 					controllerAs: 'sec'
+				})
+				.state('in_tc.eachEvent', {
+					url: '/member/events/:eventId',
+					templateUrl: '/templates/pages/in/eachEvent.html',
+					controller: 'EachEventController',
+					controllerAs: 'eec'
 				})
 				.state('in_fc.guidelines', {
 					url: '/guidelines',
@@ -230,86 +248,125 @@
 					templateUrl: '/templates/pages/in/faculty/addStudentCordinator.html',
 					controller: 'AddStudentController',
 					controllerAs: 'ascc'
+				})
+				.state('in_fc.participant_registration', {
+					url: '/participantRegistration',
+					templateUrl: '/templates/pages/in/faculty/participantRegistration.html',
+					controller: 'ParticipantRegistrationController',
+					controllerAs: 'prc'
 				});
 		}
 	}
 
-	redirectFacultyNotLoggedIn.$inject = ['facultyAuthService', '$q', '$state', '$timeout', '$rootScope'];
+	redirectFacultyNotLoggedIn.$inject = ['facultyAuthService','memberAuthService', '$q', '$state', '$timeout', '$rootScope'];
 
-	function redirectFacultyNotLoggedIn(facultyAuthService, $q, $state, $timeout, $rootScope) {
+	function redirectFacultyNotLoggedIn(facultyAuthService, memberAuthService, $q, $state, $timeout, $rootScope) {
 		var defer = $q.defer();
-		var authenticate = facultyAuthService.checkFacultyLoggedIn();
-		if (authenticate) {
-			if ($rootScope.faculty.verified !== true) {
+		var facultyAuthenticate = facultyAuthService.checkFacultyLoggedIn();
+		if (facultyAuthenticate) {
+			if ($rootScope.faculty.verified !== true && !$rootScope.alreadyRedirected) {
 				$timeout(function () {
+					$rootScope.alreadyRedirected = true;
 					$state.go('in_fc.guidelines');
 				});
 			}
 
 			defer.resolve();
 		} else {
-			$timeout(function () {
-				$state.go('out.login');
-			});
-			defer.reject();
+			var memberAuthenticate = memberAuthService.checkMemberLoggedIn();
+			if(memberAuthenticate && !$rootScope.alreadyRedirected){
+				$timeout(function () {
+					$rootScope.alreadyRedirected = true;
+					$state.go('in_tc.verifyCoordinator');
+				});
+				defer.resolve();
+			}else {
+				$timeout(function () {
+					$rootScope.alreadyRedirected = true;
+					$state.go('out.login');
+				});
+				defer.reject();
+			}
 		}
-
 		return defer.promise;
 	}
 
-	redirectTeamNotLoggedIn.$inject = ['memberAuthService', '$q', '$state', '$timeout'];
+	redirectTeamNotLoggedIn.$inject = ['memberAuthService','facultyAuthService', '$q', '$state', '$timeout', '$rootScope'];
 
-	function redirectTeamNotLoggedIn(memberAuthService, $q, $state, $timeout) {
+	function redirectTeamNotLoggedIn(memberAuthService, facultyAuthService, $q, $state, $timeout, $rootScope) {
 		var defer = $q.defer();
-		var authenticate = memberAuthService.checkMemberLoggedIn();
-		if (authenticate) {
+		var memberAuthenticate = memberAuthService.checkMemberLoggedIn();
+		if (memberAuthenticate) {
 			defer.resolve();
 		} else {
-			$timeout(function () {
-				$state.go('out.login');
-			});
-			defer.reject();
+			var facultyAuthenticate = facultyAuthService.checkFacultyLoggedIn();
+			if(facultyAuthenticate && !$rootScope.alreadyRedirected){
+				$timeout(function () {
+					$rootScope.alreadyRedirected = true;
+					$state.go('in_fc.guidelines');
+				});
+				defer.resolve();
+			}else {
+					$timeout(function () {
+						$rootScope.alreadyRedirected = true;
+						$state.go('out.login');
+					});
+					defer.reject();
+			}
+
+
 		}
 
 		return defer.promise;
 	}
 
 
-	redirectFacultyLoggedIn.$inject = ['facultyAuthService', '$state', '$q', '$timeout', '$rootScope'];
+	redirectLoggedIn.$inject = ['facultyAuthService', 'memberAuthService', '$state', '$q', '$timeout', '$rootScope'];
 
-	function redirectFacultyLoggedIn(facultyAuthService, $state, $q, $timeout, $rootScope) {
+	function redirectLoggedIn(facultyAuthService, memberAuthService, $state, $q, $timeout, $rootScope) {
 		var defer = $q.defer();
-		var authenticate = facultyAuthService.checkFacultyLoggedIn();
-		if (authenticate) {
+		var facultyAuthenticate = facultyAuthService.checkFacultyLoggedIn();
+		if (facultyAuthenticate && !$rootScope.alreadyRedirected) {
 			defer.reject();
-			$timeout(function () {
+			 $timeout(function () {
+				$rootScope.alreadyRedirected = true;
 				$state.go('in_fc.guidelines');
-			});
+			 });
 		} else {
-			defer.resolve();
+			var memberAuthenticate = memberAuthService.checkMemberLoggedIn();
+			if (memberAuthenticate && !$rootScope.alreadyRedirected) {
+					defer.reject();
+					$timeout(function () {
+	 					$rootScope.alreadyRedirected = true;
+						$state.go('in_fc.guidelines');
+					});
+			}else {
+					defer.resolve();
+			}
+
 		}
 		return defer.promise;
 	}
 
-	redirectTeamLoggedIn.$inject = ['memberAuthService', '$state', '$q', '$timeout', '$rootScope'];
-
-	function redirectTeamLoggedIn(memberAuthService, $state, $q, $timeout, $rootScope) {
-		// if(angular.isDefined($rootScope.faculty)){
-		//
-		// }
-
-		var defer = $q.defer();
-		var authenticate = memberAuthService.checkMemberLoggedIn();
-		if (authenticate) {
-			defer.reject();
-			$timeout(function () {
-				$state.go('in_tc.verifyCoordinator');
-			});
-		} else {
-			defer.resolve();
-		}
-		return defer.promise;
-	}
+	// redirectTeamLoggedIn.$inject = ['memberAuthService','facultyAuthService', '$state', '$q', '$timeout'];
+	//
+	// function redirectTeamLoggedIn(memberAuthService, facultyAuthService, $state, $q, $timeout) {
+	// 	// if(angular.isDefined($rootScope.faculty)){
+	// 	//
+	// 	// }
+	//
+	// 	var defer = $q.defer();
+	// 	var authenticate = memberAuthService.checkMemberLoggedIn();
+	// 	if (authenticate) {
+	// 		defer.reject();
+	// 		$timeout(function () {
+	// 			$state.go('in_tc.verifyCoordinator');
+	// 		});
+	// 	} else {
+	// 		defer.resolve();
+	// 	}
+	// 	return defer.promise;
+	// }
 
 })();
 
@@ -346,6 +403,7 @@
 				var authHead = 'Bearer ' + token;
 				config.headers['Authorization'] = authHead;
 			}
+			console.log(config);
 			return config;
 		}
 
@@ -380,16 +438,43 @@
 
 	function eventService($http) {
 	  var service = {
-	    addEvent: addEvent
+	    addEvent: addEvent,
+			getEvent: getEvent,
+			updateEvent: updateEvent,
+			getSingleEvent: getSingleEvent,
+			deleteEvent: deleteEvent,
 	  };
 
 	  return service;
 
-	  function addEvent(event) {
-			alert(JSON.stringify(event));
-			// return $http.post('/api/event/events', event)
-			// 	.then(resolveFunc)
-			// 	.catch(rejectFunc);
+	  function addEvent(eventData) {
+			return $http.post('/api/members/events', eventData)
+				.then(resolveFunc)
+				.catch(rejectFunc);
+	  }
+
+	  function getEvent() {
+			return $http.get('/api/members/events')
+				.then(resolveFunc)
+				.catch(rejectFunc);
+	  }
+
+	  function getSingleEvent(id) {
+			return $http.get('/api/members/events/' + id)
+				.then(resolveFunc)
+				.catch(rejectFunc);
+	  }
+
+	  function updateEvent(eventId, eventData) {
+			return $http.put('/api/members/events/' + eventId, eventData)
+				.then(resolveFunc)
+				.catch(rejectFunc);
+	  }
+
+	  function deleteEvent(eventId) {
+			return $http.delete('/api/members/events/' + eventId)
+				.then(resolveFunc)
+				.catch(rejectFunc);
 	  }
 
 		function resolveFunc(response) {
@@ -637,7 +722,9 @@
 	function memberService($http) {
 		var service = {
 			getAllFacultyCoordinators: getAllFacultyCoordinators,
-			verifyFaculty: verifyFaculty
+			verifyFaculty: verifyFaculty,
+			getTotalRegistrations: getTotalRegistrations,
+			getDeleteModal: getDeleteModal,
 		};
 
 		return service;
@@ -654,8 +741,27 @@
 				.catch(errorFunc);
 		}
 
+		function getTotalRegistrations() {
+			return $http.get('/api/members/registrations')
+				.then(responseFunc)
+				.catch(errorFunc);
+		}
+
 		function confirmRegistration(registration) {
 
+		}
+
+		function uploadFiles() {
+			
+		}
+
+		function getDeleteModal() {
+			var confirm = $mdDialog.confirm()
+				.title('Delete')
+				.textContent('Are you sure you want to delete this record?')
+				.ok('Confirm')
+				.cancel('Cancel');
+			return $mdDialog.show(confirm).then(responseFunc, errorFunc);
 		}
 
 		function responseFunc(response) {
@@ -854,14 +960,15 @@
     .directive('eventCard', eventCard);
 
   eventCard.$inject = [];
-  
+
   function eventCard() {
     var directive = {
           restrict: 'E',
           templateUrl: '/templates/components/cards/eventCard.html',
           link: linkFunc,
           scope: {
-              eventdata : '='
+              eventdata : '=',
+              reload : '&'
           },
           controller: 'EventCardController',
           controllerAs: 'ecc'
@@ -869,15 +976,13 @@
 
       return directive;
 
-      function linkFunc($scope, $element, $attributes) {
+      function linkFunc($scope) {
           $scope.openCard = false;
           $scope.caret = 'expand_less';
           $scope.toggleCard = toggleCard;
-          console.log($scope.userdata);
 
           function toggleCard() {
               $scope.openCard = !($scope.openCard);
-
               if($scope.openCard === true){
                   $scope.caret = 'expand_more';
               }
@@ -889,16 +994,200 @@
 
   }
 
+})();
+
+(function () {
+	'use strict';
+
 	angular
-    .module('fct.core')
-    .controller('EventCardController', EventCardController);
+	.module('fct.core')
+	.directive('fileUpload', fileUpload);
 
-  EventCardController.$inject = ['$scope'];
+	fileUpload.$inject = ['$timeout'];
 
-  function EventCardController($scope) {
+	function fileUpload($timeout) {
+        return {
+            restrict: 'E',
+            template: '<div ng-transclude></div>',
+            replace: true,
+            transclude: true,
+            scope: {
+                headers: '=',
+                ngModel: '=',
+                disabled: '='
+            },
+            require: 'ngModel',
+            link: function (scope, el, attr) {
+                var fileName,
+                    shareCredentials,
+                    withPreview,
+                    fileSelector,
+                    resize,
+                    maxWidth,
+                    maxHeight,
+                    sel;
 
-  }
+                fileName = attr.name || 'userFile';
+                shareCredentials = attr.credentials === 'true';
+                withPreview = attr.preview === 'true';
+                resize = attr.resize === 'true';
+                maxWidth = angular.isDefined(attr.maxWidth) ? parseInt(attr.maxWidth) : false;
+                maxHeight = angular.isDefined(attr.maxHeight) ? parseInt(attr.maxHeight) : false;
+                fileSelector = angular.isDefined(attr.fileSelector) ? attr.fileSelector : false;
 
+                el.append('<input style="display: none !important;" type="file" ' + (attr.multiple == 'true' ? 'multiple' : '') + ' accept="' + (attr.accept ? attr.accept : '') + '" name="' + fileName + '"/>');
+
+                function Resize(file, index, type) {
+                    var canvas = document.createElement("canvas");
+                    var img = document.createElement("img");
+                    var reader = new FileReader();
+                    reader.onload = function (e) {
+                        img.src = e.target.result;
+                        draw();
+                    };
+                    reader.readAsDataURL(file);
+
+                    function b64toBlob(b64Data, contentType, sliceSize) {
+                        contentType = contentType || '';
+                        sliceSize = sliceSize || 512;
+
+                        var byteCharacters = atob(b64Data);
+                        var byteArrays = [];
+
+                        for (var offset = 0; offset < byteCharacters.length; offset += sliceSize) {
+                            var slice = byteCharacters.slice(offset, offset + sliceSize);
+
+                            var byteNumbers = new Array(slice.length);
+                            for (var i = 0; i < slice.length; i++) {
+                                byteNumbers[i] = slice.charCodeAt(i);
+                            }
+
+                            var byteArray = new Uint8Array(byteNumbers);
+
+                            byteArrays.push(byteArray);
+                        }
+
+                        var blob = new Blob(byteArrays, {type: contentType});
+                        return blob;
+                    }
+
+                    function draw() {
+                        var width = img.width;
+                        var height = img.height;
+                        var ctx = canvas.getContext("2d");
+                        ctx.drawImage(img, 0, 0);
+
+                        if (width > 0 && height > 0) {
+                            if (width > height) {
+                                if (width > maxWidth) {
+                                    height *= maxWidth / width;
+                                    width = maxWidth;
+                                }
+                            } else {
+                                if (height > maxHeight) {
+                                    width *= maxHeight / height;
+                                    height = maxHeight;
+                                }
+                            }
+
+                            canvas.width = width;
+                            canvas.height = height;
+                            ctx.drawImage(img, 0, 0, width, height);
+                            var b64 = canvas.toDataURL(type).split(',')[1];
+                            file = b64toBlob(b64, type, 512);
+                        }
+
+                        uploadFile(file, index);
+                    }
+                }
+
+                function upload(fileProperties, index, file) {
+                    if (resize && maxWidth && maxHeight && (file.type.indexOf('image/') !== -1)) {
+                        Resize(file, index, file.type);
+                    } else {
+                        uploadFile(file, index);
+                    }
+                    return angular.extend(scope.ngModel[index], {
+                        name: fileProperties.name,
+                        size: fileProperties.size,
+                        type: fileProperties.type,
+                        status: {},
+                        percent: 0,
+                        preview: null
+                    });
+                }
+
+                function uploadFile(file, index) {
+                    var xhr = new XMLHttpRequest(),
+                        fd = new FormData(),
+                        progress = 0,
+                        uri = attr.uri || '/upload/upload';
+                    xhr.open('POST', uri, true);
+                    xhr.withCredentials = shareCredentials;
+                    if (scope.headers) {
+                        scope.headers.forEach(function (item) {
+                            xhr.setRequestHeader(item.header, item.value);
+                        });
+                    }
+                    xhr.onreadystatechange = function () {
+                        scope.ngModel[index].status = {
+                            code: xhr.status,
+                            statusText: xhr.statusText,
+                            response: xhr.response
+                        };
+                        scope.$apply();
+                    };
+                    xhr.upload.addEventListener("progress", function (e) {
+                        progress = parseInt(e.loaded / e.total * 100);
+                        scope.ngModel[index].percent = progress;
+                        scope.$apply();
+                    }, false);
+
+                    fd.append(fileName, file);
+                    xhr.send(fd);
+
+                    if (withPreview) {
+                        var reader = new FileReader();
+                        reader.onload = function (e) {
+                            scope.ngModel[index].preview = e.target.result;
+                            scope.$apply();
+                        };
+                        reader.readAsDataURL(file);
+                    }
+                }
+
+                $timeout(function () {
+                    sel = fileSelector ? angular.element(el[0].querySelectorAll(fileSelector)[0]) : el;
+                    sel.bind('click', function () {
+                        if (!scope.disabled) {
+                            scope.$eval(el.find('input')[0].click());
+                        }
+                    });
+                });
+
+                angular.element(el.find('input')[0]).bind('change', function (e) {
+                    var files = e.target.files;
+                    if (!angular.isDefined(scope.ngModel) || attr.multiple === 'true') {
+                        scope.ngModel = [];
+                    }
+                    var f;
+                    for (var i = 0; i < files.length; i++) {
+                        f = {
+                            name: files[i].name,
+                            size: files[i].size,
+                            type: files[i].type,
+                            status: {},
+                            percent: 0,
+                            preview: null
+                        };
+                        scope.ngModel.push(f);
+                        upload(f, i, files[i]);
+                    }
+                    scope.$apply();
+                });
+            }
+        };
+    }
 })();
 
 (function () {
@@ -1237,14 +1526,21 @@
       .module('fct.core')
       .controller('AddEventController', AddEventController);
 
-    AddEventController.$inject = ['$stateParams', 'eventService', '$rootScope'];
+    AddEventController.$inject = ['$stateParams', 'eventService', '$rootScope', '$timeout', 'Upload', '$state'];
 
-    function AddEventController(stateParams, eventService, $rootScope) {
+    function AddEventController(stateParams, eventService, $rootScope, $timeout, Upload, $state) {
         var vm = this;
-        vm.myEvent = {};
+        vm.isUpdate = false;
+        vm.myEvent = {
+          'managers':[],
+          'event': "Add",
+        };
+        vm.myEvent.attachments = [];
 
         angular.extend(vm, {
-            register: register
+            save: save,
+            openManagersModal: openManagersModal,
+            uploadFiles: uploadFiles
         });
 
         activate();
@@ -1253,31 +1549,60 @@
           initializeCKEditor();
         }
 
-        function register() {alert(JSON.stringify(vm.myEvent));
-          //eventService.addEvent(vm.myEvent);
+        function openManagersModal(total) {
+          vm.myEvent.managers = [];
+          while(total > 0) {
+            var each = {"index":1};
+            vm.myEvent.managers.push(each);
+            total--;
+          }
         }
 
-    		$rootScope.$on('registerSuccess', registerSuccess);
-        $rootScope.$on('registerFailure', registerFailure);
+        function save() {
+          console.log(JSON.stringify(vm.myEvent));
+          vm.myEvent.rules = CKEDITOR.instances["editorRules"].getData();
+          vm.myEvent.specification = CKEDITOR.instances["editorSpecification"].getData();
+          vm.myEvent.judging_criteria = CKEDITOR.instances["editorJudgingCriteria"].getData();
+
+    		  if(vm.myEvent.isUpdate) {
+      			return eventService.updateEvent(vm.myEvent).then(registerSuccess).catch(registerFailure);
+    		  } else {
+      			return eventService.addEvent(vm.myEvent).then(registerSuccess).catch(registerFailure);
+    		  }
+        }
 
     		function registerSuccess(event) {
-            asToast.showToast("Registered",true);
-
+            asToast.showToast("Event Registered.",true);
+            $timeout(function () {
+    					$state.go('in_tc.showEvent');
+    				});
         }
 
         function registerFailure(event, error) {
             asToast.showToast(error.data.message);
         }
 
-        function initializeCKEditor() {
-          if(stateParams.editData !== undefined &&
-              stateParams.editData !== null) {
-            vm.myEvent = stateParams.editData;
-            vm.myEvent.event = "Insert";
-          } else {
-            vm.myEvent.event = "Update";
-          }
+        function uploadFiles(files, errFiles) {
+          angular.forEach(files, function(file) {
+            vm.myEvent.attachments.push(file);
+            file.upload = Upload.upload({
+              url: '/api/members/upload',
+              data: {file: file}
+            });
+            file.upload.then(function (response) {
+               $timeout(function () {
+                 file.result = response.data;
+               });
+             }, function (response) {
+               if (response.status > 0)
+                 vm.errorMsg = response.status + ': ' + response.data;
+             }, function (evt) {
+               file.progress = Math.min(100, parseInt(100.0 * evt.loaded / evt.total));
+             });
+          });
+        }
 
+        function initializeCKEditor() {
           if ( CKEDITOR.env.ie && CKEDITOR.env.version < 9 )
           	CKEDITOR.tools.enableHtml5Elements( document );
 
@@ -1355,6 +1680,130 @@
 })();
 
 (function () {
+    'use strict';
+
+    angular
+      .module('fct.core')
+      .controller('EachEventController', EachEventController);
+
+    EachEventController.$inject = ['$stateParams', 'eventService', '$sce'];
+
+    function EachEventController(stateParams, eventService, $sce) {
+        var vm = this;
+
+        activate();
+
+        function activate() {
+          if(stateParams.eventId !== undefined && stateParams.eventId !== null) {
+            vm.eventId = stateParams.eventId;
+            getEvent();
+          }
+		    }
+
+        function getEvent() {
+          return eventService.getSingleEvent(vm.eventId)
+            .then(getEventSuccess)
+            .catch(getEventFailure);
+        }
+
+        function getEventSuccess(response) {
+          console.log(response);
+          vm.myEvent = response.data;console.log(vm.myEvent);
+          vm.rules = $sce.trustAsHtml(vm.myEvent.rules);
+          vm.judging_criteria = $sce.trustAsHtml(vm.myEvent.judging_criteria);
+          vm.specification = $sce.trustAsHtml(vm.myEvent.specification);
+        }
+
+        function getEventFailure(error) {
+          console.log(error);
+        }
+    }
+})();
+
+(function () {
+    'use strict';
+
+    angular
+      .module('fct.core')
+      .controller('EventCardController', EventCardController);
+
+    EventCardController.$inject = ['eventService', '$mdDialog'];
+
+    function EventCardController(eventService, $mdDialog) {
+        var vm = this;
+        vm.openCard = false;
+        vm.caret = 'expand_less';
+
+        angular.extend(vm, {
+            deleteEvent: deleteEvent,
+        });
+
+        activate();
+
+        function activate() {
+
+        }
+
+        function deleteEvent(id) {
+          if(id !== undefined && id !== null) {
+            return eventService.getDeleteModal()
+              .then(confirmedDelete)
+              .catch(unconfirmedDelete);
+          }
+          return null;
+        }
+
+        function confirmedDelete() {
+          return eventService.deleteEvent(id)
+            .then(deleteEventSuccess)
+            .catch(deleteEventFailure);
+        }
+
+        function unconfirmedDelete() {
+          //
+        }
+
+        function deleteEventSuccess(response) {
+          console.log(response);
+          vm.reload();
+        }
+
+        function deleteEventFailure(error) {
+          console.log(error);
+          //redirect
+        }
+    }
+})();
+
+(function () {
+	'use strict';
+
+	angular
+		.module('fct.core')
+		.controller('EventRegistrationController', EventRegistrationController);
+
+	EventRegistrationController.$inject = ['memberService'];
+
+	function EventRegistrationController(memberService) {
+		var vm = this;
+
+		// angular.extend(vm, {
+		// 	func: func
+		// });
+
+		activate();
+
+		function activate() {
+			console.log(JSON.stringify(getRegistration()));
+		}
+
+		function getRegistration() {
+			return memberService.getTotalRegistrations();
+		}
+	}
+})();
+
+(function () {
 	'use strict';
 
 	angular
@@ -1416,63 +1865,235 @@
 })();
 
 (function () {
+	'use strict';
+
+	angular
+		.module('fct.core')
+		.controller('ParticipantRegistrationController', ParticipantRegistrationController);
+
+	ParticipantRegistrationController.$inject = ['$http'];
+
+	function ParticipantRegistrationController($http) {
+		var vm = this;
+		vm.myParticipant = {
+			eventObject: {
+				event_id: 123123,
+				event_shortcode: 'EVET'
+			},
+			other_participants: []
+		};
+    vm.otherParticipants = [];
+		vm.myParticipant.other_participants = [];
+    vm.maxParticipants = 4;
+    vm.eventPrice = 50;
+    vm.esflag = false;
+    vm.nopflag = false;
+
+		angular.extend(vm, {
+      getParticipantLength : getParticipantLength,
+      save : save,
+      openParticipantModule : openParticipantModule,
+		});
+
+		activate();
+
+		function activate() {
+			var x = '{"eventObject": {"event_id": "123123","event_shortcode": "EVET","event_section": "1","event_name": "1"},"other_participants": [{"title": "Team Member","leaderFlag": false,"$$hashKey": "object:68","name": "cl","email": "d@ddc.c","college_name": "1","branch": "2","semester": "6","mobileno": "43223443223","enrollment": "322342342342343"}],"total_amount": 100,"numberOfParticipant": "2","do_payment": true,"team_leader": {"title": "Team Leader","leaderFlag": true,"$$hashKey": "object:67","name": "fd","email": "s@sd.3","mobileno": "12341232133","college_name": "1","branch": "1","semester": "2","enrollment": "231312312332333"}}';
+			return $http.post('/api/registration/create', x)
+				.then(resolveFunc)
+				.catch(rejectFunc);
+		}
+
+    function openParticipantModule(total) {
+      vm.nopflag = true;
+      var first = true;
+      vm.myParticipant.other_participants = [];
+      while(total > 0) {
+        var each = {"title": (first) ? "Team Leader" : "Team Member",
+                    "leaderFlag": first};
+        vm.myParticipant.other_participants.push(each);
+        first = false;
+        total--;
+      }
+    }
+
+    function getParticipantLength() {
+      return vm.myParticipant.other_participants.length;
+    }
+
+		function save() {
+			vm.myParticipant.do_payment = true;
+			console.log(JSON.stringify(vm.myParticipant));
+			vm.myParticipant.team_leader = vm.myParticipant.other_participants[0];
+			vm.myParticipant.other_participants.splice(0, 1);
+			console.log(JSON.stringify(vm.myParticipant));
+			return $http.post('/api/registration/create', vm.myParticipant)
+				.then(resolveFunc)
+				.catch(rejectFunc);
+		}
+
+		function resolveFunc(response) {
+			console.log(response);
+		}
+
+		function rejectFunc(error) {
+			console.log(error);
+		}
+	}
+})();
+
+(function () {
     'use strict';
 
     angular
       .module('fct.core')
       .controller('ShowEventController', ShowEventController);
 
-    ShowEventController.$inject = [];
-    
-    function ShowEventController() {
+    ShowEventController.$inject = ['eventService'];
+
+    function ShowEventController(eventService) {
         var vm = this;
 
+        angular.extend(vm, {
+            getEvents: getEvents,
+        });
+
         activate();
-        var joinedDate = "ab";
 
         function activate() {
+          getEvents();
+        }
 
-          vm.dummyEvents = [{
-            teamId: '32049',
-            teamName: 'Mona Lisa',
-            leaderName: 'Monit',
-            contactNumber: '9329239499',
-            eventName: 'Scrabble+',
-            email: 'abc@123.com',
-            eventSection: 'IT Department'
-          },
-          {
-            teamId: '32048',
-            teamName: 'Mango',
-            leaderName: 'Monit',
-            contactNumber: '9329239499',
-            eventName: 'Scrabble+',
-            email: 'abc@123.com',
-            eventSection: 'IT Department'
-          },
-          {
-            teamId: '32047',
-            teamName: 'Rascals',
-            leaderName: 'Monit',
-            contactNumber: '9329239499',
-            eventName: 'Scrabble+',
-            email: 'abc@123.com',
-            eventSection: 'IT Department'
-          },
-          {
-            teamId: '32046',
-            teamName: 'Rockerstar',
-            leaderName: 'Monit',
-            contactNumber: '9329239499',
-            eventName: 'Scrabble+',
-            email: 'abc@123.com',
-            eventSection: 'IT Department'
-          },];
+        function getEvents() {
+            return eventService.getEvent()
+              .then(getEventSuccess)
+              .catch(getEventFailure);
+        }
 
+        function getEventSuccess(response) {
+          console.log(response);
+          vm.dummyEvents = response.data;
+        }
+
+        function getEventFailure(error) {
+          console.log(error);
         }
     }
 })();
 
+
+(function () {
+    'use strict';
+
+    angular
+      .module('fct.core')
+      .controller('UpdateEventController', UpdateEventController);
+
+    UpdateEventController.$inject = ['$stateParams', 'eventService', '$rootScope', '$state', 'fctToast'];
+
+    function UpdateEventController(stateParams, eventService, $rootScope, state, fctToast) {
+        var vm = this;
+        vm.isUpdate = true;
+        vm.myEvent = {
+          'managers':[],
+        };
+
+        angular.extend(vm, {
+            save: save,
+            openManagersModal: openManagersModal,
+        });
+
+        activate();
+
+        function activate() {
+          initializeCKEditor();
+          checkEventId();
+        }
+
+        function openManagersModal(total) {
+          vm.myEvent.managers = [];
+          while(total > 0) {
+            var each = {"index":1};
+            vm.myEvent.managers.push(each);
+            total--;
+          }
+        }
+
+        function checkEventId() {
+          if(stateParams.eventId !== undefined && stateParams.eventId !== null) {
+              vm.eventId = stateParams.eventId;
+              return eventService.getSingleEvent(vm.eventId)
+                .then(onEventGetSuccess)
+                .catch(onEventGetFailure);
+
+          }
+          return null;
+        }
+
+        function onEventGetSuccess(eventData) {
+          console.log(eventData);
+          vm.myEvent = eventData.data;
+          vm.myEvent.event = "Update";
+        }
+
+        function onEventGetFailure(error) {
+          console.log(error);
+          //redirect
+        }
+
+        function save() {
+          vm.myEvent.rules = CKEDITOR.instances["editorRules"].getData();
+          vm.myEvent.specification = CKEDITOR.instances["editorSpecification"].getData();
+          vm.myEvent.judging_criteria = CKEDITOR.instances["editorJudgingCriteria"].getData();
+          console.log(JSON.stringify(vm.myEvent));
+          return eventService.updateEvent(vm.eventId, vm.myEvent)
+            .then(onUpdateSuccess)
+            .catch(onUpdateFailure);
+        }
+
+        function onUpdateSuccess(response) {
+          console.log(response);
+          fctToast.showToast("Update Success.", true);
+          state.go('in_tc.showEvent');
+        }
+
+        function onUpdateFailure(error) {
+          console.log(error);
+          fctToast.showToast("Please try again later.");
+        }
+
+        function initializeCKEditor() {
+          if ( CKEDITOR.env.ie && CKEDITOR.env.version < 9 )
+          	CKEDITOR.tools.enableHtml5Elements( document );
+            CKEDITOR.config.height = 150;
+            CKEDITOR.config.width = 'auto';
+            var initSample = ( function() {
+            	var wysiwygareaAvailable = isWysiwygareaAvailable();
+            	return function() {
+            		var editorElement = CKEDITOR.document.getById( 'editor' );
+            		if ( wysiwygareaAvailable ) {
+            			CKEDITOR.replace( 'editorRules' );
+            			CKEDITOR.replace( 'editorSpecification' );
+            			CKEDITOR.replace( 'editorJudgingCriteria' );
+            		} else {
+            			editorElement.setAttribute( 'contenteditable', 'true' );
+            			CKEDITOR.inline( 'editorRules' );
+            			CKEDITOR.inline( 'editorSpecification' );
+            			CKEDITOR.inline( 'editorJudgingCriteria' );
+            		}
+            	};
+
+          	function isWysiwygareaAvailable() {
+          		if ( CKEDITOR.revision == ( '%RE' + 'V%' ) ) {
+          			return true;
+          		}
+          		return !!CKEDITOR.plugins.get( 'wysiwygarea' );
+          	}
+          } )();
+          initSample();
+        }
+    }
+})();
 
 (function () {
 	'use strict';
@@ -2152,4 +2773,44 @@
 			$scope.registerForm.$setUntouched();
 		}
 	}
+})();
+
+(function() {
+
+    angular.module('fct.core')
+      .animation('.slide-vertical', slideVertical);
+
+    slideVertical.$inject = ['TweenMax'];
+
+    function slideVertical(TweenMax) {
+        return {
+            addClass: addHideClass,
+            removeClass: removeHideClass
+        };
+    }
+
+    function addHideClass(element, className, done) {
+      if (className == 'ng-hide') {
+        // var timeline = new TimelineMax();
+        TweenMax.set(element,{height:"auto", opacity:0});
+        TweenMax.from(element, 0.3, {opacity: 1, ease: Power0.easeNone});
+        TweenMax.to(element, 0.4, {height:0, ease:  Power2.easeOut, onComplete: done}).delay(0.25);
+      }
+      else {
+        done();
+      }
+
+    }
+
+    function removeHideClass(element, className, done) {
+      if (className == 'ng-hide') {
+        element.removeClass('ng-hide');
+        TweenMax.set(element,{height:"auto", opacity:0});
+        TweenMax.from(element, 0.4, {height:0, ease: Power2.easeIn});
+        TweenMax.to(element, 0.3, {opacity: 1, ease: Power2.easeIn, onComplete:done}).delay(0.35);
+      }
+      else {
+        done();
+      }
+    }
 })();

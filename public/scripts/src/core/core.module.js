@@ -11,7 +11,8 @@
 			'ngFileUpload',
 			'validation.match',
 			'ngMdIcons',
-			'angularMoment'
+			'angularMoment',
+			// 'fct.api'
 		]);
 
 	angular
