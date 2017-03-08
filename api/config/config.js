@@ -10,7 +10,7 @@ var config = {
 		"uname": "azure_9bee5685af9718e30a63da8bf8450183@azure.com",
 		"password": "gtu20173031techfest#ldce"
 	},
-	"mongoURI": "mongodb://admin_gt17_techfest@ldce:gt17#ldce@3031-2017@ds023530.mlab.com:23530/devam_gt17",
+	"mongoURI": "mongodb://gt17_admin_fc_2017:123werdfg90_@gt17ldce@ds019866.mlab.com:19866/gtu2017techfest3031ldce",
 	"testMongo": "mongodb://gt17test3:$67$89$12$gt17ldce@ds119250.mlab.com:19250/gt17test1"
 };
 
