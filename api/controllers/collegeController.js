@@ -19,7 +19,6 @@ var collegeController = function(College) {
         College.find({
                 city: request.query.city,
                 faculty_assigned: true
-
             })
             .populate({
                 path: 'facultyId',

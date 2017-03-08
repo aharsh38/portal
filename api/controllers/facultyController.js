@@ -1,6 +1,7 @@
 var passport = require('passport');
 
 var registrationController = require('./registrationController')();
+var mailController = require('./mailController')();
 
 var facultyController = function(Faculty, Registration) {
     function throwError(response, error, status, message, errorFor) {
@@ -75,6 +76,7 @@ var facultyController = function(Faculty, Registration) {
                         };
                         if (data) {
                             registrationController.generateSlip('confirmPayment', registration.teamId, data);
+                            mailController.sendMails(data, 'Confirmation of your registration', 'mailpreconfirmation');
                         } else {
                             throwError(response, error, 404, 'Not Found', 'Generated data not found.');
                         }
