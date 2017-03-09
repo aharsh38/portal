@@ -31,7 +31,7 @@
 				var authHead = 'Bearer ' + token;
 				config.headers['Authorization'] = authHead;
 			}
-			console.log(config);
+			// console.log(config);
 			return config;
 		}
 
@@ -46,7 +46,7 @@
 		}
 
 		function responseError(rejection) {
-			console.log("response rejection", rejection);
+			// console.log("response rejection", rejection);
 			if (rejection.status == 403) {
 				$location.path('/login');
 			}

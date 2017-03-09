@@ -30,19 +30,26 @@ var eventModel = new Schema({
 		email_id: String
 	}],
 	section: {
-		type: String,
+		type: String
 	},
 	fees: {
-		type: Number,
+		type: Number
 	},
 	fees_type: {
-		type: String,
+		type: String
 	},
 	do_payment: {
-		type: Boolean,
+		type: Boolean
+	},
+	no_of_participants: {
+		type: Number,
+		default: 1
+	},
+	keywords: {
+		type: String
 	},
 	shortcode: {
-		type: String,
+		type: String
 	},
 	attachments: [{
 		doc_name: String,

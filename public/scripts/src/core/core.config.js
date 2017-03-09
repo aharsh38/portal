@@ -214,7 +214,7 @@
 				if (memberAuthenticate && !$rootScope.alreadyRedirected) {
 					$timeout(function () {
 						$rootScope.alreadyRedirected = true;
-						$state.go('in_tc.verifyCoordinator');
+						$state.go('in_tc.dashboard');
 					});
 					defer.resolve();
 				} else {
@@ -275,7 +275,7 @@
 					defer.reject();
 					$timeout(function () {
 						$rootScope.alreadyRedirected = true;
-						$state.go('in_fc.guidelines');
+						$state.go('in_tc.dashboard');
 					});
 				} else {
 					defer.resolve();

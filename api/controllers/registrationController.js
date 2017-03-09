@@ -117,9 +117,10 @@ var registrationController = function (Registration) {
 		registration.other_participants = request.body.other_participants;
 		registration.total_amount = request.body.total_amount;
 		registration.do_payment = request.body.do_payment;
-
+		// console.log(request.body.eventObject.event_shortcode);
 		registration.teamId = request.body.eventObject.event_shortcode + rand.generateDigits(6);
 		// registration.teamId = "SC" + rand.generateDigits(6);
+
 		var slip;
 		var dataToGeneratePDF;
 
@@ -153,7 +154,7 @@ var registrationController = function (Registration) {
 
 		registration.save(function (error) {
 			if (error) {
-				throwError(response, error, null, 'Slip Download', 'Download Failed');
+				throwError(response, error, 500, 'Internal Server error', 'Event Register');
 			} else {
 				response.status(200);
 				response.json(registration);

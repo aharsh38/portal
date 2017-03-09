@@ -4,11 +4,12 @@
         <form name="registerForm" layout="column" ng-submit="$event.preventDefault()">
             <md-input-container>
                 <label>Name</label>
-                <input required type="text" name="username" ng-model="frc.user.name" ng-pattern="text" />
+                <input required type="text" name="username" ng-model="frc.user.name" ng-pattern="/^$|^[a-zA-Z]+ [a-zA-Z]+([a-zA-Z]+)?$/" />
                 <div ng-messages="registerForm.username.$error" role="alert">
                     <div ng-message="required">
                         Enter full name
                     </div>
+                    <div ng-message="pattern">Name should be of only 2 to 3 words and should be valid.</div>
                 </div>
             </md-input-container>
 

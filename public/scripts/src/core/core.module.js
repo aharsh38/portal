@@ -24,13 +24,22 @@
 		.module('fct.core')
 		.run(initializeCore);
 
-	initializeCore.$inject = ['$rootScope', '$interval'];
+	initializeCore.$inject = ['$rootScope', '$interval', 'facultyAuthService'];
 
-	function initializeCore($rootScope, $interval) {
+	function initializeCore($rootScope, $interval, facultyAuthService) {
 		active();
 
 		function active() {
 			preloader();
+			return check();
+		}
+
+		$rootScope.alreadyRedirected = false;
+
+		function check() {
+			if (facultyAuthService.checkFacultyLoggedIn()) {
+				return facultyAuthService.checkVerified();
+			}
 		}
 
 		function preloader() {
