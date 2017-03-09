@@ -12,12 +12,12 @@ require('./api/config/passport');
 
 // var dbURI = "mongodb://localhost/gtutechfest2";
 
-// var dbURI = "mongodb://localhost/gtutesting";
+var dbURI = "mongodb://localhost/gtutestingFinal";
 //var dbURI = "mongodb://localhost/gtutesting";
 
 //var dbURI = 'mongodb://hraw1699:fdtdcdr6m@ds161039.mlab.com:61039/gtutechfesttest';
 
-var dbURI = config.testMongo;
+// var dbURI = config.testMongo;
 
 mongoose.Promise = global.Promise;
 
@@ -41,6 +41,12 @@ var port = 9000;
 app.set('x-powered-by', false);
 
 app.use(express.static('public'));
+
+app.use(function (req, res, next) {
+	res.header("Access-Control-Allow-Origin", "*");
+	res.header("Access-Control-Allow-Headers", "Origin, X-Requested-With, Content-Type, Accept");
+	next();
+});
 
 app.use(logger('dev'));
 app.use(bodyParser.urlencoded({

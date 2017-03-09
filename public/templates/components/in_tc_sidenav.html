@@ -1,12 +1,12 @@
 
 <div class="margin-1" hide-gt-xs show-xs layout="row">
     <div flex></div>
-    <md-button ng-click="tlayc.closeLeftSidenav()" flex-xs="15" hide-gt-xs show-xs class="md-icon-button" layout="row" layout-align="center center" aria-label="sidenav">
+    <md-button ng-click="mlayc.closeLeftSidenav()" flex-xs="15" hide-gt-xs show-xs class="md-icon-button" layout="row" layout-align="center center" aria-label="sidenav">
         <ng-md-icon style="fill:white" icon="close" class="title-icon" size="24"></ng-md-icon>
     </md-button>
 </div>
 
-<div class="margin-top-2 sidenav-container" layout="column">
+<div class="margin-top-2 sidenav-container" layout="column" ng-click="mlayc.closeLeftSidenav()">
 
     <md-button class="margin-0 padding-0 text-capitalize"
     ui-sref-active="al-subOption-selected"

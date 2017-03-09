@@ -85,6 +85,7 @@ facultyModel.methods.generateJwt = function () {
 		registrations_count: this.registrations_count,
 		collected_amount: this.collected_amount,
 		forgot_password: this.forgot_password,
+		student_coordinator: this.student_coordinator,
 		exp: parseInt(expiry.getTime() / 1000),
 	}, config.secrets.faculty);
 };

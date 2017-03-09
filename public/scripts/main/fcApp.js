@@ -9,6 +9,16 @@
 	'use strict';
 
 	angular
+		.module('fct_app', [
+			'fct.api',
+			'fct.core'
+		]);
+})();
+
+(function () {
+	'use strict';
+
+	angular
 		.module('fct.core', [
 			'ngAnimate',
 			'ngMessages',
@@ -31,13 +41,22 @@
 		.module('fct.core')
 		.run(initializeCore);
 
-	initializeCore.$inject = ['$rootScope', '$interval'];
+	initializeCore.$inject = ['$rootScope', '$interval', 'facultyAuthService'];
 
-	function initializeCore($rootScope, $interval) {
+	function initializeCore($rootScope, $interval, facultyAuthService) {
 		active();
 
 		function active() {
 			preloader();
+			return check();
+		}
+
+		$rootScope.alreadyRedirected = false;
+
+		function check() {
+			if (facultyAuthService.checkFacultyLoggedIn()) {
+				return facultyAuthService.checkVerified();
+			}
 		}
 
 		function preloader() {
@@ -58,16 +77,6 @@
 			}
 		}
 	}
-})();
-
-(function () {
-	'use strict';
-
-	angular
-		.module('fct_app', [
-			'fct.api',
-			'fct.core'
-		]);
 })();
 
 	(function () {
@@ -286,7 +295,7 @@
 				if (memberAuthenticate && !$rootScope.alreadyRedirected) {
 					$timeout(function () {
 						$rootScope.alreadyRedirected = true;
-						$state.go('in_tc.verifyCoordinator');
+						$state.go('in_tc.dashboard');
 					});
 					defer.resolve();
 				} else {
@@ -347,7 +356,7 @@
 					defer.reject();
 					$timeout(function () {
 						$rootScope.alreadyRedirected = true;
-						$state.go('in_fc.guidelines');
+						$state.go('in_tc.dashboard');
 					});
 				} else {
 					defer.resolve();
@@ -412,7 +421,7 @@
 				var authHead = 'Bearer ' + token;
 				config.headers['Authorization'] = authHead;
 			}
-			console.log(config);
+			// console.log(config);
 			return config;
 		}
 
@@ -427,7 +436,7 @@
 		}
 
 		function responseError(rejection) {
-			console.log("response rejection", rejection);
+			// console.log("response rejection", rejection);
 			if (rejection.status == 403) {
 				$location.path('/login');
 			}
@@ -509,7 +518,8 @@
 		var baseLink = '/api/faculty/' + $rootScope.faculty.id;
 
 		var service = {
-			confirmRegistration: confirmRegistration
+			confirmRegistration: confirmRegistration,
+			getFacultyRegistrations: getFacultyRegistrations
 		};
 
 		return service;
@@ -528,12 +538,7 @@
 				.catch(errorFunc);
 		}
 
-		function editStudentCoordinator(students) {
-			var link = baseLink + '/studentCoordinator';
-			return $http.put(link, students)
-				.then(resolveFunc)
-				.catch(errorFunc);
-		}
+
 
 		function resolveFunc(response) {
 			return response;
@@ -563,7 +568,9 @@
 			logout: logout,
 			facultyForgotPasswordApply: facultyForgotPasswordApply,
 			facultyForgotPasswordSet: facultyForgotPasswordSet,
-			getColleges: getColleges
+			getColleges: getColleges,
+			checkVerified: checkVerified,
+			editStudentCoordinator: editStudentCoordinator
 		};
 
 		return service;
@@ -587,7 +594,9 @@
 					$rootScope.faculty.id = payload._id;
 					$rootScope.faculty.registrations_count = payload.registrations_count;
 					$rootScope.faculty.collected_amount = payload.collected_amount;
+					$rootScope.faculty.student_coordinator = payload.student_coordinator;
 					return (payload.exp > Date.now() / 1000);
+					console.log($rootScope.faculty);
 				} else {
 					return false;
 				}
@@ -597,6 +606,10 @@
 			}
 		}
 
+		function replaceToken(token) {
+			removeToken();
+			saveToken(token);
+		}
 
 
 		function saveToken(token) {
@@ -716,6 +729,41 @@
 			$rootScope.$broadcast('logoutSuccessful');
 		}
 
+		function checkVerified() {
+			console.log($rootScope.faculty);
+			$http.get('/api/faculty/check')
+				.then(checkVerifiedSuccess)
+				.catch(checkVerifiedFailure);
+		}
+
+		function checkVerifiedSuccess(response) {
+			// console.log(response);
+			replaceToken(response.data.token);
+		}
+
+		function checkVerifiedFailure(error) {
+			// console.log(error);
+		}
+
+		function editStudentCoordinator(students) {
+			var link = '/api/faculty/' + $rootScope.faculty.id + '/addStudentCoordinator';
+			return $http.post(link, students)
+				.then(editStudentCoordinatorSuccess)
+				.catch(editStudentCoordinatorFailure);
+		}
+
+		function editStudentCoordinatorSuccess(response) {
+			replaceToken(response.data.token);
+			return response;
+		}
+
+		function editStudentCoordinatorFailure(error) {
+			return error;
+		}
+
+		function functionName(error) {
+			return error;
+		}
 	}
 })();
 
@@ -1234,69 +1282,74 @@
 		.module('fct.core')
 		.controller('AddStudentController', AddStudentController);
 
-	AddStudentController.$inject = ['$http','facultyAuthService', '$rootScope', 'fctToast'];
+	AddStudentController.$inject = ['$http', 'facultyAuthService', '$rootScope', 'fctToast'];
 
 	function AddStudentController($http, facultyAuthService, $rootScope, fctToast) {
 		var vm = this;
-        vm.coordinator = {};
-        vm.editInfo = false;
-        vm.preInfo = false;
-        vm.updateButtonClicked = false;
-        vm.addButtonClicked = false;
+		vm.coordinator = {};
+		vm.editInfo = false;
+		vm.preInfo = false;
+		vm.updateButtonClicked = false;
+		vm.addButtonClicked = false;
 
 		angular.extend(vm, {
 			update: update,
-            addStudentCoordinator: addStudentCoordinator,
-            edit:edit
+			addStudentCoordinator: addStudentCoordinator,
+			edit: edit
 		});
 
 		activate();
 
 		function activate() {
-            if(!$rootScope.faculty.studentCoordinator){
-                vm.editInfo = true;
-            }else{
-                vm.coordinator = $rootScope.faculty.studentCoordinator;
-            }
+			if (!$rootScope.faculty.student_coordinator.name) {
+				vm.editInfo = true;
+			} else {
+				vm.coordinator = $rootScope.faculty.student_coordinator;
+				vm.preInfo = true;
+			}
 		}
 
 		function update(event) {
-            vm.updateButtonClicked = true;
-            return facultyAuthService.updateStudentCoordinator(vm.coordinator)
-                .then(updateStudentCoordinatorSuccess)
-                .catch(updateStudentCoordinatorFailure);
+			vm.updateButtonClicked = true;
+			return facultyAuthService.editStudentCoordinator({
+					student_coordinator: vm.coordinator
+				})
+				.then(editStudentCoordinatorSuccess)
+				.catch(editStudentCoordinatorFailure);
 		}
 
 		function edit() {
-            vm.editInfo = true;
+			vm.editInfo = true;
 		}
 
 		function addStudentCoordinator(event) {
-            vm.addButtonClicked = true;
-            return facultyAuthService.updateStudentCoordinator(vm.coordinator)
-                .then(addStudentCoordinatorSuccess)
-                .catch(updateStudentCoordinatorFailure);
+			vm.addButtonClicked = true;
+			return facultyAuthService.editStudentCoordinator({
+					student_coordinator: vm.coordinator
+				})
+				.then(addStudentCoordinatorSuccess)
+				.catch(editStudentCoordinatorFailure);
 		}
 
-        function addStudentCoordinatorSuccess(response) {
-            vm.preInfo = true;
-            vm.editInfo = false;
-            vm.addButtonClicked = false;
-            fctToast.showToast('Student Coordinator Details Added Successfuly',true);
-        }
+		function addStudentCoordinatorSuccess(response) {
+			vm.preInfo = true;
+			vm.editInfo = false;
+			vm.addButtonClicked = false;
+			fctToast.showToast('Student Coordinator Details Added Successfuly', true);
+		}
 
-        function updateStudentCoordinatorSuccess(response) {
-            vm.editInfo = false;
-            vm.updateButtonClicked = false;
-            fctToast.showToast('Student Coordinator Details Updated Successfuly',true);
-        }
+		function editStudentCoordinatorSuccess(response) {
+			vm.editInfo = false;
+			vm.updateButtonClicked = false;
+			fctToast.showToast('Student Coordinator Details Updated Successfuly', true);
+		}
 
-        function updateStudentCoordinatorFailure(error) {
-            vm.editInfo = false;
-            vm.addButtonClicked = false;
-            vm.updateButtonClicked = false;
-            fctToast.showToast('Error!! Try Again');
-        }
+		function editStudentCoordinatorFailure(error) {
+			vm.editInfo = false;
+			vm.addButtonClicked = false;
+			vm.updateButtonClicked = false;
+			fctToast.showToast('Error!! Try Again');
+		}
 	}
 })();
 
@@ -2135,6 +2188,137 @@
 
 	angular
 		.module('fct.core')
+		.controller('FacultyLayoutController', FacultyLayoutController)
+		.controller('ContactDialogController', ContactDialogController);
+
+	FacultyLayoutController.$inject = ['facultyAuthService', '$mdSidenav', '$rootScope', 'fctToast', '$state', '$mdDialog', '$mdMedia', '$scope'];
+
+	function FacultyLayoutController(facultyAuthService, $mdSidenav, $rootScope, fctToast, $state, $mdDialog, $mdMedia, $scope) {
+		var vm = this;
+
+		$scope.$watch(function () {
+			return $mdMedia('xs') || $mdMedia('sm');
+		});
+
+		angular.extend(vm, {
+			logout: logout,
+			openLeftSidenav: openLeftSidenav,
+			isOpenLeftSidenav: isOpenLeftSidenav,
+			closeLeftSidenav: closeLeftSidenav,
+			contact: contact
+		});
+
+		activate();
+
+		function activate() {
+
+		}
+
+		function logout() {
+			facultyAuthService.logout();
+		}
+
+		$rootScope.$on('logoutSuccessful', logoutSuccessful);
+
+		function logoutSuccessful(event) {
+			fctToast.showToast("Succesfully Logged out", true);
+			$state.go('out.login');
+		}
+
+		function openLeftSidenav() {
+			$mdSidenav('left').open();
+		}
+
+		function isOpenLeftSidenav() {
+			return $mdSidenav('left').isOpen();
+		}
+
+		function closeLeftSidenav() {
+			$mdSidenav('left').close();
+		}
+
+		function contact(ev) {
+			var useFullScreen = $mdMedia('sm') || $mdMedia('xs');
+			$mdDialog.show({
+				controller: 'ContactDialogController',
+				templateUrl: '/templates/components/dialogs/contact.html',
+				parent: angular.element(document.body),
+				targetEvent: ev,
+				clickOutsideToClose: true,
+				fullscreen: useFullScreen // Only for -xs, -sm breakpoints.
+			});
+		}
+	}
+
+	ContactDialogController.$inject = ['$scope', '$mdDialog'];
+
+	function ContactDialogController($scope, $mdDialog) {
+		$scope.cancel = function () {
+			$mdDialog.cancel();
+		};
+
+		$scope.hide = function () {
+			$mdDialog.hide();
+		};
+	}
+})();
+
+(function () {
+	'use strict';
+
+	angular
+		.module('fct.core')
+		.controller('MemberLayoutController', MemberLayoutController);
+
+	MemberLayoutController.$inject = ['memberAuthService', '$mdSidenav', '$rootScope', 'fctToast', '$state', '$scope'];
+
+	function MemberLayoutController(memberAuthService, $mdSidenav, $rootScope, fctToast, $state, $scope) {
+		var vm = this;
+
+		angular.extend(vm, {
+			logout: logout,
+			openLeftSidenav: openLeftSidenav,
+			isOpenLeftSidenav: isOpenLeftSidenav,
+			closeLeftSidenav: closeLeftSidenav,
+		});
+
+		activate();
+
+		function activate() {
+
+		}
+
+		function logout() {
+			memberAuthService.logout();
+		}
+
+		$rootScope.$on('logoutSuccessful', logoutSuccessful);
+
+		function logoutSuccessful(event) {
+			fctToast.showToast("Succesfully Logged out", true);
+			$state.go('out.member_login');
+		}
+
+		function openLeftSidenav() {
+			$mdSidenav('left').open();
+		}
+
+		function isOpenLeftSidenav() {
+			return $mdSidenav('left').isOpen();
+		}
+
+		function closeLeftSidenav() {
+			$mdSidenav('left').close();
+		}
+	}
+
+})();
+
+(function () {
+	'use strict';
+
+	angular
+		.module('fct.core')
 		.controller('FacultyForgotPasswordApplyController', FacultyForgotPasswordApplyController);
 
 	FacultyForgotPasswordApplyController.$inject = ['$scope', 'fctToast', 'facultyAuthService', '$state', '$rootScope'];
@@ -2682,137 +2866,6 @@
 			$scope.registerForm.$setUntouched();
 		}
 	}
-})();
-
-(function () {
-	'use strict';
-
-	angular
-		.module('fct.core')
-		.controller('FacultyLayoutController', FacultyLayoutController)
-		.controller('ContactDialogController', ContactDialogController);
-
-	FacultyLayoutController.$inject = ['facultyAuthService', '$mdSidenav', '$rootScope', 'fctToast', '$state', '$mdDialog', '$mdMedia', '$scope'];
-
-	function FacultyLayoutController(facultyAuthService, $mdSidenav, $rootScope, fctToast, $state, $mdDialog, $mdMedia, $scope) {
-		var vm = this;
-
-		$scope.$watch(function () {
-			return $mdMedia('xs') || $mdMedia('sm');
-		});
-
-		angular.extend(vm, {
-			logout: logout,
-			openLeftSidenav: openLeftSidenav,
-			isOpenLeftSidenav: isOpenLeftSidenav,
-			closeLeftSidenav: closeLeftSidenav,
-			contact: contact
-		});
-
-		activate();
-
-		function activate() {
-
-		}
-
-		function logout() {
-			facultyAuthService.logout();
-		}
-
-		$rootScope.$on('logoutSuccessful', logoutSuccessful);
-
-		function logoutSuccessful(event) {
-			fctToast.showToast("Succesfully Logged out", true);
-			$state.go('out.login');
-		}
-
-		function openLeftSidenav() {
-			$mdSidenav('left').open();
-		}
-
-		function isOpenLeftSidenav() {
-			return $mdSidenav('left').isOpen();
-		}
-
-		function closeLeftSidenav() {
-			$mdSidenav('left').close();
-		}
-
-		function contact(ev) {
-			var useFullScreen = $mdMedia('sm') || $mdMedia('xs');
-			$mdDialog.show({
-				controller: 'ContactDialogController',
-				templateUrl: '/templates/components/dialogs/contact.html',
-				parent: angular.element(document.body),
-				targetEvent: ev,
-				clickOutsideToClose: true,
-				fullscreen: useFullScreen // Only for -xs, -sm breakpoints.
-			});
-		}
-	}
-
-	ContactDialogController.$inject = ['$scope', '$mdDialog'];
-
-	function ContactDialogController($scope, $mdDialog) {
-		$scope.cancel = function () {
-			$mdDialog.cancel();
-		};
-
-		$scope.hide = function () {
-			$mdDialog.hide();
-		};
-	}
-})();
-
-(function () {
-	'use strict';
-
-	angular
-		.module('fct.core')
-		.controller('MemberLayoutController', MemberLayoutController);
-
-	MemberLayoutController.$inject = ['memberAuthService', '$mdSidenav', '$rootScope', 'fctToast', '$state', '$scope'];
-
-	function MemberLayoutController(memberAuthService, $mdSidenav, $rootScope, fctToast, $state, $scope) {
-		var vm = this;
-
-		angular.extend(vm, {
-			logout: logout,
-			openLeftSidenav: openLeftSidenav,
-			isOpenLeftSidenav: isOpenLeftSidenav,
-			closeLeftSidenav: closeLeftSidenav,
-		});
-
-		activate();
-
-		function activate() {
-
-		}
-
-		function logout() {
-			memberAuthService.logout();
-		}
-
-		$rootScope.$on('logoutSuccessful', logoutSuccessful);
-
-		function logoutSuccessful(event) {
-			fctToast.showToast("Succesfully Logged out", true);
-			$state.go('out.member_login');
-		}
-
-		function openLeftSidenav() {
-			$mdSidenav('left').open();
-		}
-
-		function isOpenLeftSidenav() {
-			return $mdSidenav('left').isOpen();
-		}
-
-		function closeLeftSidenav() {
-			$mdSidenav('left').close();
-		}
-	}
-
 })();
 
 (function() {
