@@ -31,7 +31,7 @@
             </md-input-container>
             <md-input-container class="md-block">
               <label>Description</label>
-              <textarea name="description" ng-model="ec.myEvent.description" md-maxlength="1000" rows="5"></textarea>
+              <textarea name="description" ng-model="ec.myEvent.description" md-maxlength="5000" rows="5"></textarea>
               <div ng-messages="myEvent.description.$error">
                 <div ng-message="required">This Field Is Required.</div>
                 <div ng-message="md-maxlength">The event name has to be less than 100 characters long.</div>
@@ -48,6 +48,25 @@
               <label>Event Short Code</label>
               <input required="" ng-model="ec.myEvent.shortcode" name="eventCode">
               <div ng-messages="myEvent.eventCode.$error">
+                <div ng-message="required">This Field Is Required.</div>
+              </div>
+            </md-input-container>
+            <md-input-container>
+              <label>Maximum Number Of Participants</label>
+              <input required="" ng-model="ec.myEvent.no_of_participants" name="no_of_participants"
+                min="1" max="11">
+              <div ng-messages="myEvent.no_of_participants.$error">
+                <div ng-message="required">This Field Is Required.</div>
+                <div ng-message="number">Please Enter A Valid Amount.</div>
+                <div ng-show="form.priceminrange.$error.min || form.priceminrange.$error.max">
+                  Enter Value From 1 to 11. 
+                </div>
+              </div>
+            </md-input-container>
+            <md-input-container>
+              <label>Keywords</label>
+              <input required="" ng-model="ec.myEvent.keywords" name="keywords">
+              <div ng-messages="myEvent.keywords.$error">
                 <div ng-message="required">This Field Is Required.</div>
               </div>
             </md-input-container>
@@ -72,9 +91,11 @@
                 <div ng-message="number">Please Enter A Valid Amount.</div>
               </div>
             </md-input-container>
+            <div ng-hide="true">
               Do Payment
               <md-switch ng-model="ec.myEvent.do_payment" aria-label="Switch 1" ng-disabled="true">
-            </md-switch>
+              </md-switch>
+            </div>
             <md-input-container>
               <label>Event Section</label>
               <input required="" ng-model="ec.myEvent.section" name="eventSection">

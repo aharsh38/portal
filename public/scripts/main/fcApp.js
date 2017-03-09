@@ -9,16 +9,6 @@
 	'use strict';
 
 	angular
-		.module('fct_app', [
-			'fct.api',
-			'fct.core'
-		]);
-})();
-
-(function () {
-	'use strict';
-
-	angular
 		.module('fct.core', [
 			'ngAnimate',
 			'ngMessages',
@@ -68,6 +58,16 @@
 			}
 		}
 	}
+})();
+
+(function () {
+	'use strict';
+
+	angular
+		.module('fct_app', [
+			'fct.api',
+			'fct.core'
+		]);
 })();
 
 	(function () {
@@ -383,6 +383,63 @@
 	'use strict';
 
 	angular
+		.module('fct.api')
+		.factory('authInterceptor', authInterceptor);
+
+	authInterceptor.$inject = ['$window', '$q', '$location'];
+
+	function authInterceptor($window, $q, $location) {
+		var service = {
+			request: request,
+			requestError: requestError,
+			response: response,
+			responseError: responseError
+		};
+
+		return service;
+
+		function getToken() {
+			if ($window.localStorage['auth-token']) {
+				return $window.localStorage['auth-token'];
+			} else {
+				return null;
+			}
+		}
+
+		function request(config) {
+			var token = getToken();
+			if (token !== null) {
+				var authHead = 'Bearer ' + token;
+				config.headers['Authorization'] = authHead;
+			}
+			console.log(config);
+			return config;
+		}
+
+		function requestError(rejection) {
+			// console.log("Request Rejection",rejection);
+			return $q.reject(rejection);
+		}
+
+		function response(response) {
+			// console.log("response",response);
+			return response || $q.when(response);
+		}
+
+		function responseError(rejection) {
+			console.log("response rejection", rejection);
+			if (rejection.status == 403) {
+				$location.path('/login');
+			}
+			return $q.reject(rejection);
+		}
+	}
+})();
+
+(function () {
+	'use strict';
+
+	angular
 	  .module('fct.core')
 	  .factory('eventService', eventService);
 
@@ -677,6 +734,7 @@
 			verifyFaculty: verifyFaculty,
 			getTotalRegistrations: getTotalRegistrations,
 			getDeleteModal: getDeleteModal,
+			initializeCKEditor: initializeCKEditor,
 		};
 
 		return service;
@@ -703,8 +761,35 @@
 
 		}
 
-		function uploadFiles() {
+		function initializeCKEditor() {
+			if ( CKEDITOR.env.ie && CKEDITOR.env.version < 9 )
+				CKEDITOR.tools.enableHtml5Elements( document );
+				CKEDITOR.config.height = 150;
+				CKEDITOR.config.width = 'auto';
+				var initSample = ( function() {
+					var wysiwygareaAvailable = isWysiwygareaAvailable();
+					return function() {
+						var editorElement = CKEDITOR.document.getById( 'editor' );
+						if ( wysiwygareaAvailable ) {
+							CKEDITOR.replace( 'editorRules' );
+							CKEDITOR.replace( 'editorSpecification' );
+							CKEDITOR.replace( 'editorJudgingCriteria' );
+						} else {
+							editorElement.setAttribute( 'contenteditable', 'true' );
+							CKEDITOR.inline( 'editorRules' );
+							CKEDITOR.inline( 'editorSpecification' );
+							CKEDITOR.inline( 'editorJudgingCriteria' );
+						}
+					};
 
+				function isWysiwygareaAvailable() {
+					if ( CKEDITOR.revision == ( '%RE' + 'V%' ) ) {
+						return true;
+					}
+					return !!CKEDITOR.plugins.get( 'wysiwygarea' );
+				}
+			} )();
+			initSample();
 		}
 
 		function getDeleteModal() {
@@ -867,63 +952,6 @@
 		function logout() {
 			removeToken();
 			$rootScope.$broadcast('logoutSuccessful');
-		}
-	}
-})();
-
-(function () {
-	'use strict';
-
-	angular
-		.module('fct.api')
-		.factory('authInterceptor', authInterceptor);
-
-	authInterceptor.$inject = ['$window', '$q', '$location'];
-
-	function authInterceptor($window, $q, $location) {
-		var service = {
-			request: request,
-			requestError: requestError,
-			response: response,
-			responseError: responseError
-		};
-
-		return service;
-
-		function getToken() {
-			if ($window.localStorage['auth-token']) {
-				return $window.localStorage['auth-token'];
-			} else {
-				return null;
-			}
-		}
-
-		function request(config) {
-			var token = getToken();
-			if (token !== null) {
-				var authHead = 'Bearer ' + token;
-				config.headers['Authorization'] = authHead;
-			}
-			console.log(config);
-			return config;
-		}
-
-		function requestError(rejection) {
-			// console.log("Request Rejection",rejection);
-			return $q.reject(rejection);
-		}
-
-		function response(response) {
-			// console.log("response",response);
-			return response || $q.when(response);
-		}
-
-		function responseError(rejection) {
-			console.log("response rejection", rejection);
-			if (rejection.status == 403) {
-				$location.path('/login');
-			}
-			return $q.reject(rejection);
 		}
 	}
 })();
@@ -1535,9 +1563,9 @@
       .module('fct.core')
       .controller('AddEventController', AddEventController);
 
-    AddEventController.$inject = ['$stateParams', 'eventService', '$rootScope', '$timeout', 'Upload', '$state', 'fctToast', '$filter'];
+    AddEventController.$inject = ['$stateParams', 'eventService', '$rootScope', '$timeout', 'Upload', '$state', 'fctToast', '$filter', 'memberService'];
 
-    function AddEventController(stateParams, eventService, $rootScope, $timeout, Upload, $state, fctToast, $filter) {
+    function AddEventController(stateParams, eventService, $rootScope, $timeout, Upload, $state, fctToast, $filter, memberService) {
         var vm = this;
         vm.isUpdate = false;
         vm.myEvent = {
@@ -1550,13 +1578,14 @@
         angular.extend(vm, {
             save: save,
             openManagersModal: openManagersModal,
-            uploadFiles: uploadFiles
+            uploadFiles: uploadFiles,
+            feeTypeChanged: feeTypeChanged
         });
 
         activate();
 
         function activate() {
-          initializeCKEditor();
+          memberService.initializeCKEditor();
         }
 
         function openManagersModal(total) {
@@ -1565,6 +1594,22 @@
             var each = {"index":1};
             vm.myEvent.managers.push(each);
             total--;
+          }
+        }
+
+        function feeTypeChanged() {
+          switch (vm.myEvent.fees_type) {
+            case "no_payment":
+              vm.myEvent.fees = 0;
+              vm.feeDisabled = true;
+              vm.myEvent.do_payment = false;
+              break;
+            case "do_payment":
+              vm.myEvent.do_payment = true;
+              break;
+            case "late_payment":
+              vm.myEvent.do_payment = false;
+              break;
           }
         }
 
@@ -1591,77 +1636,30 @@
             fctToast.showToast(error.data.message);
         }
 
-        function uploadFiles(files, errFiles) {
-          angular.forEach(files, function(file) {
-            vm.files.push(file);
-            file.upload = Upload.upload({
-              url: '/api/members/upload',
-              data: {file: file}
-            });
-            file.upload.then(function (response) {
-               $timeout(function () {
-                 file.result = response.data;
-                 var attach = {
-                   doc_name: file.name,
-                   link: file.result.path,
-                 };
-                 vm.myEvent.attachments.push(attach);
-               });
-             }, function (response) {
-               if (response.status > 0)
-                 vm.errorMsg = response.status + ': ' + response.data;
-             }, function (evt) {
-               file.progress = Math.min(100, parseInt(100.0 * evt.loaded / evt.total));
-             });
-          });
-        }
-
-        function initializeCKEditor() {
-          if ( CKEDITOR.env.ie && CKEDITOR.env.version < 9 )
-          	CKEDITOR.tools.enableHtml5Elements( document );
-
-          // The trick to keep the editor in the sample quite small
-          // unless user specified own height.
-          CKEDITOR.config.height = 150;
-          CKEDITOR.config.width = 'auto';
-
-          var initSample = ( function() {
-          	var wysiwygareaAvailable = isWysiwygareaAvailable();
-
-          	return function() {
-          		var editorElement = CKEDITOR.document.getById( 'editor' );
-
-          		// Depending on the wysiwygare plugin availability initialize classic or inline editor.
-          		if ( wysiwygareaAvailable ) {
-          			CKEDITOR.replace( 'editorRules' );
-          			CKEDITOR.replace( 'editorSpecification' );
-          			CKEDITOR.replace( 'editorJudgingCriteria' );
-          		} else {
-          			editorElement.setAttribute( 'contenteditable', 'true' );
-          			CKEDITOR.inline( 'editorRules' );
-          			CKEDITOR.inline( 'editorSpecification' );
-          			CKEDITOR.inline( 'editorJudgingCriteria' );
-
-          			// TODO we can consider displaying some info box that
-          			// without wysiwygarea the classic editor may not work.
-          		}
-
-          		//CKEDITOR.instances["editor"].getData()
-          		//to get the data
-          	};
-
-          	function isWysiwygareaAvailable() {
-          		// If in development mode, then the wysiwygarea must be available.
-          		// Split REV into two strings so builder does not replace it :D.
-          		if ( CKEDITOR.revision == ( '%RE' + 'V%' ) ) {
-          			return true;
-          		}
-
-          		return !!CKEDITOR.plugins.get( 'wysiwygarea' );
-          	}
-          } )();
-          initSample();
-        }
+    		function uploadFiles(files, errFiles) {
+    			angular.forEach(files, function(file) {
+    				vm.files.push(file);
+    				file.upload = Upload.upload({
+    					url: '/api/members/upload',
+    					data: {file: file}
+    				});
+    				file.upload.then(function (response) {
+    					 $timeout(function () {
+    						 file.result = response.data;
+    						 var attach = {
+    							 doc_name: file.name,
+    							 link: file.result.path,
+    						 };
+    						 vm.myEvent.attachments.push(attach);
+    					 });
+    				 }, function (response) {
+    					 if (response.status > 0)
+    						 vm.errorMsg = response.status + ': ' + response.data;
+    				 }, function (evt) {
+    					 file.progress = Math.min(100, parseInt(100.0 * evt.loaded / evt.total));
+    				 });
+    			});
+    		}
     }
 })();
 
@@ -2005,9 +2003,9 @@
       .module('fct.core')
       .controller('UpdateEventController', UpdateEventController);
 
-    UpdateEventController.$inject = ['$stateParams', 'eventService', '$rootScope', '$state', 'fctToast'];
+    UpdateEventController.$inject = ['$stateParams', 'eventService', '$rootScope', '$state', 'fctToast', 'memberService'];
 
-    function UpdateEventController(stateParams, eventService, $rootScope, state, fctToast) {
+    function UpdateEventController(stateParams, eventService, $rootScope, state, fctToast, memberService) {
         var vm = this;
         vm.isUpdate = true;
         vm.myEvent = {
@@ -2028,7 +2026,7 @@
         activate();
 
         function activate() {
-          initializeCKEditor();
+          memberService.initializeCKEditor();
           checkEventId();
         }
 
@@ -2039,31 +2037,6 @@
             vm.myEvent.managers.push(each);
             total--;
           }
-        }
-
-        function uploadFiles(files, errFiles) {
-          angular.forEach(files, function(file) {
-            vm.files.push(file);
-            file.upload = Upload.upload({
-              url: '/api/members/upload',
-              data: {file: file}
-            });
-            file.upload.then(function (response) {
-               $timeout(function () {
-                 file.result = response.data;
-                 var attach = {
-                   doc_name: file.name,
-                   link: file.result.path,
-                 };
-                 vm.myEvent.attachments.push(attach);
-               });
-             }, function (response) {
-               if (response.status > 0)
-                 vm.errorMsg = response.status + ': ' + response.data;
-             }, function (evt) {
-               file.progress = Math.min(100, parseInt(100.0 * evt.loaded / evt.total));
-             });
-          });
         }
 
         function checkEventId() {
@@ -2081,6 +2054,7 @@
           console.log(eventData);
           vm.myEvent = eventData.data;
           vm.myEvent.event = "Update";
+          vm.myEvent.totalManager = vm.myEvent.managers.length;
           vm.files = vm.myEvent.attachments;
           return [CKEDITOR.instances['editorRules'].setData(vm.myEvent.rules),
           CKEDITOR.instances['editorSpecification'].setData(vm.myEvent.specification),
@@ -2129,36 +2103,30 @@
           fctToast.showToast("Please try again later.");
         }
 
-        function initializeCKEditor() {
-          if ( CKEDITOR.env.ie && CKEDITOR.env.version < 9 )
-          	CKEDITOR.tools.enableHtml5Elements( document );
-            CKEDITOR.config.height = 150;
-            CKEDITOR.config.width = 'auto';
-            var initSample = ( function() {
-            	var wysiwygareaAvailable = isWysiwygareaAvailable();
-            	return function() {
-            		var editorElement = CKEDITOR.document.getById( 'editor' );
-            		if ( wysiwygareaAvailable ) {
-            			CKEDITOR.replace( 'editorRules' );
-            			CKEDITOR.replace( 'editorSpecification' );
-            			CKEDITOR.replace( 'editorJudgingCriteria' );
-            		} else {
-            			editorElement.setAttribute( 'contenteditable', 'true' );
-            			CKEDITOR.inline( 'editorRules' );
-            			CKEDITOR.inline( 'editorSpecification' );
-            			CKEDITOR.inline( 'editorJudgingCriteria' );
-            		}
-            	};
-
-          	function isWysiwygareaAvailable() {
-          		if ( CKEDITOR.revision == ( '%RE' + 'V%' ) ) {
-          			return true;
-          		}
-          		return !!CKEDITOR.plugins.get( 'wysiwygarea' );
-          	}
-          } )();
-          initSample();
-        }
+    		function uploadFiles(files, errFiles) {
+    			angular.forEach(files, function(file) {
+    				vm.files.push(file);
+    				file.upload = Upload.upload({
+    					url: '/api/members/upload',
+    					data: {file: file}
+    				});
+    				file.upload.then(function (response) {
+    					 $timeout(function () {
+    						 file.result = response.data;
+    						 var attach = {
+    							 doc_name: file.name,
+    							 link: file.result.path,
+    						 };
+    						 vm.myEvent.attachments.push(attach);
+    					 });
+    				 }, function (response) {
+    					 if (response.status > 0)
+    						 vm.errorMsg = response.status + ': ' + response.data;
+    				 }, function (evt) {
+    					 file.progress = Math.min(100, parseInt(100.0 * evt.loaded / evt.total));
+    				 });
+    			});
+    		}
     }
 })();
 
@@ -2454,13 +2422,12 @@
 
 		function createFilterFor(query) {
 			var lowercaseQuery = angular.lowercase(query);
-
 			return function filterFn(college) {
 				var matches = college.name.match(/\b(\w)/g);
 				var acronym = matches.join('');
 				acronym = acronym.toLowerCase();
-				return (college.name.toLowerCase().trim().indexOf(lowercaseQuery) === 0
-					|| acronym.indexOf(lowercaseQuery) === 0);
+				return (college.name.toLowerCase().trim().indexOf(lowercaseQuery) === 0 ||
+					acronym.indexOf(lowercaseQuery) === 0);
 			};
 		}
 	}

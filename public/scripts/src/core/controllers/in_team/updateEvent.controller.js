@@ -5,9 +5,9 @@
       .module('fct.core')
       .controller('UpdateEventController', UpdateEventController);
 
-    UpdateEventController.$inject = ['$stateParams', 'eventService', '$rootScope', '$state', 'fctToast'];
+    UpdateEventController.$inject = ['$stateParams', 'eventService', '$rootScope', '$state', 'fctToast', 'memberService'];
 
-    function UpdateEventController(stateParams, eventService, $rootScope, state, fctToast) {
+    function UpdateEventController(stateParams, eventService, $rootScope, state, fctToast, memberService) {
         var vm = this;
         vm.isUpdate = true;
         vm.myEvent = {
@@ -28,7 +28,7 @@
         activate();
 
         function activate() {
-          initializeCKEditor();
+          memberService.initializeCKEditor();
           checkEventId();
         }
 
@@ -39,31 +39,6 @@
             vm.myEvent.managers.push(each);
             total--;
           }
-        }
-
-        function uploadFiles(files, errFiles) {
-          angular.forEach(files, function(file) {
-            vm.files.push(file);
-            file.upload = Upload.upload({
-              url: '/api/members/upload',
-              data: {file: file}
-            });
-            file.upload.then(function (response) {
-               $timeout(function () {
-                 file.result = response.data;
-                 var attach = {
-                   doc_name: file.name,
-                   link: file.result.path,
-                 };
-                 vm.myEvent.attachments.push(attach);
-               });
-             }, function (response) {
-               if (response.status > 0)
-                 vm.errorMsg = response.status + ': ' + response.data;
-             }, function (evt) {
-               file.progress = Math.min(100, parseInt(100.0 * evt.loaded / evt.total));
-             });
-          });
         }
 
         function checkEventId() {
@@ -81,6 +56,7 @@
           console.log(eventData);
           vm.myEvent = eventData.data;
           vm.myEvent.event = "Update";
+          vm.myEvent.totalManager = vm.myEvent.managers.length;
           vm.files = vm.myEvent.attachments;
           return [CKEDITOR.instances['editorRules'].setData(vm.myEvent.rules),
           CKEDITOR.instances['editorSpecification'].setData(vm.myEvent.specification),
@@ -129,35 +105,29 @@
           fctToast.showToast("Please try again later.");
         }
 
-        function initializeCKEditor() {
-          if ( CKEDITOR.env.ie && CKEDITOR.env.version < 9 )
-          	CKEDITOR.tools.enableHtml5Elements( document );
-            CKEDITOR.config.height = 150;
-            CKEDITOR.config.width = 'auto';
-            var initSample = ( function() {
-            	var wysiwygareaAvailable = isWysiwygareaAvailable();
-            	return function() {
-            		var editorElement = CKEDITOR.document.getById( 'editor' );
-            		if ( wysiwygareaAvailable ) {
-            			CKEDITOR.replace( 'editorRules' );
-            			CKEDITOR.replace( 'editorSpecification' );
-            			CKEDITOR.replace( 'editorJudgingCriteria' );
-            		} else {
-            			editorElement.setAttribute( 'contenteditable', 'true' );
-            			CKEDITOR.inline( 'editorRules' );
-            			CKEDITOR.inline( 'editorSpecification' );
-            			CKEDITOR.inline( 'editorJudgingCriteria' );
-            		}
-            	};
-
-          	function isWysiwygareaAvailable() {
-          		if ( CKEDITOR.revision == ( '%RE' + 'V%' ) ) {
-          			return true;
-          		}
-          		return !!CKEDITOR.plugins.get( 'wysiwygarea' );
-          	}
-          } )();
-          initSample();
-        }
+    		function uploadFiles(files, errFiles) {
+    			angular.forEach(files, function(file) {
+    				vm.files.push(file);
+    				file.upload = Upload.upload({
+    					url: '/api/members/upload',
+    					data: {file: file}
+    				});
+    				file.upload.then(function (response) {
+    					 $timeout(function () {
+    						 file.result = response.data;
+    						 var attach = {
+    							 doc_name: file.name,
+    							 link: file.result.path,
+    						 };
+    						 vm.myEvent.attachments.push(attach);
+    					 });
+    				 }, function (response) {
+    					 if (response.status > 0)
+    						 vm.errorMsg = response.status + ': ' + response.data;
+    				 }, function (evt) {
+    					 file.progress = Math.min(100, parseInt(100.0 * evt.loaded / evt.total));
+    				 });
+    			});
+    		}
     }
 })();
