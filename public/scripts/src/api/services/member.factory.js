@@ -13,6 +13,7 @@
 			verifyFaculty: verifyFaculty,
 			getTotalRegistrations: getTotalRegistrations,
 			getDeleteModal: getDeleteModal,
+			initializeCKEditor: initializeCKEditor,
 		};
 
 		return service;
@@ -39,8 +40,35 @@
 
 		}
 
-		function uploadFiles() {
+		function initializeCKEditor() {
+			if ( CKEDITOR.env.ie && CKEDITOR.env.version < 9 )
+				CKEDITOR.tools.enableHtml5Elements( document );
+				CKEDITOR.config.height = 150;
+				CKEDITOR.config.width = 'auto';
+				var initSample = ( function() {
+					var wysiwygareaAvailable = isWysiwygareaAvailable();
+					return function() {
+						var editorElement = CKEDITOR.document.getById( 'editor' );
+						if ( wysiwygareaAvailable ) {
+							CKEDITOR.replace( 'editorRules' );
+							CKEDITOR.replace( 'editorSpecification' );
+							CKEDITOR.replace( 'editorJudgingCriteria' );
+						} else {
+							editorElement.setAttribute( 'contenteditable', 'true' );
+							CKEDITOR.inline( 'editorRules' );
+							CKEDITOR.inline( 'editorSpecification' );
+							CKEDITOR.inline( 'editorJudgingCriteria' );
+						}
+					};
 
+				function isWysiwygareaAvailable() {
+					if ( CKEDITOR.revision == ( '%RE' + 'V%' ) ) {
+						return true;
+					}
+					return !!CKEDITOR.plugins.get( 'wysiwygarea' );
+				}
+			} )();
+			initSample();
 		}
 
 		function getDeleteModal() {
