@@ -63,6 +63,10 @@ var Registration = require('./api/models/registrationModel');
 
 var authRouter = require('./api/routes/authRoutes')(Faculty, Member);
 app.use('/api/auth', authRouter);
+
+var mobileRouter = require('./api/routes/mobileRoutes')(Registration, Events);
+app.use('/api/mobile', mobileRouter);
+
 //
 var collegeRouter = require('./api/routes/collegeRoutes')(College);
 app.use('/api/college', collegeRouter);
