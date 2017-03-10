@@ -6,6 +6,9 @@ var eventModel = new Schema({
 		type: String,
 		required: true
 	},
+	main_section: {
+		type: String
+	},
 	tagline: {
 		type: String,
 	},
@@ -38,7 +41,7 @@ var eventModel = new Schema({
 	fees_type: {
 		type: String
 	},
-	do_payment: {
+	fixed_payment: {
 		type: Boolean
 	},
 	no_of_participants: {
@@ -49,6 +52,9 @@ var eventModel = new Schema({
 		type: String
 	},
 	shortcode: {
+		type: String
+	},
+	event_image: {
 		type: String
 	},
 	attachments: [{

@@ -15,7 +15,7 @@
 
             <md-input-container>
                 <label>Email</label>
-                <input required type="email" name="userEmail" ng-model="frc.user.email" minlength="10" maxlength="100" ng-pattern="/^.+@.+\..+$/" />
+                <input required type="email" name="userEmail" ng-model="frc.user.email"  maxlength="100" ng-pattern="/^.+@.+\..+$/" />
                 <div ng-messages="registerForm.userEmail.$error" role="alert">
                   <div ng-message="required">This is required.</div>
                   <div ng-message="email">Invalid e-mail address.</div>

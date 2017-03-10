@@ -119,7 +119,7 @@
 			if (checkMemberLoggedIn()) {
 				if ($rootScope.member) {
 					passwordObject.memberId = $rootScope.member.id;
-					var changePasswordLink = "/api/member/settings/changePassword";
+					var changePasswordLink = "/api/members/settings/changePassword";
 					$http.patch(changePasswordLink, passwordObject)
 						.then(changePasswordSuccess)
 						.catch(changePasswordFailure);
@@ -132,6 +132,7 @@
 		}
 
 		function changePasswordFailure(error) {
+			console.log(error);
 			$rootScope.$broadcast('MemberChangePasswordFailure', error);
 		}
 
