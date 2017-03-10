@@ -15,15 +15,29 @@ var eventController = function (Event) {
 		});
 	}
 
-	function upload(request, response) {
+	function uploadDocs(request, response) {
 		var temp_path = request.files.file.path;
-		var target_path = './public/media/temp/' + request.files.file.originalFilename;
+		var target_path = './public/media/docs/' + request.files.file.originalFilename;
 		fs.rename(temp_path, target_path, function (error) {
 			if (error) {
 				response.json(error);
 			} else {
 				var returnObject = {};
-				returnObject.path = target_path.toString().slice(1);
+				returnObject.path = target_path.toString().slice(8);
+				response.status(200).json(returnObject);
+			}
+		});
+	}
+
+	function uploadImage(request, response) {
+		var temp_path = request.files.file.path;
+		var target_path = './public/media/images/' + request.files.file.originalFilename;
+		fs.rename(temp_path, target_path, function (error) {
+			if (error) {
+				response.json(error);
+			} else {
+				var returnObject = {};
+				returnObject.path = target_path.toString().slice(8);
 				response.status(200).json(returnObject);
 			}
 		});
@@ -123,9 +137,12 @@ var eventController = function (Event) {
 		request.event.judging_criteria = request.body.judging_criteria;
 		request.event.managers = request.body.managers;
 		request.event.section = request.body.section;
+		request.event.main_section = request.body.main_section;
+		request.event.fixed_payment = request.body.fixed_payment;
+		request.event.keywords = request.event.keywords;
+		request.event.no_of_participants = request.event.no_of_participants;
 		request.event.fees = request.body.fees;
 		request.event.fees_type = request.body.fees_type;
-		request.event.do_payment = request.body.do_payment;
 		request.event.shortcode = request.body.shortcode;
 		request.event.save(function (error) {
 			if (error) {
@@ -157,7 +174,8 @@ var eventController = function (Event) {
 		getSingleEvent: getSingleEvent,
 		updateEvent: updateEvent,
 		deleteEvent: deleteEvent,
-		upload: upload
+		uploadDocs: uploadDocs,
+		uploadImage: uploadImage
 	};
 
 };

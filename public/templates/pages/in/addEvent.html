@@ -59,7 +59,7 @@
                 <div ng-message="required">This Field Is Required.</div>
                 <div ng-message="number">Please Enter A Valid Amount.</div>
                 <div ng-show="form.priceminrange.$error.min || form.priceminrange.$error.max">
-                  Enter Value From 1 to 11. 
+                  Enter Value From 1 to 11.
                 </div>
               </div>
             </md-input-container>
@@ -185,7 +185,7 @@
           <div id="editorJudgingCriteria">
       		</div>
         </div>
-        <md-button class="md-primary md-raised" type="submit" ng-disabled="myEvent.$invalid" ng-click="ec.save()">
+        <md-button class="md-primary md-raised" type="submit" ng-click="ec.save()">
           {{ ec.myEvent.event }}
         </md-button>
     </form>

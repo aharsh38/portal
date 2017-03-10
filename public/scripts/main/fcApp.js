@@ -2,13 +2,6 @@
 	'use strict';
 
 	angular
-		.module('fct.api', []);
-})();
-
-(function () {
-	'use strict';
-
-	angular
 		.module('fct_app', [
 			'fct.api',
 			'fct.core'
@@ -77,6 +70,13 @@
 			}
 		}
 	}
+})();
+
+(function () {
+	'use strict';
+
+	angular
+		.module('fct.api', []);
 })();
 
 	(function () {
@@ -387,6 +387,39 @@
 		// }
 
 	})();
+
+(function () {
+	'use strict';
+
+	angular
+		.module('fct.core')
+		.factory('fctToast', fctToast);
+
+	fctToast.$inject = ['$mdToast'];
+
+	function fctToast($mdToast) {
+		var service = {
+			showToast: showToast
+		};
+
+		return service;
+
+		function showToast(data, success) {
+			var toasterClass = 'md-toast-warn';
+
+			if (success) {
+				toasterClass = 'md-toast-success';
+			}
+
+			var toaster = $mdToast.simple()
+				.textContent(data)
+				.position('bottom right')
+				.hideDelay(3000)
+				.toastClass(toasterClass);
+			$mdToast.show(toaster);
+		}
+	}
+})();
 
 (function () {
 	'use strict';
@@ -981,7 +1014,7 @@
 			if (checkMemberLoggedIn()) {
 				if ($rootScope.member) {
 					passwordObject.memberId = $rootScope.member.id;
-					var changePasswordLink = "/api/member/settings/changePassword";
+					var changePasswordLink = "/api/members/settings/changePassword";
 					$http.patch(changePasswordLink, passwordObject)
 						.then(changePasswordSuccess)
 						.catch(changePasswordFailure);
@@ -994,45 +1027,13 @@
 		}
 
 		function changePasswordFailure(error) {
+			console.log(error);
 			$rootScope.$broadcast('MemberChangePasswordFailure', error);
 		}
 
 		function logout() {
 			removeToken();
 			$rootScope.$broadcast('logoutSuccessful');
-		}
-	}
-})();
-
-(function () {
-	'use strict';
-
-	angular
-		.module('fct.core')
-		.factory('fctToast', fctToast);
-
-	fctToast.$inject = ['$mdToast'];
-
-	function fctToast($mdToast) {
-		var service = {
-			showToast: showToast
-		};
-
-		return service;
-
-		function showToast(data, success) {
-			var toasterClass = 'md-toast-warn';
-
-			if (success) {
-				toasterClass = 'md-toast-success';
-			}
-
-			var toaster = $mdToast.simple()
-				.textContent(data)
-				.position('bottom right')
-				.hideDelay(3000)
-				.toastClass(toasterClass);
-			$mdToast.show(toaster);
 		}
 	}
 })();
@@ -1557,7 +1558,7 @@
 
 		function getAllFacultyCoordinatorsSuccess(response) {
 			vm.faculties = response.data;
-			console.log(vm.faculties);
+			// console.log(vm.faculties);
 			if (vm.limitFaculty <= vm.faculties.length) {
 				vm.nomoreFaculty = false;
 			}
@@ -1566,7 +1567,7 @@
 		function getAllFacultyCoordinatorsFailure(error) {
 			//State go to Add Events
 			//Dashboard
-			console.log(error);
+			// console.log(error);
 		}
 
 		function verifyFaculty(id, index, event) {
