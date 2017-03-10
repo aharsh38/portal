@@ -40,25 +40,25 @@
 			$stateProvider
 				.state('out', {
 					templateUrl: '/templates/layouts/out.html',
-					resolve: {
-						redirectLoggedIn: redirectLoggedIn
-					}
+					// resolve: {
+					// 	redirectLoggedIn: redirectLoggedIn
+					// }
 				})
 				.state('in_fc', {
 					templateUrl: '/templates/layouts/in_fc.html',
 					controller: 'FacultyLayoutController',
 					controllerAs: 'flayc',
-					resolve: {
-						redirectFacultyNotLoggedIn: redirectFacultyNotLoggedIn
-					}
+					// resolve: {
+					// 	redirectFacultyNotLoggedIn: redirectFacultyNotLoggedIn
+					// }
 				})
 				.state('in_tc', {
 					controller: 'MemberLayoutController',
 					controllerAs: 'mlayc',
 					templateUrl: '/templates/layouts/in_tc.html',
-					resolve: {
-						redirectTeamNotLoggedIn: redirectTeamNotLoggedIn
-					}
+					// resolve: {
+					// 	redirectTeamNotLoggedIn: redirectTeamNotLoggedIn
+					// }
 				})
 				.state('out.login', {
 					url: '/login',
@@ -120,10 +120,7 @@
 					url: '/member/events/create',
 					templateUrl: '/templates/pages/in/addEvent.html',
 					controller: 'AddEventController',
-					controllerAs: 'ec',
-					params: {
-						editData: null,
-					}
+					controllerAs: 'ec'
 				})
 				.state('in_tc.settings', {
 					url: '/member/settings',
@@ -177,7 +174,7 @@
 					controller: 'AddStudentController',
 					controllerAs: 'ascc'
 				})
-				.state('in_fc.participant_registration', {
+				.state('participant_registration', {
 					url: '/participantRegistration',
 					templateUrl: '/templates/pages/in/faculty/participantRegistration.html',
 					controller: 'ParticipantRegistrationController',

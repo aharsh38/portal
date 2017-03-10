@@ -14,6 +14,7 @@
 
 		angular.extend(vm, {
 			verifyFaculty: verifyFaculty,
+			rejectFaculty: rejectFaculty,
 			loadmore: loadmore
 		});
 
@@ -69,6 +70,36 @@
 
 		function verifyFacultyFailure(error) {
 			//fctToast.show('FAilure');
+		}
+
+		function rejectFaculty(id, index, event) {
+			vm.rejectingIndex = index;
+
+			var confirm = $mdDialog.confirm()
+				.title('Are you sure?')
+				.textContent('You will be Rejecting ' + vm.faculties[index].name + ' as a Faculty Coordinator')
+				.ariaLabel('FCVER')
+				.targetEvent(event)
+				.ok('Confirm Rejection')
+				.theme('normal')
+				.cancel('No, not now !!!');
+
+			$mdDialog.show(confirm).then(function () {
+				return memberService.rejectFaculty(id)
+					.then(rejectFacultySuccess)
+					.catch(rejectFacultyFailure);
+			}, function () {
+				// $scope.status = 'You decided to keep your debt.';
+			});
+		}
+
+		function rejectFacultySuccess(response) {
+			console.log(response);
+			fctToast("Faculty Rejected.", false);
+		}
+
+		function rejectFacultyFailure(error) {
+			console.log(error);
 		}
 
 		function loadmore() {

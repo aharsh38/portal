@@ -112,25 +112,25 @@
 			$stateProvider
 				.state('out', {
 					templateUrl: '/templates/layouts/out.html',
-					resolve: {
-						redirectLoggedIn: redirectLoggedIn
-					}
+					// resolve: {
+					// 	redirectLoggedIn: redirectLoggedIn
+					// }
 				})
 				.state('in_fc', {
 					templateUrl: '/templates/layouts/in_fc.html',
 					controller: 'FacultyLayoutController',
 					controllerAs: 'flayc',
-					resolve: {
-						redirectFacultyNotLoggedIn: redirectFacultyNotLoggedIn
-					}
+					// resolve: {
+					// 	redirectFacultyNotLoggedIn: redirectFacultyNotLoggedIn
+					// }
 				})
 				.state('in_tc', {
 					controller: 'MemberLayoutController',
 					controllerAs: 'mlayc',
 					templateUrl: '/templates/layouts/in_tc.html',
-					resolve: {
-						redirectTeamNotLoggedIn: redirectTeamNotLoggedIn
-					}
+					// resolve: {
+					// 	redirectTeamNotLoggedIn: redirectTeamNotLoggedIn
+					// }
 				})
 				.state('out.login', {
 					url: '/login',
@@ -192,10 +192,7 @@
 					url: '/member/events/create',
 					templateUrl: '/templates/pages/in/addEvent.html',
 					controller: 'AddEventController',
-					controllerAs: 'ec',
-					params: {
-						editData: null,
-					}
+					controllerAs: 'ec'
 				})
 				.state('in_tc.settings', {
 					url: '/member/settings',
@@ -249,7 +246,7 @@
 					controller: 'AddStudentController',
 					controllerAs: 'ascc'
 				})
-				.state('in_fc.participant_registration', {
+				.state('participant_registration', {
 					url: '/participantRegistration',
 					templateUrl: '/templates/pages/in/faculty/participantRegistration.html',
 					controller: 'ParticipantRegistrationController',
@@ -726,6 +723,7 @@
 			getTotalRegistrations: getTotalRegistrations,
 			getDeleteModal: getDeleteModal,
 			initializeCKEditor: initializeCKEditor,
+			rejectFaculty: rejectFaculty,
 		};
 
 		return service;
@@ -738,6 +736,12 @@
 
 		function verifyFaculty(id) {
 			return $http.patch('/api/members/faculty/verify/' + id)
+				.then(responseFunc)
+				.catch(errorFunc);
+		}
+
+		function rejectFaculty(id) {
+			return $http.patch('/api/members/faculty/reject/' + id)
 				.then(responseFunc)
 				.catch(errorFunc);
 		}
@@ -1481,6 +1485,7 @@
 
 		angular.extend(vm, {
 			verifyFaculty: verifyFaculty,
+			rejectFaculty: rejectFaculty,
 			loadmore: loadmore
 		});
 
@@ -1536,6 +1541,36 @@
 
 		function verifyFacultyFailure(error) {
 			//fctToast.show('FAilure');
+		}
+
+		function rejectFaculty(id, index, event) {
+			vm.rejectingIndex = index;
+
+			var confirm = $mdDialog.confirm()
+				.title('Are you sure?')
+				.textContent('You will be Rejecting ' + vm.faculties[index].name + ' as a Faculty Coordinator')
+				.ariaLabel('FCVER')
+				.targetEvent(event)
+				.ok('Confirm Rejection')
+				.theme('normal')
+				.cancel('No, not now !!!');
+
+			$mdDialog.show(confirm).then(function () {
+				return memberService.rejectFaculty(id)
+					.then(rejectFacultySuccess)
+					.catch(rejectFacultyFailure);
+			}, function () {
+				// $scope.status = 'You decided to keep your debt.';
+			});
+		}
+
+		function rejectFacultySuccess(response) {
+			console.log(response);
+			fctToast("Faculty Rejected.", false);
+		}
+
+		function rejectFacultyFailure(error) {
+			console.log(error);
 		}
 
 		function loadmore() {
@@ -1883,7 +1918,7 @@
 		vm.myParticipant = {
 			eventObject: {
 				event_id: 123123,
-				event_shortcode: 'EVET'
+				event_shortcode: 'ET'
 			},
 			other_participants: []
 		};
@@ -1902,47 +1937,47 @@
 
 		activate();
 
-		function activate() {
-			var x = '{"eventObject": {"event_id": "123123","event_shortcode": "EVET","event_section": "1","event_name": "1"},"other_participants": [{"title": "Team Member","leaderFlag": false,"$$hashKey": "object:68","name": "cl","email": "d@ddc.c","college_name": "1","branch": "2","semester": "6","mobileno": "43223443223","enrollment": "322342342342343"}],"total_amount": 100,"numberOfParticipant": "2","do_payment": true,"team_leader": {"title": "Team Leader","leaderFlag": true,"$$hashKey": "object:67","name": "fd","email": "s@sd.3","mobileno": "12341232133","college_name": "1","branch": "1","semester": "2","enrollment": "231312312332333"}}';
-			return $http.post('/api/registration/create', x)
+		function activate() {alert('ddd');
+			var x = '{"eventObject": {"event_id": "123123","event_shortcode": "ET","event_section": "1","event_name": "1"},"other_participants": [{"title": "Team Member","leaderFlag": false,"$$hashKey": "object:68","name": "cl","email": "d@ddc.c","college_name": "1","branch": "2","semester": "6","mobileno": "43223443223","enrollment": "322342342342343"}],"total_amount": 100,"numberOfParticipant": "2","do_payment": true,"team_leader": {"title": "Team Leader","leaderFlag": true,"$$hashKey": "object:67","name": "fd","email": "s@sd.3","mobileno": "12341232133","college_name": "1","branch": "1","semester": "2","enrollment": "231312312332333"}}';
+			return $http.post('http://192.168.1.143:9000/api/registration/create', x)
 				.then(resolveFunc)
 				.catch(rejectFunc);
 		}
 
     function openParticipantModule(total) {
-      vm.nopflag = true;
-      var first = true;
-      vm.myParticipant.other_participants = [];
-      while(total > 0) {
-        var each = {"title": (first) ? "Team Leader" : "Team Member",
-                    "leaderFlag": first};
-        vm.myParticipant.other_participants.push(each);
-        first = false;
-        total--;
-      }
+      // vm.nopflag = true;
+      // var first = true;
+      // vm.myParticipant.other_participants = [];
+      // while(total > 0) {
+      //   var each = {"title": (first) ? "Team Leader" : "Team Member",
+      //               "leaderFlag": first};
+      //   vm.myParticipant.other_participants.push(each);
+      //   first = false;
+      //   total--;
+      // }
     }
 
     function getParticipantLength() {
-      return vm.myParticipant.other_participants.length;
+      // return vm.myParticipant.other_participants.length;
     }
 
 		function save() {
-			vm.myParticipant.do_payment = true;
-			console.log(JSON.stringify(vm.myParticipant));
-			vm.myParticipant.team_leader = vm.myParticipant.other_participants[0];
-			vm.myParticipant.other_participants.splice(0, 1);
-			console.log(JSON.stringify(vm.myParticipant));
-			return $http.post('/api/registration/create', vm.myParticipant)
-				.then(resolveFunc)
-				.catch(rejectFunc);
+		// 	vm.myParticipant.do_payment = true;
+		// 	console.log(JSON.stringify(vm.myParticipant));
+		// 	vm.myParticipant.team_leader = vm.myParticipant.other_participants[0];
+		// 	vm.myParticipant.other_participants.splice(0, 1);
+		// 	console.log(JSON.stringify(vm.myParticipant));
+		// 	return $http.post('/api/registration/create', vm.myParticipant)
+		// 		.then(resolveFunc)
+		// 		.catch(rejectFunc);
 		}
 
 		function resolveFunc(response) {
-			console.log(response);
+			console.log("dfdff" + response);
 		}
 
 		function rejectFunc(error) {
-			console.log(error);
+			console.log("zzdf" + error);
 		}
 	}
 })();
