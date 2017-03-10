@@ -9,8 +9,8 @@ var mobileRoutes = function (Faculty, Member, Registration, College, Events) {
   var registrationMiddleware = require('../middlewares/getParamRegistration')(Registration);
   var eventMiddleware = require('../middlewares/getParamEvent')(Events);
 
-  memberRouter.param('teamId', registrationMiddleware);
-  memberRouter.param('eventId', eventMiddleware);
+  mobileRouter.param('teamId', registrationMiddleware);
+  mobileRouter.param('eventId', eventMiddleware);
 
   mobileRouter.get('/eventBySection', eventController.getEventsBySection);
   mobileRouter.get('/getSingleEvent/:eventId', eventController.getSingleEvent);
@@ -21,4 +21,4 @@ var mobileRoutes = function (Faculty, Member, Registration, College, Events) {
 	return mobileRouter;
 };
 
-module.exports = memberRoutes;
+module.exports = mobileRoutes;

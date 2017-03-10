@@ -1,4 +1,10 @@
 var passport = require('passport');
+var rand = require('random-key');
+var fs = require('fs');
+var pdf = require('html-pdf');
+var Handlebars = require('handlebars');
+var json2xls = require('json2xls');
+var _ = require('underscore');
 
 var registrationController = require('./registrationController')();
 var mailController = require('./mailController')();
@@ -15,21 +21,21 @@ var facultyController = function(Faculty, Registration) {
         });
     }
 
-    function addStudentCoordinator(request, response){
-      request.faculty.student_coordinator = request.body.student_coordinator;
-      request.faculty.save(function(error) {
-          if (error) {
-              throwError(response, error, 500, 'Internal Server error', 'Faculty Register');
-          } else {
-              // var token;
-              // token = faculty.generateJwt();
-              response.status(200);
-              response.json({
-                  //"token": token,
-                  "message": "success"
-              });
-          }
-      });
+    function addStudentCoordinator(request, response) {
+        request.faculty.student_coordinator = request.body.student_coordinator;
+        request.faculty.save(function(error) {
+            if (error) {
+                throwError(response, error, 500, 'Internal Server error', 'Faculty Register');
+            } else {
+                // var token;
+                // token = faculty.generateJwt();
+                response.status(200);
+                response.json({
+                    //"token": token,
+                    "message": "success"
+                });
+            }
+        });
     }
 
     function confirmRegistration(request, response) {
@@ -170,6 +176,7 @@ var facultyController = function(Faculty, Registration) {
                 }
             });
     }
+
     function getFaculty(req, res) {
         Faculty.find()
             .exec(function(err, faculty) {
@@ -182,10 +189,139 @@ var facultyController = function(Faculty, Registration) {
     }
 
 
-    // function exportFacultyStudentList(request, response) {
-    // }
+    function exportVFSList(request, response) {
+      Faculty.find({
+              verified: true,
+              rejected: false
+          })
+          .select({
+              name: 1,
+              email: 1,
+              mobileno: 1,
+              verified: 1,
+              student_coordinator: 1,
+              collegeId: 1
+          })
+          .populate({
+              path: 'collegeId',
+              select: '_id name code city state pincode'
+          })
+          .exec(function(error, facultystudent) {
+              if (error) {
+                  throwError(response, error, 500, 'Internal Server Error', 'Faculty Fetch Failed');
+                  return;
+              }
+              if (!facultystudent) {
+                  throwError(response, error, 404, 'Not Found', 'Faculty not found');
+              } else {
+                  console.log(facultystudent);
+                  var en = "Confirmed Faculty List";
+                  var data = [];
+                  _.each(facultystudent, function(element, index, list) {
+                      //console.log(element.student_coordinator.name);
+                      var arrayOfFaculty = {
+                          sr_no: index + 1,
+                          name: element.name,
+                          email: element.email,
+                          mobileno: element.mobileno,
+                          student_name: element.student_coordinator.name,
+                          student_email: element.student_coordinator.email,
+                          student_mobile: element.student_coordinator.mobileno,
+                          student_enrollment: element.student_coordinator.enrollment,
+                          student_branch: element.student_coordinator.branch,
+                          college_name: element.collegeId.name,
+                          college_city: element.collegeId.city,
+                          college_code: element.collegeId.code,
+                          State: element.collegeId.state
+                      };
+                      console.log(arrayOfFaculty);
+                      data.push(arrayOfFaculty);
+                  });
+                  console.log(data);
+                  var xls = json2xls(data);
+                  fs.writeFileSync('./documents/' + en + '.xlsx', xls, 'binary');
+                  if (fs.existsSync('./documents/' + en + '.xlsx')) {
+                      response.download('./documents/' + en + '.xlsx', function(error) {
+                          if (error) {
+                              console.log(error);
+                              //To Add Throwerror
+                          } else {
+                              response.status(200);
+                              response.json(facultystudent);
+                              fs.unlinkSync('./documents/' + en + '.xlsx');
+                          }
+                      });
+                  } else {
+                      console.log('File doesn\'t exist');
+                      //to add throw error
+                  }
+              }
+          });
+    }
 
-
+    function exportUVFList(request, response) {
+        Faculty.find({
+                verified: false,
+                rejected: false
+            })
+            .select({
+                name: 1,
+                email: 1,
+                mobileno: 1,
+                verified: 1,
+                collegeId: 1
+            })
+            .populate({
+                path: 'collegeId',
+                select: '_id name code city state pincode'
+            })
+            .exec(function(error, faculty) {
+                if (error) {
+                    throwError(response, error, 500, 'Internal Server Error', 'Faculty Fetch Failed');
+                    return;
+                }
+                if (!faculty) {
+                    throwError(response, error, 404, 'Not Found', 'Faculty not found');
+                } else {
+                    //console.log(faculty);
+                    var en = "Unconfirmed Faculty List";
+                    var data = [];
+                    _.each(faculty, function(element, index, list) {
+                        //console.log(element.collegeId.name);
+                        var arrayOfFaculty = {
+                            sr_no: index + 1,
+                            name: element.name,
+                            email: element.email,
+                            mobileno: element.mobileno,
+                            college_name: element.collegeId.name,
+                            college_city: element.collegeId.city,
+                            college_code: element.collegeId.code,
+                            State: element.collegeId.state
+                        };
+                        console.log(arrayOfFaculty);
+                        data.push(arrayOfFaculty);
+                    });
+                    console.log(data);
+                    var xls = json2xls(data);
+                    fs.writeFileSync('./documents/' + en + '.xlsx', xls, 'binary');
+                    if (fs.existsSync('./documents/' + en + '.xlsx')) {
+                        response.download('./documents/' + en + '.xlsx', function(error) {
+                            if (error) {
+                                console.log(error);
+                                //To Add Throwerror
+                            } else {
+                                response.status(200);
+                                response.json(faculty);
+                                fs.unlinkSync('./documents/' + en + '.xlsx');
+                            }
+                        });
+                    } else {
+                        console.log('File doesn\'t exist');
+                        //to add throw error
+                    }
+                }
+            });
+    }
     var ac = {};
     ac.seeRegistration = seeRegistration;
     ac.confirmRegistration = confirmRegistration;
@@ -193,6 +329,8 @@ var facultyController = function(Faculty, Registration) {
     ac.getAllFacultyCoordinators = getAllFacultyCoordinators;
     ac.addStudentCoordinator = addStudentCoordinator;
     ac.getFaculty = getFaculty;
+    ac.exportVFSList = exportVFSList;
+    ac.exportUVFList = exportUVFList;
     return ac;
 
 };

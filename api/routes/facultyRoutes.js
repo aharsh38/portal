@@ -14,8 +14,8 @@ var facultyRoutes = function (Faculty, Registration) {
 	facultyRouter.get('/:facultyId/registrations', registrationController.getFacultyRegistrations);
 	facultyRouter.post('/:facultyId/addStudentCoordinator', facultyController.addStudentCoordinator);
 	facultyRouter.get('/getFaculty', facultyController.getFaculty);
-
-	// facultyRouter.post('/:facultyId/studentCoordinator', facultyController.addStudentController);
+	facultyRouter.get('/exportVFSList', facultyController.exportVFSList);
+	facultyRouter.get('/exportUVFList', facultyController.exportUVFList);
 	// facultyRouter.put('/:facultyId/studentCoordinator/edit', facultyController.editStudentController);
 
 
