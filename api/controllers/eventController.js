@@ -104,11 +104,13 @@ var eventController = function (Event) {
 		event_obj.judging_criteria = request.body.judging_criteria;
 		event_obj.managers = request.body.managers;
 		event_obj.section = request.body.section;
+		event_obj.main_section = request.body.main_section;
+		event_obj.fixed_payment = request.body.fixed_payment;
+		event_obj.keywords = request.body.keywords;
+		event_obj.no_of_participants = request.body.no_of_participants;
 		event_obj.fees = request.body.fees;
 		event_obj.fees_type = request.body.fees_type;
-		event_obj.do_payment = request.body.do_payment;
 		event_obj.shortcode = request.body.shortcode;
-		event_obj.attachments = request.body.attachments;
 		event_obj.save(function (error) {
 			if (error) {
 				throwError(response, "Creating Event", error);
@@ -139,8 +141,8 @@ var eventController = function (Event) {
 		request.event.section = request.body.section;
 		request.event.main_section = request.body.main_section;
 		request.event.fixed_payment = request.body.fixed_payment;
-		request.event.keywords = request.event.keywords;
-		request.event.no_of_participants = request.event.no_of_participants;
+		request.event.keywords = request.body.keywords;
+		request.event.no_of_participants = request.body.no_of_participants;
 		request.event.fees = request.body.fees;
 		request.event.fees_type = request.body.fees_type;
 		request.event.shortcode = request.body.shortcode;
