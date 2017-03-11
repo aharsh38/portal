@@ -87,8 +87,6 @@
 			}
 		}
 
-
-
 		function save() {
 			vm.myEvent.rules = CKEDITOR.instances['editorRules'].getData();
 			vm.myEvent.specification = CKEDITOR.instances['editorSpecification'].getData();
