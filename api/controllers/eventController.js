@@ -24,6 +24,7 @@ var eventController = function (Event) {
 			} else {
 				var returnObject = {};
 				returnObject.path = target_path.toString().slice(8);
+
 				response.status(200).json(returnObject);
 			}
 		});
@@ -37,7 +38,7 @@ var eventController = function (Event) {
 				response.json(error);
 			} else {
 				var returnObject = {};
-				returnObject.path = target_path.toString().slice(8);
+				returnObject.path = 'http://portal.gtu.ac.in' + target_path.toString().slice(8);
 				response.status(200).json(returnObject);
 			}
 		});
