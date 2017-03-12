@@ -7,7 +7,8 @@ var eventModel = new Schema({
 		required: true
 	},
 	main_section: {
-		type: String
+		type: String,
+		default: ''
 	},
 	tagline: {
 		type: String,
