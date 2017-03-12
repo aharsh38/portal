@@ -117,7 +117,7 @@ var registrationController = function (Registration) {
 		registration.other_participants = request.body.other_participants;
 		registration.total_amount = request.body.total_amount;
 		registration.do_payment = request.body.do_payment;
-		// console.log(request.body.eventObject.event_shortcode);
+		registration.late_payment = request.body.late_payment;
 		registration.teamId = request.body.eventObject.event_shortcode + rand.generateDigits(6);
 		// registration.teamId = "SC" + rand.generateDigits(6);
 
@@ -143,7 +143,7 @@ var registrationController = function (Registration) {
 				eventObject: registration.eventObject
 			};
 			slip = generateSlip('forPayment', registration.teamId, dataToGeneratePDF);
-		} else {
+		} else if (request.body.latePayment) {
 			dataToGeneratePDF = {
 				teamId: registration.teamId,
 				team_leader: registration.team_leader,
@@ -156,8 +156,18 @@ var registrationController = function (Registration) {
 			if (error) {
 				throwError(response, error, 500, 'Internal Server error', 'Event Register');
 			} else {
+				var dnlink = 'http://portal.gtu.ac.in/api/registration/downloadSlip/' + registration.teamId + '?type=';
+				if (request.body.do_payment) {
+					dnlink += 'forPayment';
+				} else if (request.body.late_payment) {
+					dnlink += 'latePayment';
+				}
+
+
 				response.status(200);
-				response.json(registration);
+				response.json({
+					downloadSlip: dnlink
+				});
 			}
 		});
 	}
