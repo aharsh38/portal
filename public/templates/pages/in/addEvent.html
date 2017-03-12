@@ -20,6 +20,17 @@
                 <div ng-message="md-maxlength">The event name has to be less than 100 characters long.</div>
               </div>
             </md-input-container>
+
+            <md-input-container>
+              <label>Main section</label>
+              <input name="main_section" required md-maxlength="100"
+                ng-model="ec.myEvent.main_section">
+              <div ng-messages="myEvent.main_section.$error">
+                <div ng-message="required">This Field Is Required.</div>
+                <div ng-message="md-maxlength">The event name has to be less than 100 characters long.</div>
+              </div>
+            </md-input-container>
+
             <md-input-container>
               <label>Tag Line</label>
               <input name="tagLine" required md-maxlength="200"
@@ -93,7 +104,7 @@
             </md-input-container>
             <div >
               Fixed Payment
-              <md-switch ng-model="ec.myEvent.fixed_payment" aria-label="Switch 1" ng-disabled="true">
+              <md-switch ng-model="ec.myEvent.fixed_payment" aria-label="Switch 1">
               </md-switch>
             </div>
             <md-input-container>
