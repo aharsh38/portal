@@ -12,6 +12,7 @@
 			'validation.match',
 			'ngMdIcons',
 			'angularMoment',
+			'ckeditor'
 			// 'fct.api'
 		]);
 
