@@ -50,9 +50,10 @@ var registrationController = function (Registration) {
 							};
 						} else {
 							var html = fs.readFileSync('./api/slips/' + type + '/html/' + teamid + '.html', 'utf8');
-
+								
 							var options = {
-								format: 'Letter'
+								format: 'Letter',
+								zoom: 0.5
 							};
 
 							pdf.create(html, options).toFile('./api/slips/' + type + '/' + teamid + '.pdf', function (error, res) {
@@ -69,7 +70,7 @@ var registrationController = function (Registration) {
 											throwError(response, error, 500, 'Internal Server error', 'Event Register');
 										} else {
 
-											var dnlink = 'http://localhost:9000/api/registration/downloadSlip/' + registration.teamId + '?type=';
+											var dnlink = 'http://portal.gtu.ac.in/api/registration/downloadSlip/' + registration.teamId + '?type=';
 											if (request.body.do_payment) {
 												dnlink += 'forPayment';
 											} else if (request.body.late_payment) {
