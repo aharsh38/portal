@@ -335,6 +335,7 @@ var facultyController = function (Faculty, Registration) {
 			} else {
 				if (faculty.verified) {
 					var token = faculty.generateJwt();
+					console.log(token);
 					response.status(200);
 					response.json({
 						token: token
