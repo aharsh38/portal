@@ -324,7 +324,6 @@ var facultyController = function (Faculty, Registration) {
 			});
 	}
 
-
 	function checkFacultyVerified(request, response) {
 		Faculty.findById(request.payload._id).exec(function (error, faculty) {
 			if (error) {
