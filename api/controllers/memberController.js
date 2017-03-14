@@ -21,7 +21,7 @@ var memberController = function(Faculty, Member, College) {
 
     function verifyFaculty(request, response) {
         request.faculty.verified = true;
-
+        request.faculty.rejected = false;
         College.findOne({
                 _id: request.faculty.collegeId
             })
@@ -54,6 +54,7 @@ var memberController = function(Faculty, Member, College) {
 
     function rejectFaculty(request, response) {
         request.faculty.rejected = true;
+        request.faculty.verified = false;
         request.faculty.save(function(error) {
             if (error)
                 throwError(response, error, 500, 'Internal Server Error', 'Faculty Rejection Failed');
