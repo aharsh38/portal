@@ -75,7 +75,7 @@
 				.textContent('You will be Rejecting ' + vm.faculties[index].name + ' as a Faculty Coordinator')
 				.ariaLabel('FCVER')
 				.targetEvent(event)
-				.ok('Confirm Verification')
+				.ok('Confirm Rejection')
 				.theme('normal')
 				.cancel('No, not now !!!');
 			$mdDialog.show(confirm).then(function () {

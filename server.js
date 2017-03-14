@@ -15,7 +15,7 @@ require('./api/config/passport');
 //var dbURI = "mongodb://localhost/gtutestingFinal";
 //var dbURI = "mongodb://localhost/gtutesting";
 
-var dbURI = 'mongodb://hraw1699:fdtdcdr6m@ds161039.mlab.com:61039/gtutechfesttest';
+var dbURI = 'mongodb://harshit1699:fdtdcdr6m@ds161039.mlab.com:61039/gtutechfesttest';
 
 // var dbURI = config.testMongo;
 
