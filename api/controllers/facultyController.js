@@ -217,7 +217,10 @@ var facultyController = function(Faculty, Registration) {
                     throwError(response, error, 404, 'Not Found', 'Faculty not found');
                 } else {
                     console.log(facultystudent);
-                    var en = "Confirmed Faculty List";
+                    var en = "ConfirmedFacultyList";
+                    if(fs.existsSync('./public/documents/' + en + '.xlsx')){
+                      fs.unlinkSync('./public/documents/' + en + '.xlsx');
+                    }
                     var data = [];
                     _.each(facultystudent, function(element, index, list) {
                         //console.log(element.student_coordinator.name);
@@ -241,17 +244,11 @@ var facultyController = function(Faculty, Registration) {
                     });
                     console.log(data);
                     var xls = json2xls(data);
-                    fs.writeFileSync('./documents/' + en + '.xlsx', xls, 'binary');
-                    if (fs.existsSync('./documents/' + en + '.xlsx')) {
-                        response.download('./documents/' + en + '.xlsx', function(error) {
-                            if (error) {
-                                console.log(error);
-                                //To Add Throwerror
-                            } else {
-                                response.status(200);
-                                response.json(facultystudent);
-                                fs.unlinkSync('./documents/' + en + '.xlsx');
-                            }
+                    fs.writeFileSync('./public/documents/' + en + '.xlsx', xls, 'binary');
+                    if (fs.existsSync('./public/documents/' + en + '.xlsx')) {
+                        response.status(200);
+                        response.json({
+                          path:'/documents/'+en+'.xlsx'
                         });
                     } else {
                         console.log('File doesn\'t exist');
@@ -285,8 +282,11 @@ var facultyController = function(Faculty, Registration) {
                 if (!faculty) {
                     throwError(response, error, 404, 'Not Found', 'Faculty not found');
                 } else {
-                    //console.log(faculty);
-                    var en = "Unconfirmed Faculty List";
+                    console.log(faculty);
+                    var en = "UnconfirmedFacultyList";
+                    if(fs.existsSync('./public/documents/' + en + '.xlsx')){
+                      fs.unlinkSync('./public/documents/' + en + '.xlsx');
+                    }
                     var data = [];
                     _.each(faculty, function(element, index, list) {
                         //console.log(element.collegeId.name);
@@ -300,23 +300,29 @@ var facultyController = function(Faculty, Registration) {
                             college_code: element.collegeId.code,
                             State: element.collegeId.state
                         };
-                        console.log(arrayOfFaculty);
+                        // console.log(arrayOfFaculty);
                         data.push(arrayOfFaculty);
                     });
-                    console.log(data);
+                    console.log("FINAL DATA",data);
                     var xls = json2xls(data);
-                    fs.writeFileSync('./documents/' + en + '.xlsx', xls, 'binary');
-                    if (fs.existsSync('./documents/' + en + '.xlsx')) {
-                        response.download('./documents/' + en + '.xlsx', function(error) {
-                            if (error) {
-                                console.log(error);
-                                //To Add Throwerror
-                            } else {
-                                response.status(200);
-                                response.json(faculty);
-                                fs.unlinkSync('./documents/' + en + '.xlsx');
-                            }
+                    fs.writeFileSync('./public/documents/' + en + '.xlsx', xls, 'binary');
+                    if (fs.existsSync('./public/documents/' + en + '.xlsx')) {
+                        response.status(200);
+                        response.json({
+                          path:'/documents/'+en+'.xlsx'
                         });
+                        // response.download('./documents/' + en + '.xlsx', function(error) {
+                        //     if (error) {
+                        //         console.log(error);
+                        //         //To Add Throwerror
+                        //     } else {
+                        //
+                        //         response.send(faculty);
+                        //         //fs.unlinkSync('./documents/' + en + '.xlsx');
+                        //
+                        //     }
+
+                        // });
                     } else {
                         console.log('File doesn\'t exist');
                         //to add throw error

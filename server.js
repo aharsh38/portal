@@ -14,8 +14,8 @@ require('./api/config/passport');
 
 //var dbURI = "mongodb://localhost/gtutestingFinal";
 //var dbURI = "mongodb://localhost/gtutesting";
-
-var dbURI = 'mongodb://gtutest1:fdtdcdr6m@ds161039.mlab.com:61039/gtutechfesttest';
+var dbURI = 'mongodb://hraw:fdtdcdr6m@ds131480.mlab.com:31480/gtutechfesttest1';
+//var dbURI = 'mongodb://gtutest1:fdtdcdr6m@ds161039.mlab.com:61039/gtutechfesttest';
 //var dbURI = 'mongodb://hraw1699:fdtdcdr6m@ds161039.mlab.com:61039/gtutechfesttest';
 
 // var dbURI = config.testMongo;
@@ -83,8 +83,8 @@ app.use('/api/college', collegeRouter);
 // // app.use('/api/event', eventRouter);
 //
 var memberRouter = require('./api/routes/memberRoutes')(Faculty, Member, Registration, College, Events);
-//app.use('/api/members', memberRouter);
-app.use('/api/members', authenticate.memberAuth, memberRouter);
+app.use('/api/members', memberRouter);
+//app.use('/api/members', authenticate.memberAuth, memberRouter);
 //
 var facultyRouter = require('./api/routes/facultyRoutes')(Faculty, Registration);
 //app.use('/api/faculty', facultyRouter);

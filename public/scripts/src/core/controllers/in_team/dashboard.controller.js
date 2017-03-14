@@ -21,7 +21,7 @@
 		}
 
 		function getVFSCount() {
-			return memberService.getVerifyFacultyStudentCount()
+			return memberService.getVerifyFacultyStudent()
 				.then(function(response) {
 					console.log(response);
 				})
@@ -31,7 +31,17 @@
 		}
 
 		function getUVFCount() {
-			return memberService.getUnverifiedFacultyCount()
+			return memberService.getUnverifiedFaculty()
+				.then(function(response) {
+					console.log(response);
+				})
+				.catch(function(error) {
+					console.log(error);
+				});
+		}
+
+		function getUnconfirmedRegistration() {
+			return memberService.getUnconfirmedRegistration()
 				.then(function(response) {
 					console.log(reponse);
 				})

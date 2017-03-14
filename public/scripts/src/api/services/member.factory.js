@@ -14,8 +14,8 @@
 			rejectFaculty: rejectFaculty,
 			getTotalRegistrations: getTotalRegistrations,
 			getDeleteModal: getDeleteModal,
-			getVerifyFacultyStudentCount: getVerifyFacultyStudentCount,
-			getUnverifiedFacultyCount: getUnverifiedFacultyCount,
+			getVerifyFacultyStudent: getVerifyFacultyStudent,
+			getUnverifiedFaculty: getUnverifiedFaculty,
 		};
 
 		return service;
@@ -44,14 +44,20 @@
 				.catch(errorFunc);
 		}
 
-		function getVerifyFacultyStudentCount() {
+		function getVerifyFacultyStudent() {
 			return $http.get('/api/members/exportVFSList')
 				.then(responseFunc)
 				.catch(errorFunc);
 		}
 
-		function getUnverifiedFacultyCount() {
+		function getUnverifiedFaculty() {
 			return $http.get('/api/members/exportUVFList')
+				.then(responseFunc)
+				.catch(errorFunc);
+		}
+
+		function getUnconfirmedRegistration() {
+			return $http.get('/api/members/registration/exportUnconfirmedRegistration')
 				.then(responseFunc)
 				.catch(errorFunc);
 		}
