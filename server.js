@@ -51,6 +51,7 @@ app.use(bodyParser.json());
 
 app.use(passport.initialize());
 
+
 var authenticate = require('./api/middlewares/authenticate')(config);
 var College = require('./api/models/collegeModel');
 var Events = require('./api/models/eventModel');
@@ -101,3 +102,12 @@ app.listen(port, function () {
 });
 
 module.exports = app;
+// app.get('/download', function(request, response){
+// 		response.download('./api/slips/SM019423.pdf', function(error, data){
+// 			if (error) {
+// 					response.send("error");
+// 			} else {
+// 					response.status(404).send(data);
+// 			}
+// 		});
+// });
