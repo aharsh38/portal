@@ -170,11 +170,52 @@ var eventController = function(Event) {
         });
     }
 
+    function getEventsBySectionM(request, response) {
+        var event_classification = [];
+        var event_classification_final = [];
+
+        Events.find({
+            main_section: 'Technical Events'
+        }).aggregate(
+            [{
+                $group: {
+                    _id: "$section",
+                    events: {
+                        $push: {
+                            event_name: "$name",
+                            fixed_payment: "$fixed_payment",
+                            fees: "$fees",
+                            fees_type: "$fees_type",
+                            no_of_participants: "$no_of_participants",
+                            shortcode: "$shortcode",
+                            id: "$_id"
+                        }
+                    }
+                }
+            }],
+            function(error, data) {
+                if (error) {
+                    throwError(response, "Finding all events according to section", error);
+                } else {
+
+                    event_classification = _und.indexBy(data, '_id');
+
+                    for (var j in event_classification) {
+                        event_classification_final.push({
+                            section_name: event_classification[j]['_id'],
+                            events: event_classification[j]['events']
+                        });
+                    }
+                    res.json(event_classification_final);
+                }
+            });
+    }
 
 
     return {
         getAllEvents: getAllEvents,
         getEventsBySection: getEventsBySection,
+        getEventsBySectionM: getEventsBySectionM,
         createEvent: createEvent,
         getSingleEvent: getSingleEvent,
         updateEvent: updateEvent,
@@ -184,4 +225,4 @@ var eventController = function(Event) {
     };
 
 };
-module.exports = eventController;
+module.exports = eventController;;
