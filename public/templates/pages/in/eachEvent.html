@@ -1,13 +1,13 @@
 <!DOCTYPE html>
-<div class="margin-tb-gt-xs-4 margin-lr-gt-xs-2 bg-white margin-xs-1 padding-tb-3 padding-lr-2 page" md-whiteframe="5">
-  <div layout="row">
-    <md-button class="md-icon-button md-raised md-primary" ui-sref="in_tc.showEvent" md-no-ink="true">
-        <ng-md-icon icon="arrow_back" size="20">
-        </ng-md-icon>
-    </md-button>
-    <h2>{{ aec.myEvent.event }} Event Details</h2>
-  </div>
-  <form class="al-add-event-page margin-top-2" layout-gt-xs="row" layout-xs="column"
+<div class="margin-tb-gt-xs-4 margin-lr-gt-xs-2 bg-white margin-xs-1 padding-tb-3 padding-lr-2 page" md-whiteframe="5" layout="column">
+    <div layout="row">
+        <md-button class="md-icon-button md-raised md-primary" ui-sref="in_tc.showEvent" md-no-ink="true">
+            <ng-md-icon icon="arrow_back" size="20">
+            </ng-md-icon>
+        </md-button>
+        <h2>{{ aec.myEvent.event }} Event Details</h2>
+    </div>
+  <!-- <form class="al-add-event-page margin-top-2" layout-gt-xs="row" layout-xs="column"
     name="myEvent" layout-wrap>
     <div layout="column" flex="100">
       <div layout="row" class="margin-1" flex>
@@ -39,10 +39,6 @@
         {{ eec.myEvent.fee_type }}
       </div>
       <div layout="row" class="margin-1" flex>
-        <label>Do Payment:&nbsp;&nbsp;&nbsp;&nbsp;</label>
-        {{ eec.myEvent.do_payment }}
-      </div>
-      <div layout="row" class="margin-1" flex>
         <label>Event Section:&nbsp;&nbsp;&nbsp;&nbsp;</label>
         {{ eec.myEvent.section }}
       </div>
@@ -51,17 +47,7 @@
         <div ng-bind-html="eec.rules"></div>
         <br/>
       </div>
-      <div layout="row" flex class="margin-1">
-        <label>Specification:&nbsp;&nbsp;&nbsp;&nbsp;</label>
-        <div ng-bind-html="eec.specification"></div>
-        <br/>
-      </div>
-      <div layout="row" flex class="margin-1">
-        <label>Judging Criteria:&nbsp;&nbsp;&nbsp;&nbsp;</label>
-        <br/>
-        <div ng-bind-html="eec.judging_criteria"></div>
-        <br/>
-      </div>
+
       <div layout="row" flex ng-repeat="each in eec.myEvent.managers" class="margin-1">
         <div layout="row" class="margin-1">
           <label>Event Manager {{ $index + 1 }}</label>
@@ -88,5 +74,45 @@
         </div>
       </div>
     </div>
-  </form>
+  </form> -->
+    <div class="margin-top-5 padding-lr-gt-xs-2" layout-gt-xs="row" layout-wrap>
+        <p class="margin-top-xs-1" flex-gt-xs="50"><strong>Tagline:</strong> {{eec.myEvent.tagline}}</p>
+        <p class="margin-top-xs-1" flex-gt-xs="20"><strong>Section:</strong> {{eec.myEvent.section}}</p>
+        <p class="margin-top-xs-1" flex-gt-xs="20"><strong>Shortcode:</strong> {{eec.myEvent.shortcode}}</p>
+
+        <p class="margin-top-xs-1" flex-gt-xs="50"><strong>Fees:</strong> {{eec.myEvent.fees}}</p>
+        <p class="margin-top-xs-1" flex-gt-xs="40"><strong>Fees type:</strong> {{eec.myEvent.fees_type}}</p>
+
+
+        <p class="margin-top-1" flex-gt-xs="95"><strong>Description:</strong> {{eec.myEvent.description}}</p>
+        <p flex-gt-xs="95" class="margin-top-1"><strong>Rules:</strong><br>
+            <div ng-bind-html="eec.rules"></div>
+            <br/>
+        </p>
+
+        <p flex-gt-xs="95"><strong>Rules:</strong><br>
+            <div ng-bind-html="eec.rules"></div>
+            <br/>
+        </p>
+
+        <p flex-gt-xs="95" ng-if="eec.specification != ''"><strong>Specification:</strong><br>
+            <div ng-bind-html="eec.specification"></div>
+            <br/>
+        </p>
+
+        <p flex-gt-xs="95"><strong>Judging Criteria:</strong><br>
+            <div ng-bind-html="eec.judging_criteria"></div>
+            <br/>
+        </p>
+
+        <p flex-gt-xs="100" ng-repeat="each in eec.myEvent.managers" layout-gt-xs="row" layout-wrap>
+            <span flex-gt-xs="95"><strong>Event Manager {{$index}}</strong><br></span>
+            <span flex-gt-xs="33"><strong>Name: </strong>{{each.manager_name}}</span>
+            <span flex-gt-xs="33"><strong>Mobile No: </strong>{{each.contact_number}}</span>
+            <span flex-gt-xs="33"><strong>Email: </strong>{{each.email_id}}</span>
+        </p>
+
+
+    </div>
+
 </div>

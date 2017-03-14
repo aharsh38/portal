@@ -108,6 +108,10 @@ var registrationModel = new Schema({
 		type: Boolean,
 		default: false
 	},
+	late_payment: {
+		type: Boolean,
+		default: false
+	},
 	confirmed_mail_send: {
 		type: Boolean,
 		default: false

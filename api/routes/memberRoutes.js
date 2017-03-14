@@ -29,6 +29,7 @@ var memberRoutes = function (Faculty, Member, Registration, College, Events) {
 	memberRouter.param('eventId', eventMiddleware);
 	memberRouter.param('memberId', memberMiddleware);
 
+
 	memberRouter.patch('/faculty/verify/:facultyId', memberController.verifyFaculty);
 	memberRouter.patch('/faculty/reject/:facultyId', memberController.rejectFaculty);
 
@@ -36,9 +37,10 @@ var memberRoutes = function (Faculty, Member, Registration, College, Events) {
 	memberRouter.get('/faculty', facultyController.getAllFacultyCoordinators);
 
 	// memberRouter.get('/registrations/', registrationController.getAllEventsRegistrationData);
+	memberRouter.get('/importCollege', collegeController.importCollege);
 
-
-	memberRouter.post('/upload', eventController.upload);
+	memberRouter.post('/upload', eventController.uploadDocs);
+	memberRouter.post('/uploadImage', eventController.uploadImage);
 
 	memberRouter.route('/events_in_section').get(eventController.getEventsBySection);
 	memberRouter.route('/events')
@@ -54,7 +56,7 @@ var memberRoutes = function (Faculty, Member, Registration, College, Events) {
 	// memberRouter.post('/registrations/export', registrationController.exportRegistration);
 	// memberRouter.get('/registrations/allEventsExport', registrationController.exportForCertificate);
 
-	// memberRouter.patch('/settings/:memberId/changePassword', memberController.memberChangePassword);
+	memberRouter.patch('/settings/changePassword', memberController.memberChangePassword);
 
 	return memberRouter;
 };

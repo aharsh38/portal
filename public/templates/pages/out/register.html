@@ -4,17 +4,18 @@
         <form name="registerForm" layout="column" ng-submit="$event.preventDefault()">
             <md-input-container>
                 <label>Name</label>
-                <input required type="text" name="username" ng-model="frc.user.name" ng-pattern="text" />
+                <input required type="text" name="username" ng-model="frc.user.name" ng-pattern="/^$|^[a-zA-Z]+ [a-zA-Z]+([a-zA-Z]+)?$/" />
                 <div ng-messages="registerForm.username.$error" role="alert">
                     <div ng-message="required">
                         Enter full name
                     </div>
+                    <div ng-message="pattern">Name should be of only 2 to 3 words and should be valid.</div>
                 </div>
             </md-input-container>
 
             <md-input-container>
                 <label>Email</label>
-                <input required type="email" name="userEmail" ng-model="frc.user.email" minlength="10" maxlength="100" ng-pattern="/^.+@.+\..+$/" />
+                <input required type="email" name="userEmail" ng-model="frc.user.email"  maxlength="100" ng-pattern="/^.+@.+\..+$/" />
                 <div ng-messages="registerForm.userEmail.$error" role="alert">
                   <div ng-message="required">This is required.</div>
                   <div ng-message="email">Invalid e-mail address.</div>
@@ -24,7 +25,7 @@
 
             <md-input-container>
                 <label>Mobile no:</label>
-                <input required name="phno" ng-model="frc.user.mobileno" minlength="10" maxlength="10" ng-pattern="/^[7-9]{3}[0-9]{7}$/"/>
+                <input required name="phno" ng-model="frc.user.mobileno" minlength="10" maxlength="10" ng-pattern="/^[0-9]{10}$/"/>
                 <div ng-messages="registerForm.phno.$error" role="alert">
                     <div ng-message="required">This is required.</div>
                     <div ng-message="maxlength">Invalid Mobile No.</div>

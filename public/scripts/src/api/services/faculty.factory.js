@@ -11,7 +11,8 @@
 		var baseLink = '/api/faculty/' + $rootScope.faculty.id;
 
 		var service = {
-			confirmRegistration: confirmRegistration
+			confirmRegistration: confirmRegistration,
+			getFacultyRegistrations: getFacultyRegistrations
 		};
 
 		return service;
@@ -30,12 +31,7 @@
 				.catch(errorFunc);
 		}
 
-		function editStudentCoordinator(students) {
-			var link = baseLink + '/studentCoordinator';
-			return $http.put(link, students)
-				.then(resolveFunc)
-				.catch(errorFunc);
-		}
+
 
 		function resolveFunc(response) {
 			return response;

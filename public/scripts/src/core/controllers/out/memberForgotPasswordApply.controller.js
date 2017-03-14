@@ -19,7 +19,8 @@
 			submit: submit
 		});
 
-		function submit() {
+		function submit(event) {
+			console.log("HIII");
 			if (vm.submitButtonClicked) {
 				event.preventDefault();
 			} else {
