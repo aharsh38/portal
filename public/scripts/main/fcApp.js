@@ -9,16 +9,6 @@
 	'use strict';
 
 	angular
-		.module('fct_app', [
-			'fct.api',
-			'fct.core'
-		]);
-})();
-
-(function () {
-	'use strict';
-
-	angular
 		.module('fct.core', [
 			'ngAnimate',
 			'ngMessages',
@@ -77,6 +67,16 @@
 			}
 		}
 	}
+})();
+
+(function () {
+	'use strict';
+
+	angular
+		.module('fct_app', [
+			'fct.api',
+			'fct.core'
+		]);
 })();
 
 	(function () {
@@ -1613,7 +1613,7 @@
 		}
 
 		function rejectFaculty(id, index, event) {
-			vm.verifyingIndex = index;
+			vm.rejectionIndex = index;
 			var confirm = $mdDialog.confirm()
 				.title('Are you sure?')
 				.textContent('You will be Rejecting ' + vm.faculties[index].name + ' as a Faculty Coordinator')
@@ -1632,7 +1632,8 @@
 		}
 
 		function rejectFacultySuccess(response) {
-			vm.faculties[vm.verifyingIndex].rejected = true;
+			vm.faculties[vm.rejectionIndex].rejected = true;
+			vm.faculties.splice(vm.rejectionIndex, 1);
 			console.log(response);
 		}
 
