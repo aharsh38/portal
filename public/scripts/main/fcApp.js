@@ -9,16 +9,6 @@
 	'use strict';
 
 	angular
-		.module('fct_app', [
-			'fct.api',
-			'fct.core'
-		]);
-})();
-
-(function () {
-	'use strict';
-
-	angular
 		.module('fct.core', [
 			'ngAnimate',
 			'ngMessages',
@@ -41,13 +31,22 @@
 		.module('fct.core')
 		.run(initializeCore);
 
-	initializeCore.$inject = ['$rootScope', '$interval'];
+	initializeCore.$inject = ['$rootScope', '$interval', 'facultyAuthService'];
 
-	function initializeCore($rootScope, $interval) {
+	function initializeCore($rootScope, $interval, facultyAuthService) {
 		active();
 
 		function active() {
 			preloader();
+			return check();
+		}
+
+		$rootScope.alreadyRedirected = false;
+
+		function check() {
+			if (facultyAuthService.checkFacultyLoggedIn()) {
+				return facultyAuthService.checkVerified();
+			}
 		}
 
 		function preloader() {
@@ -70,305 +69,324 @@
 	}
 })();
 
-	(function () {
+(function () {
 	'use strict';
 
 	angular
-		.module('fct.core')
-		.config(configName);
+		.module('fct_app', [
+			'fct.api',
+			'fct.core'
+		]);
+})();
 
-	configName.$inject = ['$mdThemingProvider', '$stateProvider', '$urlRouterProvider', '$locationProvider', '$httpProvider'];
+	(function () {
+		'use strict';
 
-	function configName($mdThemingProvider, $stateProvider, $urlRouterProvider, $locationProvider, $httpProvider) {
-		var themePalette = {
-			primary: "blue",
-			accent: "amber",
-			warn: "red"
-		};
+		angular
+			.module('fct.core')
+			.config(configName);
 
-		activate();
+		configName.$inject = ['$mdThemingProvider', '$stateProvider', '$urlRouterProvider', '$locationProvider', '$httpProvider'];
 
-		function activate() {
-			setTheme();
-			setRoutes();
-			addInterceptors();
-		}
+		function configName($mdThemingProvider, $stateProvider, $urlRouterProvider, $locationProvider, $httpProvider) {
+			var themePalette = {
+				primary: "blue",
+				accent: "amber",
+				warn: "red"
+			};
 
-		function addInterceptors() {
-			$httpProvider.interceptors.push('authInterceptor');
-		}
+			activate();
 
-		function setTheme() {
-			$mdThemingProvider.theme('default')
-				.primaryPalette(themePalette.primary)
-				.accentPalette(themePalette.accent)
-				.warnPalette(themePalette.warn);
-		}
-
-		function setRoutes() {
-			$locationProvider.html5Mode(true);
-			$urlRouterProvider.when('/', '/login');
-			$urlRouterProvider.otherwise('/login');
-			$stateProvider
-				.state('out', {
-					templateUrl: '/templates/layouts/out.html',
-					resolve: {
-						redirectLoggedIn: redirectLoggedIn
-					}
-				})
-				.state('in_fc', {
-					templateUrl: '/templates/layouts/in_fc.html',
-					controller: 'FacultyLayoutController',
-					controllerAs: 'flayc',
-					resolve: {
-						redirectFacultyNotLoggedIn: redirectFacultyNotLoggedIn
-					}
-				})
-				.state('in_tc', {
-					controller: 'MemberLayoutController',
-					controllerAs: 'mlayc',
-					templateUrl: '/templates/layouts/in_tc.html',
-					resolve: {
-						redirectTeamNotLoggedIn: redirectTeamNotLoggedIn
-					}
-				})
-				.state('out.login', {
-					url: '/login',
-					templateUrl: '/templates/pages/out/login.html',
-					controller: 'FacultyLoginController',
-					controllerAs: 'flc'
-				})
-				.state('out.register', {
-					url: '/register',
-					templateUrl: '/templates/pages/out/register.html',
-					controller: 'FacultyRegistrationController',
-					controllerAs: 'frc'
-				})
-				.state('out.forgotPasswordApply', {
-					url: '/forgotPasswordApply',
-					templateUrl: '/templates/pages/out/forgotPasswordApply.html',
-					controller: 'FacultyForgotPasswordApplyController',
-					controllerAs: 'ffpac'
-				})
-				.state('out.forgotPasswordSet', {
-					url: '/forgotPasswordSet?token&id',
-					templateUrl: '/templates/pages/out/forgotPasswordSet.html',
-					controller: 'FacultyForgotPasswordSetController',
-					controllerAs: 'ffpsc'
-				})
-				.state('out.member_login', {
-					url: '/member/login',
-					templateUrl: '/templates/pages/out/member/login.html',
-					controller: 'MemberLoginController',
-					controllerAs: 'mlc'
-				})
-				.state('out.member_register', {
-					url: '/member/register',
-					templateUrl: '/templates/pages/out/member/register.html',
-					controller: 'MemberRegistrationController',
-					controllerAs: 'mrc'
-				})
-				.state('in_tc.verifyCoordinator', {
-					url: '/verifyCoordinator',
-					templateUrl: '/templates/pages/in/verifyCoordinator.html',
-					controller: 'VerifyCoordinatorController',
-					controllerAs: 'vcc'
-				})
-				.state('in_tc.collegeList', {
-					url: '/collegeList',
-					templateUrl: '/templates/pages/in/collegeList.html'
-				})
-				.state('in_tc.dashboard', {
-					url: '/dashboard',
-					templateUrl: '/templates/pages/in/dashboard.html'
-				})
-				.state('in_tc.eventRegistrations', {
-					url: '/eventRegistration',
-					templateUrl: '/templates/pages/in/eventRegistration.html',
-					controller: 'EventRegistrationController',
-					controllerAs: 'erc'
-				})
-				.state('in_tc.addEvent', {
-					url: '/member/events/create',
-					templateUrl: '/templates/pages/in/addEvent.html',
-					controller: 'AddEventController',
-					controllerAs: 'ec',
-					params: {
-						editData: null,
-					}
-				})
-				.state('in_tc.settings', {
-					url: '/member/settings',
-					templateUrl: '/templates/pages/in/memberSettings.html',
-					controller: 'MemberSettingsController',
-					controllerAs: 'msc'
-				})
-				.state('in_tc.updateEvent', {
-					url: '/member/events/:eventId/update',
-					templateUrl: '/templates/pages/in/addEvent.html',
-					controller: 'UpdateEventController',
-					controllerAs: 'ec'
-				})
-				.state('in_tc.showEvent', {
-					url: '/member/events',
-					templateUrl: '/templates/pages/in/showEvent.html',
-					controller: 'ShowEventController',
-					controllerAs: 'sec'
-				})
-				.state('in_tc.eachEvent', {
-					url: '/member/events/:eventId',
-					templateUrl: '/templates/pages/in/eachEvent.html',
-					controller: 'EachEventController',
-					controllerAs: 'eec'
-				})
-				.state('in_fc.guidelines', {
-					url: '/guidelines',
-					templateUrl: '/templates/pages/in/guidelines.html'
-				})
-				.state('in_fc.settings', {
-					url: '/settings',
-					templateUrl: '/templates/pages/in/facultySettings.html',
-					controller: 'FacultySettingsController',
-					controllerAs: 'fsc'
-				})
-				.state('in_fc.confirm_registration', {
-					url: '/confirm/registrations',
-					templateUrl: '/templates/pages/in/faculty/confirmRegistration.html',
-					controller: 'ConfirmRegistrationsController',
-					controllerAs: 'crc'
-				})
-				.state('in_fc.registration_details', {
-					url: '/registrations',
-					templateUrl: '/templates/pages/in/faculty/registrationDetails.html',
-					controller: 'RegistrationDetailsController',
-					controllerAs: 'rdc'
-				})
-				.state('in_fc.student_coordinator', {
-					url: '/studentCoordinator',
-					templateUrl: '/templates/pages/in/faculty/addStudentCordinator.html',
-					controller: 'AddStudentController',
-					controllerAs: 'ascc'
-				})
-				.state('in_fc.participant_registration', {
-					url: '/participantRegistration',
-					templateUrl: '/templates/pages/in/faculty/participantRegistration.html',
-					controller: 'ParticipantRegistrationController',
-					controllerAs: 'prc'
-				});
-		}
-	}
-
-	redirectFacultyNotLoggedIn.$inject = ['facultyAuthService','memberAuthService', '$q', '$state', '$timeout', '$rootScope'];
-
-	function redirectFacultyNotLoggedIn(facultyAuthService, memberAuthService, $q, $state, $timeout, $rootScope) {
-		var defer = $q.defer();
-		var facultyAuthenticate = facultyAuthService.checkFacultyLoggedIn();
-		if (facultyAuthenticate) {
-			if ($rootScope.faculty.verified !== true && !$rootScope.alreadyRedirected) {
-				$timeout(function () {
-					$rootScope.alreadyRedirected = true;
-					$state.go('in_fc.guidelines');
-				});
+			function activate() {
+				setTheme();
+				setRoutes();
+				addInterceptors();
 			}
 
-			defer.resolve();
-		} else {
-			var memberAuthenticate = memberAuthService.checkMemberLoggedIn();
-			if(memberAuthenticate && !$rootScope.alreadyRedirected){
-				$timeout(function () {
-					$rootScope.alreadyRedirected = true;
-					$state.go('in_tc.verifyCoordinator');
-				});
-				defer.resolve();
-			}else {
-				$timeout(function () {
-					$rootScope.alreadyRedirected = true;
-					$state.go('out.login');
-				});
-				defer.reject();
+			function addInterceptors() {
+				$httpProvider.interceptors.push('authInterceptor');
+			}
+
+			function setTheme() {
+				$mdThemingProvider.theme('default')
+					.primaryPalette(themePalette.primary)
+					.accentPalette(themePalette.accent)
+					.warnPalette(themePalette.warn);
+			}
+
+			function setRoutes() {
+				$locationProvider.html5Mode(true);
+				$urlRouterProvider.when('/', '/login');
+				$urlRouterProvider.otherwise('/login');
+				$stateProvider
+					.state('out', {
+						templateUrl: '/templates/layouts/out.html',
+						resolve: {
+							redirectLoggedIn: redirectLoggedIn
+						}
+					})
+					.state('in_fc', {
+						templateUrl: '/templates/layouts/in_fc.html',
+						controller: 'FacultyLayoutController',
+						controllerAs: 'flayc',
+						resolve: {
+							redirectFacultyNotLoggedIn: redirectFacultyNotLoggedIn
+						}
+					})
+					.state('in_tc', {
+						controller: 'MemberLayoutController',
+						controllerAs: 'mlayc',
+						templateUrl: '/templates/layouts/in_tc.html',
+						resolve: {
+							redirectTeamNotLoggedIn: redirectTeamNotLoggedIn
+						}
+					})
+					.state('out.login', {
+						url: '/login',
+						templateUrl: '/templates/pages/out/login.html',
+						controller: 'FacultyLoginController',
+						controllerAs: 'flc'
+					})
+					.state('out.register', {
+						url: '/register',
+						templateUrl: '/templates/pages/out/register.html',
+						controller: 'FacultyRegistrationController',
+						controllerAs: 'frc'
+					})
+					.state('out.forgotPasswordApply', {
+						url: '/forgotPasswordApply',
+						templateUrl: '/templates/pages/out/forgotPasswordApply.html',
+						controller: 'FacultyForgotPasswordApplyController',
+						controllerAs: 'ffpac'
+					})
+					.state('out.forgotPasswordSet', {
+						url: '/forgotPasswordSet?token&id',
+						templateUrl: '/templates/pages/out/forgotPasswordSet.html',
+						controller: 'FacultyForgotPasswordSetController',
+						controllerAs: 'ffpsc'
+					})
+					.state('out.member_login', {
+						url: '/member/login',
+						templateUrl: '/templates/pages/out/member/login.html',
+						controller: 'MemberLoginController',
+						controllerAs: 'mlc'
+					})
+					.state('out.member_register', {
+						url: '/member/register',
+						templateUrl: '/templates/pages/out/member/register.html',
+						controller: 'MemberRegistrationController',
+						controllerAs: 'mrc'
+					})
+					.state('out.member_forgotPasswordSet', {
+						url: '/member/forgotPasswordSet?token&id',
+						templateUrl: '/templates/pages/out/member/forgotPasswordSet.html',
+						controller: 'MemberForgotPasswordSetController',
+						controllerAs: 'mfpsc'
+					})
+					.state('out.member_forgotPasswordApply', {
+						url: '/member/forgotPasswordApply',
+						templateUrl: '/templates/pages/out/member/forgotPasswordApply.html',
+						controller: 'MemberForgotPasswordApplyController',
+						controllerAs: 'mfpac'
+					})
+					.state('in_tc.verifyCoordinator', {
+						url: '/member/verifyCoordinator',
+						templateUrl: '/templates/pages/in/verifyCoordinator.html',
+						controller: 'VerifyCoordinatorController',
+						controllerAs: 'vcc'
+					})
+					.state('in_tc.collegeList', {
+						url: '/member/collegeList',
+						templateUrl: '/templates/pages/in/collegeList.html'
+					})
+					.state('in_tc.dashboard', {
+						url: '/dashboard',
+						templateUrl: '/templates/pages/in/dashboard.html'
+					})
+					.state('in_tc.eventRegistrations', {
+						url: '/eventRegistration',
+						templateUrl: '/templates/pages/in/eventRegistration.html',
+						controller: 'EventRegistrationController',
+						controllerAs: 'erc'
+					})
+					.state('in_tc.addEvent', {
+						url: '/member/events/create',
+						templateUrl: '/templates/pages/in/addEvent.html',
+						controller: 'AddEventController',
+						controllerAs: 'ec',
+					})
+					.state('in_tc.settings', {
+						url: '/member/settings',
+						templateUrl: '/templates/pages/in/memberSettings.html',
+						controller: 'MemberSettingsController',
+						controllerAs: 'msc'
+					})
+					.state('in_tc.updateEvent', {
+						url: '/member/events/:eventId/update',
+						templateUrl: '/templates/pages/in/addEvent.html',
+						controller: 'UpdateEventController',
+						controllerAs: 'ec'
+					})
+					.state('in_tc.showEvent', {
+						url: '/member/events',
+						templateUrl: '/templates/pages/in/showEvent.html',
+						controller: 'ShowEventController',
+						controllerAs: 'sec'
+					})
+					.state('in_tc.eachEvent', {
+						url: '/member/events/:eventId',
+						templateUrl: '/templates/pages/in/eachEvent.html',
+						controller: 'EachEventController',
+						controllerAs: 'eec'
+					})
+					.state('in_fc.guidelines', {
+						url: '/guidelines',
+						templateUrl: '/templates/pages/in/guidelines.html'
+					})
+					.state('in_fc.settings', {
+						url: '/settings',
+						templateUrl: '/templates/pages/in/facultySettings.html',
+						controller: 'FacultySettingsController',
+						controllerAs: 'fsc'
+					})
+					.state('in_fc.confirm_registration', {
+						url: '/confirm/registrations',
+						templateUrl: '/templates/pages/in/faculty/confirmRegistration.html',
+						controller: 'ConfirmRegistrationsController',
+						controllerAs: 'crc'
+					})
+					.state('in_fc.registration_details', {
+						url: '/registrations',
+						templateUrl: '/templates/pages/in/faculty/registrationDetails.html',
+						controller: 'RegistrationDetailsController',
+						controllerAs: 'rdc'
+					})
+					.state('in_fc.student_coordinator', {
+						url: '/studentCoordinator',
+						templateUrl: '/templates/pages/in/faculty/addStudentCordinator.html',
+						controller: 'AddStudentController',
+						controllerAs: 'ascc'
+					})
+					.state('in_fc.participant_registration', {
+						url: '/participantRegistration',
+						templateUrl: '/templates/pages/in/faculty/participantRegistration.html',
+						controller: 'ParticipantRegistrationController',
+						controllerAs: 'prc'
+					});
 			}
 		}
-		return defer.promise;
-	}
 
-	redirectTeamNotLoggedIn.$inject = ['memberAuthService','facultyAuthService', '$q', '$state', '$timeout', '$rootScope'];
+		redirectFacultyNotLoggedIn.$inject = ['facultyAuthService', 'memberAuthService', '$q', '$state', '$timeout', '$rootScope'];
 
-	function redirectTeamNotLoggedIn(memberAuthService, facultyAuthService, $q, $state, $timeout, $rootScope) {
-		var defer = $q.defer();
-		var memberAuthenticate = memberAuthService.checkMemberLoggedIn();
-		if (memberAuthenticate) {
-			defer.resolve();
-		} else {
+		function redirectFacultyNotLoggedIn(facultyAuthService, memberAuthService, $q, $state, $timeout, $rootScope) {
+			var defer = $q.defer();
 			var facultyAuthenticate = facultyAuthService.checkFacultyLoggedIn();
-			if(facultyAuthenticate && !$rootScope.alreadyRedirected){
-				$timeout(function () {
-					$rootScope.alreadyRedirected = true;
-					$state.go('in_fc.guidelines');
-				});
+			if (facultyAuthenticate) {
+				if ($rootScope.faculty.verified !== true && !$rootScope.alreadyRedirected) {
+					$timeout(function () {
+						$rootScope.alreadyRedirected = true;
+						$state.go('in_fc.guidelines');
+					});
+				}
+
 				defer.resolve();
-			}else {
+			} else {
+				var memberAuthenticate = memberAuthService.checkMemberLoggedIn();
+				if (memberAuthenticate && !$rootScope.alreadyRedirected) {
+					$timeout(function () {
+						$rootScope.alreadyRedirected = true;
+						$state.go('in_tc.dashboard');
+					});
+					defer.resolve();
+				} else {
 					$timeout(function () {
 						$rootScope.alreadyRedirected = true;
 						$state.go('out.login');
 					});
 					defer.reject();
+				}
 			}
-
-
+			return defer.promise;
 		}
 
-		return defer.promise;
-	}
+		redirectTeamNotLoggedIn.$inject = ['memberAuthService', 'facultyAuthService', '$q', '$state', '$timeout', '$rootScope'];
 
-
-	redirectLoggedIn.$inject = ['facultyAuthService', 'memberAuthService', '$state', '$q', '$timeout', '$rootScope'];
-
-	function redirectLoggedIn(facultyAuthService, memberAuthService, $state, $q, $timeout, $rootScope) {
-		var defer = $q.defer();
-		var facultyAuthenticate = facultyAuthService.checkFacultyLoggedIn();
-		if (facultyAuthenticate && !$rootScope.alreadyRedirected) {
-			defer.reject();
-			 $timeout(function () {
-				$rootScope.alreadyRedirected = true;
-				$state.go('in_fc.guidelines');
-			 });
-		} else {
+		function redirectTeamNotLoggedIn(memberAuthService, facultyAuthService, $q, $state, $timeout, $rootScope) {
+			var defer = $q.defer();
 			var memberAuthenticate = memberAuthService.checkMemberLoggedIn();
-			if (memberAuthenticate && !$rootScope.alreadyRedirected) {
-					defer.reject();
+			if (memberAuthenticate) {
+				defer.resolve();
+			} else {
+				var facultyAuthenticate = facultyAuthService.checkFacultyLoggedIn();
+				if (facultyAuthenticate && !$rootScope.alreadyRedirected) {
 					$timeout(function () {
-	 					$rootScope.alreadyRedirected = true;
+						$rootScope.alreadyRedirected = true;
 						$state.go('in_fc.guidelines');
 					});
-			}else {
 					defer.resolve();
+				} else {
+					$timeout(function () {
+						$rootScope.alreadyRedirected = true;
+						$state.go('out.login');
+					});
+					defer.reject();
+				}
+
+
 			}
 
+			return defer.promise;
 		}
-		return defer.promise;
-	}
 
-	// redirectTeamLoggedIn.$inject = ['memberAuthService','facultyAuthService', '$state', '$q', '$timeout'];
-	//
-	// function redirectTeamLoggedIn(memberAuthService, facultyAuthService, $state, $q, $timeout) {
-	// 	// if(angular.isDefined($rootScope.faculty)){
-	// 	//
-	// 	// }
-	//
-	// 	var defer = $q.defer();
-	// 	var authenticate = memberAuthService.checkMemberLoggedIn();
-	// 	if (authenticate) {
-	// 		defer.reject();
-	// 		$timeout(function () {
-	// 			$state.go('in_tc.verifyCoordinator');
-	// 		});
-	// 	} else {
-	// 		defer.resolve();
-	// 	}
-	// 	return defer.promise;
-	// }
 
-})();
+		redirectLoggedIn.$inject = ['facultyAuthService', 'memberAuthService', '$state', '$q', '$timeout', '$rootScope'];
+
+		function redirectLoggedIn(facultyAuthService, memberAuthService, $state, $q, $timeout, $rootScope) {
+			var defer = $q.defer();
+			var facultyAuthenticate = facultyAuthService.checkFacultyLoggedIn();
+			if (facultyAuthenticate && !$rootScope.alreadyRedirected) {
+				defer.reject();
+				$timeout(function () {
+					$rootScope.alreadyRedirected = true;
+					$state.go('in_fc.guidelines');
+				});
+			} else {
+				var memberAuthenticate = memberAuthService.checkMemberLoggedIn();
+				if (memberAuthenticate && !$rootScope.alreadyRedirected) {
+					defer.reject();
+					$timeout(function () {
+						$rootScope.alreadyRedirected = true;
+						$state.go('in_tc.dashboard');
+					});
+				} else {
+					defer.resolve();
+				}
+
+			}
+			return defer.promise;
+		}
+
+		// redirectTeamLoggedIn.$inject = ['memberAuthService','facultyAuthService', '$state', '$q', '$timeout'];
+		//
+		// function redirectTeamLoggedIn(memberAuthService, facultyAuthService, $state, $q, $timeout) {
+		// 	// if(angular.isDefined($rootScope.faculty)){
+		// 	//
+		// 	// }
+		//
+		// 	var defer = $q.defer();
+		// 	var authenticate = memberAuthService.checkMemberLoggedIn();
+		// 	if (authenticate) {
+		// 		defer.reject();
+		// 		$timeout(function () {
+		// 			$state.go('in_tc.verifyCoordinator');
+		// 		});
+		// 	} else {
+		// 		defer.resolve();
+		// 	}
+		// 	return defer.promise;
+		// }
+
+	})();
 
 (function () {
 	'use strict';
@@ -403,7 +421,7 @@
 				var authHead = 'Bearer ' + token;
 				config.headers['Authorization'] = authHead;
 			}
-			console.log(config);
+			// console.log(config);
 			return config;
 		}
 
@@ -418,7 +436,7 @@
 		}
 
 		function responseError(rejection) {
-			console.log("response rejection", rejection);
+			// console.log("response rejection", rejection);
 			if (rejection.status == 403) {
 				$location.path('/login');
 			}
@@ -500,7 +518,8 @@
 		var baseLink = '/api/faculty/' + $rootScope.faculty.id;
 
 		var service = {
-			confirmRegistration: confirmRegistration
+			confirmRegistration: confirmRegistration,
+			getFacultyRegistrations: getFacultyRegistrations
 		};
 
 		return service;
@@ -519,12 +538,7 @@
 				.catch(errorFunc);
 		}
 
-		function editStudentCoordinator(students) {
-			var link = baseLink + '/studentCoordinator';
-			return $http.put(link, students)
-				.then(resolveFunc)
-				.catch(errorFunc);
-		}
+
 
 		function resolveFunc(response) {
 			return response;
@@ -554,7 +568,9 @@
 			logout: logout,
 			facultyForgotPasswordApply: facultyForgotPasswordApply,
 			facultyForgotPasswordSet: facultyForgotPasswordSet,
-			getColleges: getColleges
+			getColleges: getColleges,
+			checkVerified: checkVerified,
+			editStudentCoordinator: editStudentCoordinator
 		};
 
 		return service;
@@ -578,7 +594,9 @@
 					$rootScope.faculty.id = payload._id;
 					$rootScope.faculty.registrations_count = payload.registrations_count;
 					$rootScope.faculty.collected_amount = payload.collected_amount;
+					$rootScope.faculty.student_coordinator = payload.student_coordinator;
 					return (payload.exp > Date.now() / 1000);
+					console.log($rootScope.faculty);
 				} else {
 					return false;
 				}
@@ -588,6 +606,10 @@
 			}
 		}
 
+		function replaceToken(token) {
+			removeToken();
+			saveToken(token);
+		}
 
 
 		function saveToken(token) {
@@ -707,6 +729,41 @@
 			$rootScope.$broadcast('logoutSuccessful');
 		}
 
+		function checkVerified() {
+			console.log($rootScope.faculty);
+			$http.get('/api/faculty/check')
+				.then(checkVerifiedSuccess)
+				.catch(checkVerifiedFailure);
+		}
+
+		function checkVerifiedSuccess(response) {
+			// console.log(response);
+			replaceToken(response.data.token);
+		}
+
+		function checkVerifiedFailure(error) {
+			// console.log(error);
+		}
+
+		function editStudentCoordinator(students) {
+			var link = '/api/faculty/' + $rootScope.faculty.id + '/addStudentCoordinator';
+			return $http.post(link, students)
+				.then(editStudentCoordinatorSuccess)
+				.catch(editStudentCoordinatorFailure);
+		}
+
+		function editStudentCoordinatorSuccess(response) {
+			replaceToken(response.data.token);
+			return response;
+		}
+
+		function editStudentCoordinatorFailure(error) {
+			return error;
+		}
+
+		function functionName(error) {
+			return error;
+		}
 	}
 })();
 
@@ -725,6 +782,7 @@
 			verifyFaculty: verifyFaculty,
 			getTotalRegistrations: getTotalRegistrations,
 			getDeleteModal: getDeleteModal,
+			initializeCKEditor: initializeCKEditor,
 		};
 
 		return service;
@@ -751,8 +809,35 @@
 
 		}
 
-		function uploadFiles() {
+		function initializeCKEditor() {
+			if ( CKEDITOR.env.ie && CKEDITOR.env.version < 9 )
+				CKEDITOR.tools.enableHtml5Elements( document );
+				CKEDITOR.config.height = 150;
+				CKEDITOR.config.width = 'auto';
+				var initSample = ( function() {
+					var wysiwygareaAvailable = isWysiwygareaAvailable();
+					return function() {
+						var editorElement = CKEDITOR.document.getById( 'editor' );
+						if ( wysiwygareaAvailable ) {
+							CKEDITOR.replace( 'editorRules' );
+							CKEDITOR.replace( 'editorSpecification' );
+							CKEDITOR.replace( 'editorJudgingCriteria' );
+						} else {
+							editorElement.setAttribute( 'contenteditable', 'true' );
+							CKEDITOR.inline( 'editorRules' );
+							CKEDITOR.inline( 'editorSpecification' );
+							CKEDITOR.inline( 'editorJudgingCriteria' );
+						}
+					};
 
+				function isWysiwygareaAvailable() {
+					if ( CKEDITOR.revision == ( '%RE' + 'V%' ) ) {
+						return true;
+					}
+					return !!CKEDITOR.plugins.get( 'wysiwygarea' );
+				}
+			} )();
+			initSample();
 		}
 
 		function getDeleteModal() {
@@ -896,7 +981,7 @@
 			if (checkMemberLoggedIn()) {
 				if ($rootScope.member) {
 					passwordObject.memberId = $rootScope.member.id;
-					var changePasswordLink = "/api/member/settings/changePassword";
+					var changePasswordLink = "/api/members/settings/changePassword";
 					$http.patch(changePasswordLink, passwordObject)
 						.then(changePasswordSuccess)
 						.catch(changePasswordFailure);
@@ -909,6 +994,7 @@
 		}
 
 		function changePasswordFailure(error) {
+			console.log(error);
 			$rootScope.$broadcast('MemberChangePasswordFailure', error);
 		}
 
@@ -1197,69 +1283,74 @@
 		.module('fct.core')
 		.controller('AddStudentController', AddStudentController);
 
-	AddStudentController.$inject = ['$http','facultyAuthService', '$rootScope', 'fctToast'];
+	AddStudentController.$inject = ['$http', 'facultyAuthService', '$rootScope', 'fctToast'];
 
 	function AddStudentController($http, facultyAuthService, $rootScope, fctToast) {
 		var vm = this;
-        vm.coordinator = {};
-        vm.editInfo = false;
-        vm.preInfo = false;
-        vm.updateButtonClicked = false;
-        vm.addButtonClicked = false;
+		vm.coordinator = {};
+		vm.editInfo = false;
+		vm.preInfo = false;
+		vm.updateButtonClicked = false;
+		vm.addButtonClicked = false;
 
 		angular.extend(vm, {
 			update: update,
-            addStudentCoordinator: addStudentCoordinator,
-            edit:edit
+			addStudentCoordinator: addStudentCoordinator,
+			edit: edit
 		});
 
 		activate();
 
 		function activate() {
-            if(!$rootScope.faculty.studentCoordinator){
-                vm.editInfo = true;
-            }else{
-                vm.coordinator = $rootScope.faculty.studentCoordinator;
-            }
+			if (!$rootScope.faculty.student_coordinator.name) {
+				vm.editInfo = true;
+			} else {
+				vm.coordinator = $rootScope.faculty.student_coordinator;
+				vm.preInfo = true;
+			}
 		}
 
 		function update(event) {
-            vm.updateButtonClicked = true;
-            return facultyAuthService.updateStudentCoordinator(vm.coordinator)
-                .then(updateStudentCoordinatorSuccess)
-                .catch(updateStudentCoordinatorFailure);
+			vm.updateButtonClicked = true;
+			return facultyAuthService.editStudentCoordinator({
+					student_coordinator: vm.coordinator
+				})
+				.then(editStudentCoordinatorSuccess)
+				.catch(editStudentCoordinatorFailure);
 		}
 
 		function edit() {
-            vm.editInfo = true;
+			vm.editInfo = true;
 		}
 
 		function addStudentCoordinator(event) {
-            vm.addButtonClicked = true;
-            return facultyAuthService.updateStudentCoordinator(vm.coordinator)
-                .then(addStudentCoordinatorSuccess)
-                .catch(updateStudentCoordinatorFailure);
+			vm.addButtonClicked = true;
+			return facultyAuthService.editStudentCoordinator({
+					student_coordinator: vm.coordinator
+				})
+				.then(addStudentCoordinatorSuccess)
+				.catch(editStudentCoordinatorFailure);
 		}
 
-        function addStudentCoordinatorSuccess(response) {
-            vm.preInfo = true;
-            vm.editInfo = false;
-            vm.addButtonClicked = false;
-            fctToast.showToast('Student Coordinator Details Added Successfuly',true);
-        }
+		function addStudentCoordinatorSuccess(response) {
+			vm.preInfo = true;
+			vm.editInfo = false;
+			vm.addButtonClicked = false;
+			fctToast.showToast('Student Coordinator Details Added Successfuly', true);
+		}
 
-        function updateStudentCoordinatorSuccess(response) {
-            vm.editInfo = false;
-            vm.updateButtonClicked = false;
-            fctToast.showToast('Student Coordinator Details Updated Successfuly',true);
-        }
+		function editStudentCoordinatorSuccess(response) {
+			vm.editInfo = false;
+			vm.updateButtonClicked = false;
+			fctToast.showToast('Student Coordinator Details Updated Successfuly', true);
+		}
 
-        function updateStudentCoordinatorFailure(error) {
-            vm.editInfo = false;
-            vm.addButtonClicked = false;
-            vm.updateButtonClicked = false;
-            fctToast.showToast('Error!! Try Again');
-        }
+		function editStudentCoordinatorFailure(error) {
+			vm.editInfo = false;
+			vm.addButtonClicked = false;
+			vm.updateButtonClicked = false;
+			fctToast.showToast('Error!! Try Again');
+		}
 	}
 })();
 
@@ -1467,7 +1558,7 @@
 
 		function getAllFacultyCoordinatorsSuccess(response) {
 			vm.faculties = response.data;
-			console.log(vm.faculties);
+			// console.log(vm.faculties);
 			if (vm.limitFaculty <= vm.faculties.length) {
 				vm.nomoreFaculty = false;
 			}
@@ -1476,7 +1567,7 @@
 		function getAllFacultyCoordinatorsFailure(error) {
 			//State go to Add Events
 			//Dashboard
-			console.log(error);
+			// console.log(error);
 		}
 
 		function verifyFaculty(id, index, event) {
@@ -1520,140 +1611,116 @@
 })();
 
 (function () {
-    'use strict';
+	'use strict';
 
-    angular
-      .module('fct.core')
-      .controller('AddEventController', AddEventController);
+	angular
+		.module('fct.core')
+		.controller('AddEventController', AddEventController);
 
-    AddEventController.$inject = ['$stateParams', 'eventService', '$rootScope', '$timeout', 'Upload', '$state', 'fctToast', '$filter'];
+	AddEventController.$inject = ['$stateParams', 'eventService', '$rootScope', '$timeout', 'Upload', '$state', 'fctToast', '$filter', 'memberService'];
 
-    function AddEventController(stateParams, eventService, $rootScope, $timeout, Upload, $state, fctToast, $filter) {
-        var vm = this;
-        vm.isUpdate = false;
-        vm.myEvent = {
-          'managers':[],
-          'event': "Add",
-        };
-        vm.myEvent.attachments = [];
-        vm.files = [];
+	function AddEventController(stateParams, eventService, $rootScope, $timeout, Upload, $state, fctToast, $filter, memberService) {
+		var vm = this;
+		vm.isUpdate = false;
+		vm.myEvent = {
+			'managers': [],
+			'event': "Add",
+		};
 
-        angular.extend(vm, {
-            save: save,
-            openManagersModal: openManagersModal,
-            uploadFiles: uploadFiles
-        });
+		vm.myEvent.attachments = [];
+		vm.files = [];
+		vm.image = '';
 
-        activate();
+		angular.extend(vm, {
+			save: save,
+			openManagersModal: openManagersModal,
+			uploadFiles: uploadFiles,
+			feeTypeChanged: feeTypeChanged
+		});
 
-        function activate() {
-          initializeCKEditor();
-        }
+		activate();
 
-        function openManagersModal(total) {
-          vm.myEvent.managers = [];
-          while(total > 0) {
-            var each = {"index":1};
-            vm.myEvent.managers.push(each);
-            total--;
-          }
-        }
+		function activate() {
+			memberService.initializeCKEditor();
+		}
 
-        function save() {
-          vm.myEvent.rules = CKEDITOR.instances["editorRules"].getData();
-          vm.myEvent.specification = CKEDITOR.instances["editorSpecification"].getData();
-          vm.myEvent.judging_criteria = CKEDITOR.instances["editorJudgingCriteria"].getData();
-          console.log(vm.myEvent);
-    		  if(vm.myEvent.isUpdate) {
-      			return eventService.updateEvent(vm.myEvent).then(registerSuccess).catch(registerFailure);
-    		  } else {
-      			return eventService.addEvent(vm.myEvent).then(registerSuccess).catch(registerFailure);
-    		  }
-        }
+		function openManagersModal(total) {
+			vm.myEvent.managers = [];
+			while (total > 0) {
+				var each = {
+					"index": 1
+				};
+				vm.myEvent.managers.push(each);
+				total--;
+			}
+		}
 
-    		function registerSuccess(event) {
-            fctToast.showToast("Event Registered.",true);
-            $timeout(function () {
-    					$state.go('in_tc.showEvent');
-    				});
-        }
+		function feeTypeChanged() {
+			switch (vm.myEvent.fees_type) {
+			case "no_payment":
+				vm.myEvent.fees = 0;
+				vm.feeDisabled = true;
+				vm.myEvent.do_payment = false;
+				break;
+			case "do_payment":
+				vm.myEvent.do_payment = true;
+				break;
+			case "late_payment":
+				vm.myEvent.do_payment = false;
+				break;
+			}
+		}
 
-        function registerFailure(event, error) {
-            fctToast.showToast(error.data.message);
-        }
+		function save() {
+			vm.myEvent.rules = CKEDITOR.instances["editorRules"].getData();
+			vm.myEvent.specification = CKEDITOR.instances["editorSpecification"].getData();
+			vm.myEvent.judging_criteria = CKEDITOR.instances["editorJudgingCriteria"].getData();
+			console.log(vm.myEvent);
+			if (vm.myEvent.isUpdate) {
+				return eventService.updateEvent(vm.myEvent).then(registerSuccess).catch(registerFailure);
+			} else {
+				return eventService.addEvent(vm.myEvent).then(registerSuccess).catch(registerFailure);
+			}
+		}
 
-        function uploadFiles(files, errFiles) {
-          angular.forEach(files, function(file) {
-            vm.files.push(file);
-            file.upload = Upload.upload({
-              url: '/api/members/upload',
-              data: {file: file}
-            });
-            file.upload.then(function (response) {
-               $timeout(function () {
-                 file.result = response.data;
-                 var attach = {
-                   doc_name: file.name,
-                   link: file.result.path,
-                 };
-                 vm.myEvent.attachments.push(attach);
-               });
-             }, function (response) {
-               if (response.status > 0)
-                 vm.errorMsg = response.status + ': ' + response.data;
-             }, function (evt) {
-               file.progress = Math.min(100, parseInt(100.0 * evt.loaded / evt.total));
-             });
-          });
-        }
+		function registerSuccess(event) {
+			fctToast.showToast("Event Registered.", true);
+			$timeout(function () {
+				$state.go('in_tc.showEvent');
+			});
+		}
 
-        function initializeCKEditor() {
-          if ( CKEDITOR.env.ie && CKEDITOR.env.version < 9 )
-          	CKEDITOR.tools.enableHtml5Elements( document );
+		function registerFailure(event, error) {
+			fctToast.showToast(error.data.message);
+		}
 
-          // The trick to keep the editor in the sample quite small
-          // unless user specified own height.
-          CKEDITOR.config.height = 150;
-          CKEDITOR.config.width = 'auto';
-
-          var initSample = ( function() {
-          	var wysiwygareaAvailable = isWysiwygareaAvailable();
-
-          	return function() {
-          		var editorElement = CKEDITOR.document.getById( 'editor' );
-
-          		// Depending on the wysiwygare plugin availability initialize classic or inline editor.
-          		if ( wysiwygareaAvailable ) {
-          			CKEDITOR.replace( 'editorRules' );
-          			CKEDITOR.replace( 'editorSpecification' );
-          			CKEDITOR.replace( 'editorJudgingCriteria' );
-          		} else {
-          			editorElement.setAttribute( 'contenteditable', 'true' );
-          			CKEDITOR.inline( 'editorRules' );
-          			CKEDITOR.inline( 'editorSpecification' );
-          			CKEDITOR.inline( 'editorJudgingCriteria' );
-
-          			// TODO we can consider displaying some info box that
-          			// without wysiwygarea the classic editor may not work.
-          		}
-
-          		//CKEDITOR.instances["editor"].getData()
-          		//to get the data
-          	};
-
-          	function isWysiwygareaAvailable() {
-          		// If in development mode, then the wysiwygarea must be available.
-          		// Split REV into two strings so builder does not replace it :D.
-          		if ( CKEDITOR.revision == ( '%RE' + 'V%' ) ) {
-          			return true;
-          		}
-
-          		return !!CKEDITOR.plugins.get( 'wysiwygarea' );
-          	}
-          } )();
-          initSample();
-        }
-    }
+		function uploadFiles(files, errFiles) {
+			angular.forEach(files, function (file) {
+				vm.files.push(file);
+				file.upload = Upload.upload({
+					url: '/api/members/upload',
+					data: {
+						file: file
+					}
+				});
+				file.upload.then(function (response) {
+					$timeout(function () {
+						file.result = response.data;
+						var attach = {
+							doc_name: file.name,
+							link: file.result.path,
+						};
+						vm.myEvent.attachments.push(attach);
+					});
+				}, function (response) {
+					if (response.status > 0)
+						vm.errorMsg = response.status + ': ' + response.data;
+				}, function (evt) {
+					file.progress = Math.min(100, parseInt(100.0 * evt.loaded / evt.total));
+				});
+			});
+		}
+	}
 })();
 
 (function () {
@@ -1990,167 +2057,142 @@
 
 
 (function () {
-    'use strict';
+	'use strict';
 
-    angular
-      .module('fct.core')
-      .controller('UpdateEventController', UpdateEventController);
+	angular
+		.module('fct.core')
+		.controller('UpdateEventController', UpdateEventController);
 
-    UpdateEventController.$inject = ['$stateParams', 'eventService', '$rootScope', '$state', 'fctToast'];
+	UpdateEventController.$inject = ['$stateParams', 'eventService', '$rootScope', '$state', 'fctToast', 'memberService'];
 
-    function UpdateEventController(stateParams, eventService, $rootScope, state, fctToast) {
-        var vm = this;
-        vm.isUpdate = true;
-        vm.myEvent = {
-          'managers':[],
-        };
-        vm.myEvent.attachments = [];
-        vm.files = [];
-        vm.feeDisabled = false;
-        vm.myEvent.do_payment = false;
+	function UpdateEventController(stateParams, eventService, $rootScope, state, fctToast, memberService) {
+		var vm = this;
+		vm.isUpdate = true;
+		vm.myEvent = {
+			'managers': [],
+		};
+		vm.myEvent.attachments = [];
+		vm.files = [];
+		vm.feeDisabled = false;
+		vm.myEvent.do_payment = false;
 
-        angular.extend(vm, {
-            save: save,
-            openManagersModal: openManagersModal,
-            uploadFiles: uploadFiles,
-            feeTypeChanged: feeTypeChanged
-        });
+		angular.extend(vm, {
+			save: save,
+			openManagersModal: openManagersModal,
+			uploadFiles: uploadFiles,
+			feeTypeChanged: feeTypeChanged
+		});
 
-        activate();
+		activate();
 
-        function activate() {
-          initializeCKEditor();
-          checkEventId();
-        }
+		function activate() {
+			memberService.initializeCKEditor();
+			checkEventId();
+		}
 
-        function openManagersModal(total) {
-          vm.myEvent.managers = [];
-          while(total > 0) {
-            var each = {"index":1};
-            vm.myEvent.managers.push(each);
-            total--;
-          }
-        }
+		function openManagersModal(total) {
+			vm.myEvent.managers = [];
+			while (total > 0) {
+				var each = {
+					"index": 1
+				};
+				vm.myEvent.managers.push(each);
+				total--;
+			}
+		}
 
-        function uploadFiles(files, errFiles) {
-          angular.forEach(files, function(file) {
-            vm.files.push(file);
-            file.upload = Upload.upload({
-              url: '/api/members/upload',
-              data: {file: file}
-            });
-            file.upload.then(function (response) {
-               $timeout(function () {
-                 file.result = response.data;
-                 var attach = {
-                   doc_name: file.name,
-                   link: file.result.path,
-                 };
-                 vm.myEvent.attachments.push(attach);
-               });
-             }, function (response) {
-               if (response.status > 0)
-                 vm.errorMsg = response.status + ': ' + response.data;
-             }, function (evt) {
-               file.progress = Math.min(100, parseInt(100.0 * evt.loaded / evt.total));
-             });
-          });
-        }
+		function checkEventId() {
+			if (stateParams.eventId !== undefined && stateParams.eventId !== null) {
+				vm.eventId = stateParams.eventId;
+				return eventService.getSingleEvent(vm.eventId)
+					.then(onEventGetSuccess)
+					.catch(onEventGetFailure);
 
-        function checkEventId() {
-          if(stateParams.eventId !== undefined && stateParams.eventId !== null) {
-              vm.eventId = stateParams.eventId;
-              return eventService.getSingleEvent(vm.eventId)
-                .then(onEventGetSuccess)
-                .catch(onEventGetFailure);
+			}
+			return null;
+		}
 
-          }
-          return null;
-        }
+		function onEventGetSuccess(eventData) {
+			console.log(eventData);
+			vm.myEvent = eventData.data;
+			vm.myEvent.event = "Update";
+			vm.myEvent.totalManager = vm.myEvent.managers.length;
+			vm.files = vm.myEvent.attachments;
+			return [CKEDITOR.instances['editorRules'].setData(vm.myEvent.rules),
+				CKEDITOR.instances['editorSpecification'].setData(vm.myEvent.specification),
+				CKEDITOR.instances['editorJudgingCriteria'].setData(vm.myEvent.judging_criteria)
+			];
+		}
 
-        function onEventGetSuccess(eventData) {
-          console.log(eventData);
-          vm.myEvent = eventData.data;
-          vm.myEvent.event = "Update";
-          vm.files = vm.myEvent.attachments;
-          return [CKEDITOR.instances['editorRules'].setData(vm.myEvent.rules),
-          CKEDITOR.instances['editorSpecification'].setData(vm.myEvent.specification),
-          CKEDITOR.instances['editorJudgingCriteria'].setData(vm.myEvent.judging_criteria)];
-        }
+		function onEventGetFailure(error) {
+			console.log(error);
 
-        function onEventGetFailure(error) {
-          console.log(error);
-          //redirect
-        }
+		}
 
-        function feeTypeChanged() {
-          switch (vm.myEvent.fees_type) {
-            case "no_payment":
-              vm.myEvent.fees = 0;
-              vm.feeDisabled = true;
-              vm.myEvent.do_payment = false;
-              break;
-            case "do_payment":
-              vm.myEvent.do_payment = true;
-              break;
-            case "late_payment":
-              vm.myEvent.do_payment = false;
-              break;
-          }
-        }
+		function feeTypeChanged() {
+			switch (vm.myEvent.fees_type) {
+			case "no_payment":
+				vm.myEvent.fees = 0;
+				vm.feeDisabled = true;
+				vm.myEvent.do_payment = false;
+				break;
+			case "do_payment":
+				vm.myEvent.do_payment = true;
+				break;
+			case "late_payment":
+				vm.myEvent.do_payment = false;
+				break;
+			}
+		}
 
-        function save() {
-          vm.myEvent.rules = CKEDITOR.instances['editorRules'].getData();
-          vm.myEvent.specification = CKEDITOR.instances['editorSpecification'].getData();
-          vm.myEvent.judging_criteria = CKEDITOR.instances['editorJudgingCriteria'].getData();
-          console.log(JSON.stringify(vm.myEvent));
-          return eventService.updateEvent(vm.eventId, vm.myEvent)
-            .then(onUpdateSuccess)
-            .catch(onUpdateFailure);
-        }
+		function save() {
+			vm.myEvent.rules = CKEDITOR.instances['editorRules'].getData();
+			vm.myEvent.specification = CKEDITOR.instances['editorSpecification'].getData();
+			vm.myEvent.judging_criteria = CKEDITOR.instances['editorJudgingCriteria'].getData();
+			console.log(JSON.stringify(vm.myEvent));
+			return eventService.updateEvent(vm.eventId, vm.myEvent)
+				.then(onUpdateSuccess)
+				.catch(onUpdateFailure);
+		}
 
-        function onUpdateSuccess(response) {
-          console.log(response);
-          fctToast.showToast("Update Success.", true);
-          state.go('in_tc.showEvent');
-        }
+		function onUpdateSuccess(response) {
+			console.log(response);
+			fctToast.showToast("Update Success.", true);
+			state.go('in_tc.showEvent');
+		}
 
-        function onUpdateFailure(error) {
-          console.log(error);
-          fctToast.showToast("Please try again later.");
-        }
+		function onUpdateFailure(error) {
+			console.log(error);
+			fctToast.showToast("Please try again later.");
+		}
 
-        function initializeCKEditor() {
-          if ( CKEDITOR.env.ie && CKEDITOR.env.version < 9 )
-          	CKEDITOR.tools.enableHtml5Elements( document );
-            CKEDITOR.config.height = 150;
-            CKEDITOR.config.width = 'auto';
-            var initSample = ( function() {
-            	var wysiwygareaAvailable = isWysiwygareaAvailable();
-            	return function() {
-            		var editorElement = CKEDITOR.document.getById( 'editor' );
-            		if ( wysiwygareaAvailable ) {
-            			CKEDITOR.replace( 'editorRules' );
-            			CKEDITOR.replace( 'editorSpecification' );
-            			CKEDITOR.replace( 'editorJudgingCriteria' );
-            		} else {
-            			editorElement.setAttribute( 'contenteditable', 'true' );
-            			CKEDITOR.inline( 'editorRules' );
-            			CKEDITOR.inline( 'editorSpecification' );
-            			CKEDITOR.inline( 'editorJudgingCriteria' );
-            		}
-            	};
-
-          	function isWysiwygareaAvailable() {
-          		if ( CKEDITOR.revision == ( '%RE' + 'V%' ) ) {
-          			return true;
-          		}
-          		return !!CKEDITOR.plugins.get( 'wysiwygarea' );
-          	}
-          } )();
-          initSample();
-        }
-    }
+		function uploadFiles(files, errFiles) {
+			angular.forEach(files, function (file) {
+				vm.files.push(file);
+				file.upload = Upload.upload({
+					url: '/api/members/upload',
+					data: {
+						file: file
+					}
+				});
+				file.upload.then(function (response) {
+					$timeout(function () {
+						file.result = response.data;
+						var attach = {
+							doc_name: file.name,
+							link: file.result.path,
+						};
+						vm.myEvent.attachments.push(attach);
+					});
+				}, function (response) {
+					if (response.status > 0)
+						vm.errorMsg = response.status + ': ' + response.data;
+				}, function (evt) {
+					file.progress = Math.min(100, parseInt(100.0 * evt.loaded / evt.total));
+				});
+			});
+		}
+	}
 })();
 
 (function () {
@@ -2305,9 +2347,10 @@
 			submit: submit
 		});
 
+		console.log("HHHIII");
 
-
-		function submit() {
+		function submit(event) {
+			console.log("222");
 			if (vm.submitButtonClicked) {
 				event.preventDefault();
 			} else {
@@ -2575,13 +2618,12 @@
 
 		function createFilterFor(query) {
 			var lowercaseQuery = angular.lowercase(query);
-
 			return function filterFn(college) {
 				var matches = college.name.match(/\b(\w)/g);
 				var acronym = matches.join('');
 				acronym = acronym.toLowerCase();
-				return (college.name.toLowerCase().trim().indexOf(lowercaseQuery) === 0
-					|| acronym.indexOf(lowercaseQuery) === 0);
+				return (college.name.toLowerCase().trim().indexOf(lowercaseQuery) === 0 ||
+					acronym.indexOf(lowercaseQuery) === 0);
 			};
 		}
 	}
@@ -2608,7 +2650,8 @@
 			submit: submit
 		});
 
-		function submit() {
+		function submit(event) {
+			console.log("HIII");
 			if (vm.submitButtonClicked) {
 				event.preventDefault();
 			} else {

@@ -35,7 +35,7 @@ var registrationController = function (Registration) {
 			});
 	}
 
-	function generateSlip(type, teamid, data) {
+	function generateSlip(type, teamid, data, request, response, registration) {
 		if (type) {
 			fs.readFile('./api/slips/templates/' + type + '.hbs', function (error, file) {
 				if (!error) {
@@ -56,16 +56,33 @@ var registrationController = function (Registration) {
 							};
 
 							pdf.create(html, options).toFile('./api/slips/' + type + '/' + teamid + '.pdf', function (error, res) {
-
+								console.log("PDF GENERATE ERROR", error);
 								if (error) {
 									return {
 										"message": "error",
 										"error": error
 									};
 								} else {
-									return {
-										"message": "Slip Succesfuly created"
-									};
+
+									registration.save(function (error) {
+										if (error) {
+											throwError(response, error, 500, 'Internal Server error', 'Event Register');
+										} else {
+
+											var dnlink = 'http://localhost:9000/api/registration/downloadSlip/' + registration.teamId + '?type=';
+											if (request.body.do_payment) {
+												dnlink += 'forPayment';
+											} else if (request.body.late_payment) {
+												dnlink += 'latePayment';
+											}
+
+
+											response.status(200);
+											response.json({
+												downloadSlip: dnlink
+											});
+										}
+									});
 								}
 							});
 						}
@@ -117,9 +134,10 @@ var registrationController = function (Registration) {
 		registration.other_participants = request.body.other_participants;
 		registration.total_amount = request.body.total_amount;
 		registration.do_payment = request.body.do_payment;
-
+		registration.late_payment = request.body.late_payment;
 		registration.teamId = request.body.eventObject.event_shortcode + rand.generateDigits(6);
 		// registration.teamId = "SC" + rand.generateDigits(6);
+
 		var slip;
 		var dataToGeneratePDF;
 
@@ -137,12 +155,12 @@ var registrationController = function (Registration) {
 				teamId: registration.teamId,
 				serialId: registration.serialId,
 				team_leader: registration.team_leader,
-				date: current_date,
+				date: nd,
 				amount: registration.total_amount,
 				eventObject: registration.eventObject
 			};
-			slip = generateSlip('forPayment', registration.teamId, dataToGeneratePDF);
-		} else {
+			slip = generateSlip('forPayment', registration.teamId, dataToGeneratePDF, request, response, registration);
+		} else if (request.body.latePayment) {
 			dataToGeneratePDF = {
 				teamId: registration.teamId,
 				team_leader: registration.team_leader,
@@ -150,15 +168,6 @@ var registrationController = function (Registration) {
 			};
 			slip = generateSlip('latePayment', registration.teamId, dataToGeneratePDF);
 		}
-
-		registration.save(function (error) {
-			if (error) {
-				throwError(response, error, null, 'Slip Download', 'Download Failed');
-			} else {
-				response.status(200);
-				response.json(registration);
-			}
-		});
 	}
 
 
@@ -166,11 +175,13 @@ var registrationController = function (Registration) {
 	function downloadSlip(request, response) {
 		var type = request.query.type;
 		var teamId = request.params.teamId;
+		response.status(200);
 		response.download('./api/slips/' + type + '/' + teamId + '.pdf', function (error, data) {
+			console.log("Error", error);
 			if (error) {
 				throwError(response, error, null, 'Slip Download', 'Download Failed');
 			} else {
-				response.status(404).send(data);
+				response.send(data);
 			}
 		});
 	}

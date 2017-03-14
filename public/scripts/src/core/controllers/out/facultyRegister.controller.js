@@ -96,13 +96,12 @@
 
 		function createFilterFor(query) {
 			var lowercaseQuery = angular.lowercase(query);
-
 			return function filterFn(college) {
 				var matches = college.name.match(/\b(\w)/g);
 				var acronym = matches.join('');
 				acronym = acronym.toLowerCase();
-				return (college.name.toLowerCase().trim().indexOf(lowercaseQuery) === 0
-					|| acronym.indexOf(lowercaseQuery) === 0);
+				return (college.name.toLowerCase().trim().indexOf(lowercaseQuery) === 0 ||
+					acronym.indexOf(lowercaseQuery) === 0);
 			};
 		}
 	}

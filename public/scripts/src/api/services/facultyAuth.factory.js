@@ -16,7 +16,9 @@
 			logout: logout,
 			facultyForgotPasswordApply: facultyForgotPasswordApply,
 			facultyForgotPasswordSet: facultyForgotPasswordSet,
-			getColleges: getColleges
+			getColleges: getColleges,
+			checkVerified: checkVerified,
+			editStudentCoordinator: editStudentCoordinator
 		};
 
 		return service;
@@ -40,7 +42,9 @@
 					$rootScope.faculty.id = payload._id;
 					$rootScope.faculty.registrations_count = payload.registrations_count;
 					$rootScope.faculty.collected_amount = payload.collected_amount;
+					$rootScope.faculty.student_coordinator = payload.student_coordinator;
 					return (payload.exp > Date.now() / 1000);
+					console.log($rootScope.faculty);
 				} else {
 					return false;
 				}
@@ -50,6 +54,10 @@
 			}
 		}
 
+		function replaceToken(token) {
+			removeToken();
+			saveToken(token);
+		}
 
 
 		function saveToken(token) {
@@ -169,5 +177,40 @@
 			$rootScope.$broadcast('logoutSuccessful');
 		}
 
+		function checkVerified() {
+			console.log($rootScope.faculty);
+			$http.get('/api/faculty/check')
+				.then(checkVerifiedSuccess)
+				.catch(checkVerifiedFailure);
+		}
+
+		function checkVerifiedSuccess(response) {
+			// console.log(response);
+			replaceToken(response.data.token);
+		}
+
+		function checkVerifiedFailure(error) {
+			// console.log(error);
+		}
+
+		function editStudentCoordinator(students) {
+			var link = '/api/faculty/' + $rootScope.faculty.id + '/addStudentCoordinator';
+			return $http.post(link, students)
+				.then(editStudentCoordinatorSuccess)
+				.catch(editStudentCoordinatorFailure);
+		}
+
+		function editStudentCoordinatorSuccess(response) {
+			replaceToken(response.data.token);
+			return response;
+		}
+
+		function editStudentCoordinatorFailure(error) {
+			return error;
+		}
+
+		function functionName(error) {
+			return error;
+		}
 	}
 })();

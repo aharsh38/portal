@@ -13,16 +13,27 @@
         <div layout="column" flex="100">
             <md-input-container>
               <label>Event Name</label>
-              <input name="eventName" required="" md-maxlength="100"
+              <input name="eventName" required md-maxlength="100"
                 ng-model="ec.myEvent.name">
               <div ng-messages="myEvent.eventName.$error">
                 <div ng-message="required">This Field Is Required.</div>
                 <div ng-message="md-maxlength">The event name has to be less than 100 characters long.</div>
               </div>
             </md-input-container>
+
+            <md-input-container>
+              <label>Main section</label>
+              <input name="main_section" required md-maxlength="100"
+                ng-model="ec.myEvent.main_section">
+              <div ng-messages="myEvent.main_section.$error">
+                <div ng-message="required">This Field Is Required.</div>
+                <div ng-message="md-maxlength">The event name has to be less than 100 characters long.</div>
+              </div>
+            </md-input-container>
+
             <md-input-container>
               <label>Tag Line</label>
-              <input name="tagLine" required="" md-maxlength="200"
+              <input name="tagLine" required md-maxlength="200"
                 ng-model="ec.myEvent.tagline">
               <div ng-messages="myEvent.tagLine.$error">
                 <div ng-message="required">This Field Is Required.</div>
@@ -31,7 +42,7 @@
             </md-input-container>
             <md-input-container class="md-block">
               <label>Description</label>
-              <textarea name="description" ng-model="ec.myEvent.description" md-maxlength="1000" rows="5"></textarea>
+              <textarea name="description" ng-model="ec.myEvent.description" md-maxlength="5000" rows="5"></textarea>
               <div ng-messages="myEvent.description.$error">
                 <div ng-message="required">This Field Is Required.</div>
                 <div ng-message="md-maxlength">The event name has to be less than 100 characters long.</div>
@@ -39,21 +50,40 @@
             </md-input-container>
             <md-input-container>
               <label>Problem Statement</label>
-              <input required="" ng-model="ec.myEvent.problem_statement" name="problemStatement">
+              <input ng-model="ec.myEvent.problem_statement" name="problemStatement">
               <div ng-messages="myEvent.problemStatement.$error">
                 <div ng-message="required">This Field Is Required.</div>
               </div>
             </md-input-container>
             <md-input-container>
               <label>Event Short Code</label>
-              <input required="" ng-model="ec.myEvent.shortcode" name="eventCode">
+              <input required ng-model="ec.myEvent.shortcode" name="eventCode">
               <div ng-messages="myEvent.eventCode.$error">
                 <div ng-message="required">This Field Is Required.</div>
               </div>
             </md-input-container>
             <md-input-container>
+              <label>Maximum Number Of Participants</label>
+              <input ng-model="ec.myEvent.no_of_participants" name="no_of_participants"
+                min="1" max="11">
+              <div ng-messages="myEvent.no_of_participants.$error">
+                <div ng-message="required">This Field Is Required.</div>
+                <div ng-message="number">Please Enter A Valid Amount.</div>
+                <div ng-show="form.priceminrange.$error.min || form.priceminrange.$error.max">
+                  Enter Value From 1 to 11.
+                </div>
+              </div>
+            </md-input-container>
+            <md-input-container>
+              <label>Keywords</label>
+              <input ng-model="ec.myEvent.keywords" name="keywords">
+              <div ng-messages="myEvent.keywords.$error">
+                <div ng-message="required">This Field Is Required.</div>
+              </div>
+            </md-input-container>
+            <md-input-container>
               <label>Fee Type</label>
-              <md-select ng-model="ec.myEvent.fees_type" name="fees_type" required=""
+              <md-select ng-model="ec.myEvent.fees_type" name="fees_type"
                 ng-change="ec.feeTypeChanged()">
                 <md-option value="no_payment">No Payment</md-option>
                 <md-option value="do_payment">Do Payment</md-option>
@@ -72,9 +102,11 @@
                 <div ng-message="number">Please Enter A Valid Amount.</div>
               </div>
             </md-input-container>
-              Do Payment
-              <md-switch ng-model="ec.myEvent.do_payment" aria-label="Switch 1" ng-disabled="true">
-            </md-switch>
+            <div >
+              Fixed Payment
+              <md-switch ng-model="ec.myEvent.fixed_payment" aria-label="Switch 1">
+              </md-switch>
+            </div>
             <md-input-container>
               <label>Event Section</label>
               <input required="" ng-model="ec.myEvent.section" name="eventSection">
@@ -164,7 +196,7 @@
           <div id="editorJudgingCriteria">
       		</div>
         </div>
-        <md-button class="md-primary md-raised" type="submit" ng-disabled="myEvent.$invalid" ng-click="ec.save()">
+        <md-button class="md-primary md-raised" type="submit" ng-click="ec.save()">
           {{ ec.myEvent.event }}
         </md-button>
     </form>

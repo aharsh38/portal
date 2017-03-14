@@ -15,15 +15,30 @@ var eventController = function (Event) {
 		});
 	}
 
-	function upload(request, response) {
+	function uploadDocs(request, response) {
 		var temp_path = request.files.file.path;
-		var target_path = './public/media/temp/' + request.files.file.originalFilename;
+		var target_path = './public/media/docs/' + request.files.file.originalFilename;
 		fs.rename(temp_path, target_path, function (error) {
 			if (error) {
 				response.json(error);
 			} else {
 				var returnObject = {};
-				returnObject.path = target_path.toString().slice(1);
+				returnObject.path = target_path.toString().slice(8);
+
+				response.status(200).json(returnObject);
+			}
+		});
+	}
+
+	function uploadImage(request, response) {
+		var temp_path = request.files.file.path;
+		var target_path = './public/media/images/' + request.files.file.originalFilename;
+		fs.rename(temp_path, target_path, function (error) {
+			if (error) {
+				response.json(error);
+			} else {
+				var returnObject = {};
+				returnObject.path = 'http://portal.gtu.ac.in' + target_path.toString().slice(8);
 				response.status(200).json(returnObject);
 			}
 		});
@@ -32,6 +47,7 @@ var eventController = function (Event) {
 	function getEventsBySection(req, res) {
 		var event_classification = [];
 		var event_classification_final = [];
+
 
 		Event.aggregate(
 			[{
@@ -89,11 +105,13 @@ var eventController = function (Event) {
 		event_obj.judging_criteria = request.body.judging_criteria;
 		event_obj.managers = request.body.managers;
 		event_obj.section = request.body.section;
+		event_obj.main_section = request.body.main_section;
+		event_obj.fixed_payment = request.body.fixed_payment;
+		event_obj.keywords = request.body.keywords;
+		event_obj.no_of_participants = request.body.no_of_participants;
 		event_obj.fees = request.body.fees;
 		event_obj.fees_type = request.body.fees_type;
-		event_obj.do_payment = request.body.do_payment;
 		event_obj.shortcode = request.body.shortcode;
-		event_obj.attachments = request.body.attachments;
 		event_obj.save(function (error) {
 			if (error) {
 				throwError(response, "Creating Event", error);
@@ -122,9 +140,12 @@ var eventController = function (Event) {
 		request.event.judging_criteria = request.body.judging_criteria;
 		request.event.managers = request.body.managers;
 		request.event.section = request.body.section;
+		request.event.main_section = request.body.main_section;
+		request.event.fixed_payment = request.body.fixed_payment;
+		request.event.keywords = request.body.keywords;
+		request.event.no_of_participants = request.body.no_of_participants;
 		request.event.fees = request.body.fees;
 		request.event.fees_type = request.body.fees_type;
-		request.event.do_payment = request.body.do_payment;
 		request.event.shortcode = request.body.shortcode;
 		request.event.save(function (error) {
 			if (error) {
@@ -156,7 +177,8 @@ var eventController = function (Event) {
 		getSingleEvent: getSingleEvent,
 		updateEvent: updateEvent,
 		deleteEvent: deleteEvent,
-		upload: upload
+		uploadDocs: uploadDocs,
+		uploadImage: uploadImage
 	};
 
 };
