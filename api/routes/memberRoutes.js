@@ -23,6 +23,10 @@ var memberRoutes = function(Faculty, Member, Registration, College, Events) {
         console.log("Mulipart");
         next();
     });
+    memberRouter.use('/uploadImage', multipartMiddleware, function(request, response, next) {
+        console.log("Mulipart");
+        next();
+    });
 
     memberRouter.param('teamId', registrationMiddleware);
     memberRouter.param('facultyId', facultyMiddleware);
