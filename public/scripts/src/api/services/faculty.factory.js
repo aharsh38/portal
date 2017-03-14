@@ -33,6 +33,13 @@
 
 
 
+		function get(students) {
+			var link = baseLink + '/studentCoordinator';
+			return $http.put(link, students)
+				.then(resolveFunc)
+				.catch(errorFunc);
+		}
+
 		function resolveFunc(response) {
 			return response;
 		}

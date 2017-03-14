@@ -9,16 +9,6 @@
 	'use strict';
 
 	angular
-		.module('fct_app', [
-			'fct.api',
-			'fct.core'
-		]);
-})();
-
-(function () {
-	'use strict';
-
-	angular
 		.module('fct.core', [
 			'ngAnimate',
 			'ngMessages',
@@ -29,6 +19,7 @@
 			'validation.match',
 			'ngMdIcons',
 			'angularMoment',
+			'ckeditor'
 			// 'fct.api'
 		]);
 
@@ -77,6 +68,16 @@
 			}
 		}
 	}
+})();
+
+(function () {
+	'use strict';
+
+	angular
+		.module('fct_app', [
+			'fct.api',
+			'fct.core'
+		]);
 })();
 
 	(function () {
@@ -392,63 +393,6 @@
 	'use strict';
 
 	angular
-		.module('fct.api')
-		.factory('authInterceptor', authInterceptor);
-
-	authInterceptor.$inject = ['$window', '$q', '$location'];
-
-	function authInterceptor($window, $q, $location) {
-		var service = {
-			request: request,
-			requestError: requestError,
-			response: response,
-			responseError: responseError
-		};
-
-		return service;
-
-		function getToken() {
-			if ($window.localStorage['auth-token']) {
-				return $window.localStorage['auth-token'];
-			} else {
-				return null;
-			}
-		}
-
-		function request(config) {
-			var token = getToken();
-			if (token !== null) {
-				var authHead = 'Bearer ' + token;
-				config.headers['Authorization'] = authHead;
-			}
-			// console.log(config);
-			return config;
-		}
-
-		function requestError(rejection) {
-			// console.log("Request Rejection",rejection);
-			return $q.reject(rejection);
-		}
-
-		function response(response) {
-			// console.log("response",response);
-			return response || $q.when(response);
-		}
-
-		function responseError(rejection) {
-			// console.log("response rejection", rejection);
-			if (rejection.status == 403) {
-				$location.path('/login');
-			}
-			return $q.reject(rejection);
-		}
-	}
-})();
-
-(function () {
-	'use strict';
-
-	angular
 	  .module('fct.core')
 	  .factory('eventService', eventService);
 
@@ -539,6 +483,13 @@
 		}
 
 
+
+		function get(students) {
+			var link = baseLink + '/studentCoordinator';
+			return $http.put(link, students)
+				.then(resolveFunc)
+				.catch(errorFunc);
+		}
 
 		function resolveFunc(response) {
 			return response;
@@ -780,6 +731,7 @@
 		var service = {
 			getAllFacultyCoordinators: getAllFacultyCoordinators,
 			verifyFaculty: verifyFaculty,
+			rejectFaculty: rejectFaculty,
 			getTotalRegistrations: getTotalRegistrations,
 			getDeleteModal: getDeleteModal,
 			initializeCKEditor: initializeCKEditor,
@@ -795,6 +747,12 @@
 
 		function verifyFaculty(id) {
 			return $http.patch('/api/members/faculty/verify/' + id)
+				.then(responseFunc)
+				.catch(errorFunc);
+		}
+
+		function rejectFaculty(id) {
+			return $http.patch('/api/members/faculty/reject/' + id)
 				.then(responseFunc)
 				.catch(errorFunc);
 		}
@@ -1001,6 +959,63 @@
 		function logout() {
 			removeToken();
 			$rootScope.$broadcast('logoutSuccessful');
+		}
+	}
+})();
+
+(function () {
+	'use strict';
+
+	angular
+		.module('fct.api')
+		.factory('authInterceptor', authInterceptor);
+
+	authInterceptor.$inject = ['$window', '$q', '$location'];
+
+	function authInterceptor($window, $q, $location) {
+		var service = {
+			request: request,
+			requestError: requestError,
+			response: response,
+			responseError: responseError
+		};
+
+		return service;
+
+		function getToken() {
+			if ($window.localStorage['auth-token']) {
+				return $window.localStorage['auth-token'];
+			} else {
+				return null;
+			}
+		}
+
+		function request(config) {
+			var token = getToken();
+			if (token !== null) {
+				var authHead = 'Bearer ' + token;
+				config.headers['Authorization'] = authHead;
+			}
+			// console.log(config);
+			return config;
+		}
+
+		function requestError(rejection) {
+			// console.log("Request Rejection",rejection);
+			return $q.reject(rejection);
+		}
+
+		function response(response) {
+			// console.log("response",response);
+			return response || $q.when(response);
+		}
+
+		function responseError(rejection) {
+			// console.log("response rejection", rejection);
+			if (rejection.status == 403) {
+				$location.path('/login');
+			}
+			return $q.reject(rejection);
 		}
 	}
 })();
@@ -1276,82 +1291,82 @@
     }
 })();
 
-(function () {
-	'use strict';
+(function() {
+    'use strict';
 
-	angular
-		.module('fct.core')
-		.controller('AddStudentController', AddStudentController);
+    angular
+        .module('fct.core')
+        .controller('AddStudentController', AddStudentController);
 
-	AddStudentController.$inject = ['$http', 'facultyAuthService', '$rootScope', 'fctToast'];
+    AddStudentController.$inject = ['$http', 'facultyAuthService', '$rootScope', 'fctToast'];
 
-	function AddStudentController($http, facultyAuthService, $rootScope, fctToast) {
-		var vm = this;
-		vm.coordinator = {};
-		vm.editInfo = false;
-		vm.preInfo = false;
-		vm.updateButtonClicked = false;
-		vm.addButtonClicked = false;
+    function AddStudentController($http, facultyAuthService, $rootScope, fctToast) {
+        var vm = this;
+        vm.coordinator = {};
+        vm.editInfo = false;
+        vm.preInfo = false;
+        vm.updateButtonClicked = false;
+        vm.addButtonClicked = false;
 
-		angular.extend(vm, {
-			update: update,
-			addStudentCoordinator: addStudentCoordinator,
-			edit: edit
-		});
+        angular.extend(vm, {
+            update: update,
+            addStudentCoordinator: addStudentCoordinator,
+            edit: edit
+        });
 
-		activate();
+        activate();
 
-		function activate() {
-			if (!$rootScope.faculty.student_coordinator.name) {
-				vm.editInfo = true;
-			} else {
-				vm.coordinator = $rootScope.faculty.student_coordinator;
-				vm.preInfo = true;
-			}
-		}
+        function activate() {
+            if (angular.isUndefined($rootScope.faculty.student_coordinator) && !$rootScope.faculty.student_coordinator.name) {
+                vm.editInfo = true;
+            } else {
+                vm.coordinator = $rootScope.faculty.student_coordinator;
+                vm.preInfo = true;
+            }
+        }
 
-		function update(event) {
-			vm.updateButtonClicked = true;
-			return facultyAuthService.editStudentCoordinator({
-					student_coordinator: vm.coordinator
-				})
-				.then(editStudentCoordinatorSuccess)
-				.catch(editStudentCoordinatorFailure);
-		}
+        function update(event) {
+            vm.updateButtonClicked = true;
+            return facultyAuthService.editStudentCoordinator({
+                    student_coordinator: vm.coordinator
+                })
+                .then(editStudentCoordinatorSuccess)
+                .catch(editStudentCoordinatorFailure);
+        }
 
-		function edit() {
-			vm.editInfo = true;
-		}
+        function edit() {
+            vm.editInfo = true;
+        }
 
-		function addStudentCoordinator(event) {
-			vm.addButtonClicked = true;
-			return facultyAuthService.editStudentCoordinator({
-					student_coordinator: vm.coordinator
-				})
-				.then(addStudentCoordinatorSuccess)
-				.catch(editStudentCoordinatorFailure);
-		}
+        function addStudentCoordinator(event) {
+            vm.addButtonClicked = true;
+            return facultyAuthService.editStudentCoordinator({
+                    student_coordinator: vm.coordinator
+                })
+                .then(addStudentCoordinatorSuccess)
+                .catch(editStudentCoordinatorFailure);
+        }
 
-		function addStudentCoordinatorSuccess(response) {
-			vm.preInfo = true;
-			vm.editInfo = false;
-			vm.addButtonClicked = false;
-			fctToast.showToast('Student Coordinator Details Added Successfuly', true);
-		}
+        function addStudentCoordinatorSuccess(response) {
+            vm.preInfo = true;
+            vm.editInfo = false;
+            vm.addButtonClicked = false;
+            fctToast.showToast('Student Coordinator Details Added Successfuly', true);
+        }
 
-		function editStudentCoordinatorSuccess(response) {
-			vm.editInfo = false;
-			vm.updateButtonClicked = false;
-			fctToast.showToast('Student Coordinator Details Updated Successfuly', true);
-		}
+        function editStudentCoordinatorSuccess(response) {
+            vm.editInfo = false;
+            vm.updateButtonClicked = false;
+            fctToast.showToast('Student Coordinator Details Updated Successfuly', true);
+        }
 
-		function editStudentCoordinatorFailure(error) {
-			vm.editInfo = false;
-			vm.addButtonClicked = false;
-			vm.updateButtonClicked = false;
-			fctToast.showToast('Error!! Try Again');
-		}
-	}
+        function editStudentCoordinatorFailure(error) {
+            vm.editInfo = false;
+            vm.addButtonClicked = false;
+            vm.updateButtonClicked = false;
+            fctToast.showToast('Error!! Try Again');
+        }
+    }
 })();
 
 (function () {
@@ -1544,6 +1559,7 @@
 
 		angular.extend(vm, {
 			verifyFaculty: verifyFaculty,
+			rejectFaculty: rejectFaculty,
 			loadmore: loadmore
 		});
 
@@ -1572,7 +1588,6 @@
 
 		function verifyFaculty(id, index, event) {
 			vm.verifyingIndex = index;
-
 			var confirm = $mdDialog.confirm()
 				.title('Are you sure?')
 				.textContent('You will be Verifying ' + vm.faculties[index].name + ' as a Faculty Coordinator')
@@ -1581,16 +1596,13 @@
 				.ok('Confirm Verification')
 				.theme('normal')
 				.cancel('No, not now !!!');
-
 			$mdDialog.show(confirm).then(function () {
 				return memberService.verifyFaculty(id)
 					.then(verifyFacultySuccess)
 					.catch(verifyFacultyFailure);
 			}, function () {
-				// $scope.status = 'You decided to keep your debt.';
+				//failed
 			});
-
-
 		}
 
 		function verifyFacultySuccess(response) {
@@ -1601,6 +1613,36 @@
 			//fctToast.show('FAilure');
 		}
 
+		function rejectFaculty(id, index, event) {
+			vm.rejectionIndex = index;
+			var confirm = $mdDialog.confirm()
+				.title('Are you sure?')
+				.textContent('You will be Rejecting ' + vm.faculties[index].name + ' as a Faculty Coordinator')
+				.ariaLabel('FCVER')
+				.targetEvent(event)
+				.ok('Confirm Rejection')
+				.theme('normal')
+				.cancel('No, not now !!!');
+			$mdDialog.show(confirm).then(function () {
+				return memberService.rejectFaculty(id)
+					.then(rejectFacultySuccess)
+					.catch(rejectFacultyFailure);
+			}, function () {
+				//failed
+			});
+		}
+
+		function rejectFacultySuccess(response) {
+			vm.faculties[vm.rejectionIndex].rejected = true;
+			vm.faculties.splice(vm.rejectionIndex, 1);
+			console.log(response);
+		}
+
+		function rejectFacultyFailure(error) {
+			//fctToast.show('FAilure');
+			console.log(error);
+		}
+
 		function loadmore() {
 			vm.limitFaculty += 5;
 			if (vm.limitFaculty >= vm.faculties.length) {
@@ -1608,722 +1650,6 @@
 			}
 		}
 	}
-})();
-
-(function () {
-	'use strict';
-
-	angular
-		.module('fct.core')
-		.controller('AddEventController', AddEventController);
-
-	AddEventController.$inject = ['$stateParams', 'eventService', '$rootScope', '$timeout', 'Upload', '$state', 'fctToast', '$filter', 'memberService'];
-
-	function AddEventController(stateParams, eventService, $rootScope, $timeout, Upload, $state, fctToast, $filter, memberService) {
-		var vm = this;
-		vm.isUpdate = false;
-		vm.myEvent = {
-			'managers': [],
-			'event': "Add",
-		};
-
-		vm.myEvent.attachments = [];
-		vm.files = [];
-		vm.image = '';
-
-		angular.extend(vm, {
-			save: save,
-			openManagersModal: openManagersModal,
-			uploadFiles: uploadFiles,
-			feeTypeChanged: feeTypeChanged
-		});
-
-		activate();
-
-		function activate() {
-			memberService.initializeCKEditor();
-		}
-
-		function openManagersModal(total) {
-			vm.myEvent.managers = [];
-			while (total > 0) {
-				var each = {
-					"index": 1
-				};
-				vm.myEvent.managers.push(each);
-				total--;
-			}
-		}
-
-		function feeTypeChanged() {
-			switch (vm.myEvent.fees_type) {
-			case "no_payment":
-				vm.myEvent.fees = 0;
-				vm.feeDisabled = true;
-				vm.myEvent.do_payment = false;
-				break;
-			case "do_payment":
-				vm.myEvent.do_payment = true;
-				break;
-			case "late_payment":
-				vm.myEvent.do_payment = false;
-				break;
-			}
-		}
-
-		function save() {
-			vm.myEvent.rules = CKEDITOR.instances["editorRules"].getData();
-			vm.myEvent.specification = CKEDITOR.instances["editorSpecification"].getData();
-			vm.myEvent.judging_criteria = CKEDITOR.instances["editorJudgingCriteria"].getData();
-			console.log(vm.myEvent);
-			if (vm.myEvent.isUpdate) {
-				return eventService.updateEvent(vm.myEvent).then(registerSuccess).catch(registerFailure);
-			} else {
-				return eventService.addEvent(vm.myEvent).then(registerSuccess).catch(registerFailure);
-			}
-		}
-
-		function registerSuccess(event) {
-			fctToast.showToast("Event Registered.", true);
-			$timeout(function () {
-				$state.go('in_tc.showEvent');
-			});
-		}
-
-		function registerFailure(event, error) {
-			fctToast.showToast(error.data.message);
-		}
-
-		function uploadFiles(files, errFiles) {
-			angular.forEach(files, function (file) {
-				vm.files.push(file);
-				file.upload = Upload.upload({
-					url: '/api/members/upload',
-					data: {
-						file: file
-					}
-				});
-				file.upload.then(function (response) {
-					$timeout(function () {
-						file.result = response.data;
-						var attach = {
-							doc_name: file.name,
-							link: file.result.path,
-						};
-						vm.myEvent.attachments.push(attach);
-					});
-				}, function (response) {
-					if (response.status > 0)
-						vm.errorMsg = response.status + ': ' + response.data;
-				}, function (evt) {
-					file.progress = Math.min(100, parseInt(100.0 * evt.loaded / evt.total));
-				});
-			});
-		}
-	}
-})();
-
-(function () {
-	'use strict';
-
-	angular
-		.module('fct.core')
-		.controller('DashboardController', DashboardController);
-
-	DashboardController.$inject = ['$rootScope', 'memberService'];
-
-	function DashboardController($rootScope, memberService) {
-		var vm = this;
-
-		angular.extend(vm, {
-			func: func
-		});
-
-		activate();
-
-		function activate() {
-
-		}
-
-		function func() {
-
-		}
-	}
-})();
-
-(function () {
-    'use strict';
-
-    angular
-      .module('fct.core')
-      .controller('EachEventController', EachEventController);
-
-    EachEventController.$inject = ['$stateParams', 'eventService', '$sce'];
-
-    function EachEventController(stateParams, eventService, $sce) {
-        var vm = this;
-
-        activate();
-
-        function activate() {
-          if(stateParams.eventId !== undefined && stateParams.eventId !== null) {
-            vm.eventId = stateParams.eventId;
-            getEvent();
-          }
-		    }
-
-        function getEvent() {
-          return eventService.getSingleEvent(vm.eventId)
-            .then(getEventSuccess)
-            .catch(getEventFailure);
-        }
-
-        function getEventSuccess(response) {
-          console.log(response);
-          vm.myEvent = response.data;
-          vm.rules = $sce.trustAsHtml(vm.myEvent.rules);
-          vm.judging_criteria = $sce.trustAsHtml(vm.myEvent.judging_criteria);
-          vm.specification = $sce.trustAsHtml(vm.myEvent.specification);
-        }
-
-        function getEventFailure(error) {
-          console.log(error);
-        }
-    }
-})();
-
-(function () {
-    'use strict';
-
-    angular
-      .module('fct.core')
-      .controller('EventCardController', EventCardController);
-
-    EventCardController.$inject = ['eventService', '$mdDialog', 'memberService', '$scope'];
-
-    function EventCardController(eventService, $mdDialog, memberService, $scope) {
-        var vm = this;
-        vm.openCard = false;
-        vm.caret = 'expand_less';
-
-        angular.extend(vm, {
-            deleteEvent: deleteEvent,
-        });
-
-        activate();
-
-        function activate() {
-
-        }
-
-        function deleteEvent(id) {
-          if(id !== undefined && id !== null) {
-            vm.deleteId = id;
-            return memberService.getDeleteModal()
-              .then(confirmedDelete)
-              .catch(unconfirmedDelete);
-          }
-          return null;
-        }
-
-        function confirmedDelete() {
-          return eventService.deleteEvent(vm.deleteId)
-            .then(deleteEventSuccess)
-            .catch(deleteEventFailure);
-        }
-
-        function unconfirmedDelete() {
-          //
-        }
-
-        function deleteEventSuccess(response) {
-          console.log(response);
-          $scope.reload();
-          // vm.reload();
-        }
-
-        function deleteEventFailure(error) {
-          console.log(error);
-          //redirect
-        }
-    }
-})();
-
-(function () {
-	'use strict';
-
-	angular
-		.module('fct.core')
-		.controller('EventRegistrationController', EventRegistrationController);
-
-	EventRegistrationController.$inject = ['memberService'];
-
-	function EventRegistrationController(memberService) {
-		var vm = this;
-
-		// angular.extend(vm, {
-		// 	func: func
-		// });
-
-		activate();
-
-		function activate() {
-			console.log(JSON.stringify(getRegistration()));
-		}
-
-		function getRegistration() {
-			return memberService.getTotalRegistrations();
-		}
-	}
-})();
-
-(function () {
-	'use strict';
-
-	angular
-		.module('fct.core')
-		.controller('MemberSettingsController', MemberSettingsController);
-
-	MemberSettingsController.$inject = ['memberAuthService', 'fctToast', '$scope', '$rootScope', '$timeout'];
-
-	function MemberSettingsController(memberAuthService, fctToast, $scope, $rootScope, $timeout) {
-		var vm = this;
-		vm.updateInfo = false;
-		$scope.changePasswordForm = {};
-		vm.user = {};
-
-		angular.extend(vm, {
-			changePassword: changePassword
-		});
-
-		activate();
-
-		function activate() {
-
-		}
-
-		function changePassword(event) {
-			if (vm.updateInfo) {
-				event.preventDefault();
-			} else {
-				vm.updateInfo = true;
-				memberAuthService.changeMemberPassword(vm.user);
-			}
-		}
-
-		$rootScope.$on('MemberChangePasswordSuccess', MemberChangePasswordSuccess);
-		$rootScope.$on('MemberChangePasswordFailure', MemberChangePasswordFailure);
-
-		function MemberChangePasswordSuccess(event) {
-			fctToast.showToast("Password Changed Successfully", true);
-			$timeout(function () {
-				resetForm();
-			});
-
-		}
-
-		function MemberChangePasswordFailure(event, error) {
-			fctToast.showToast(error.data.message);
-			$timeout(function () {
-				resetForm();
-			});
-		}
-
-		function resetForm() {
-			vm.user = {};
-			vm.updateInfo = false;
-			$scope.changePasswordForm.$setPristine();
-			$scope.changePasswordForm.$setUntouched();
-		}
-	}
-})();
-
-(function () {
-	'use strict';
-
-	angular
-		.module('fct.core')
-		.controller('ParticipantRegistrationController', ParticipantRegistrationController);
-
-	ParticipantRegistrationController.$inject = ['$http'];
-
-	function ParticipantRegistrationController($http) {
-		var vm = this;
-		vm.myParticipant = {
-			eventObject: {
-				event_id: 123123,
-				event_shortcode: 'EVET'
-			},
-			other_participants: []
-		};
-    vm.otherParticipants = [];
-		vm.myParticipant.other_participants = [];
-    vm.maxParticipants = 4;
-    vm.eventPrice = 50;
-    vm.esflag = false;
-    vm.nopflag = false;
-
-		angular.extend(vm, {
-      getParticipantLength : getParticipantLength,
-      save : save,
-      openParticipantModule : openParticipantModule,
-		});
-
-		activate();
-
-		function activate() {
-			var x = '{"eventObject": {"event_id": "123123","event_shortcode": "EVET","event_section": "1","event_name": "1"},"other_participants": [{"title": "Team Member","leaderFlag": false,"$$hashKey": "object:68","name": "cl","email": "d@ddc.c","college_name": "1","branch": "2","semester": "6","mobileno": "43223443223","enrollment": "322342342342343"}],"total_amount": 100,"numberOfParticipant": "2","do_payment": true,"team_leader": {"title": "Team Leader","leaderFlag": true,"$$hashKey": "object:67","name": "fd","email": "s@sd.3","mobileno": "12341232133","college_name": "1","branch": "1","semester": "2","enrollment": "231312312332333"}}';
-			return $http.post('/api/registration/create', x)
-				.then(resolveFunc)
-				.catch(rejectFunc);
-		}
-
-    function openParticipantModule(total) {
-      vm.nopflag = true;
-      var first = true;
-      vm.myParticipant.other_participants = [];
-      while(total > 0) {
-        var each = {"title": (first) ? "Team Leader" : "Team Member",
-                    "leaderFlag": first};
-        vm.myParticipant.other_participants.push(each);
-        first = false;
-        total--;
-      }
-    }
-
-    function getParticipantLength() {
-      return vm.myParticipant.other_participants.length;
-    }
-
-		function save() {
-			vm.myParticipant.do_payment = true;
-			console.log(JSON.stringify(vm.myParticipant));
-			vm.myParticipant.team_leader = vm.myParticipant.other_participants[0];
-			vm.myParticipant.other_participants.splice(0, 1);
-			console.log(JSON.stringify(vm.myParticipant));
-			return $http.post('/api/registration/create', vm.myParticipant)
-				.then(resolveFunc)
-				.catch(rejectFunc);
-		}
-
-		function resolveFunc(response) {
-			console.log(response);
-		}
-
-		function rejectFunc(error) {
-			console.log(error);
-		}
-	}
-})();
-
-(function () {
-    'use strict';
-
-    angular
-      .module('fct.core')
-      .controller('ShowEventController', ShowEventController);
-
-    ShowEventController.$inject = ['eventService'];
-
-    function ShowEventController(eventService) {
-        var vm = this;
-
-        angular.extend(vm, {
-            getEvents: getEvents,
-        });
-
-        activate();
-
-        function activate() {
-          getEvents();
-        }
-
-        function getEvents() {
-            return eventService.getEvent()
-              .then(getEventSuccess)
-              .catch(getEventFailure);
-        }
-
-        function getEventSuccess(response) {
-          console.log(response);
-          vm.dummyEvents = response.data;
-        }
-
-        function getEventFailure(error) {
-          console.log(error);
-        }
-    }
-})();
-
-
-(function () {
-	'use strict';
-
-	angular
-		.module('fct.core')
-		.controller('UpdateEventController', UpdateEventController);
-
-	UpdateEventController.$inject = ['$stateParams', 'eventService', '$rootScope', '$state', 'fctToast', 'memberService'];
-
-	function UpdateEventController(stateParams, eventService, $rootScope, state, fctToast, memberService) {
-		var vm = this;
-		vm.isUpdate = true;
-		vm.myEvent = {
-			'managers': [],
-		};
-		vm.myEvent.attachments = [];
-		vm.files = [];
-		vm.feeDisabled = false;
-		vm.myEvent.do_payment = false;
-
-		angular.extend(vm, {
-			save: save,
-			openManagersModal: openManagersModal,
-			uploadFiles: uploadFiles,
-			feeTypeChanged: feeTypeChanged
-		});
-
-		activate();
-
-		function activate() {
-			memberService.initializeCKEditor();
-			checkEventId();
-		}
-
-		function openManagersModal(total) {
-			vm.myEvent.managers = [];
-			while (total > 0) {
-				var each = {
-					"index": 1
-				};
-				vm.myEvent.managers.push(each);
-				total--;
-			}
-		}
-
-		function checkEventId() {
-			if (stateParams.eventId !== undefined && stateParams.eventId !== null) {
-				vm.eventId = stateParams.eventId;
-				return eventService.getSingleEvent(vm.eventId)
-					.then(onEventGetSuccess)
-					.catch(onEventGetFailure);
-
-			}
-			return null;
-		}
-
-		function onEventGetSuccess(eventData) {
-			console.log(eventData);
-			vm.myEvent = eventData.data;
-			vm.myEvent.event = "Update";
-			vm.myEvent.totalManager = vm.myEvent.managers.length;
-			vm.files = vm.myEvent.attachments;
-			return [CKEDITOR.instances['editorRules'].setData(vm.myEvent.rules),
-				CKEDITOR.instances['editorSpecification'].setData(vm.myEvent.specification),
-				CKEDITOR.instances['editorJudgingCriteria'].setData(vm.myEvent.judging_criteria)
-			];
-		}
-
-		function onEventGetFailure(error) {
-			console.log(error);
-
-		}
-
-		function feeTypeChanged() {
-			switch (vm.myEvent.fees_type) {
-			case "no_payment":
-				vm.myEvent.fees = 0;
-				vm.feeDisabled = true;
-				vm.myEvent.do_payment = false;
-				break;
-			case "do_payment":
-				vm.myEvent.do_payment = true;
-				break;
-			case "late_payment":
-				vm.myEvent.do_payment = false;
-				break;
-			}
-		}
-
-		function save() {
-			vm.myEvent.rules = CKEDITOR.instances['editorRules'].getData();
-			vm.myEvent.specification = CKEDITOR.instances['editorSpecification'].getData();
-			vm.myEvent.judging_criteria = CKEDITOR.instances['editorJudgingCriteria'].getData();
-			console.log(JSON.stringify(vm.myEvent));
-			return eventService.updateEvent(vm.eventId, vm.myEvent)
-				.then(onUpdateSuccess)
-				.catch(onUpdateFailure);
-		}
-
-		function onUpdateSuccess(response) {
-			console.log(response);
-			fctToast.showToast("Update Success.", true);
-			state.go('in_tc.showEvent');
-		}
-
-		function onUpdateFailure(error) {
-			console.log(error);
-			fctToast.showToast("Please try again later.");
-		}
-
-		function uploadFiles(files, errFiles) {
-			angular.forEach(files, function (file) {
-				vm.files.push(file);
-				file.upload = Upload.upload({
-					url: '/api/members/upload',
-					data: {
-						file: file
-					}
-				});
-				file.upload.then(function (response) {
-					$timeout(function () {
-						file.result = response.data;
-						var attach = {
-							doc_name: file.name,
-							link: file.result.path,
-						};
-						vm.myEvent.attachments.push(attach);
-					});
-				}, function (response) {
-					if (response.status > 0)
-						vm.errorMsg = response.status + ': ' + response.data;
-				}, function (evt) {
-					file.progress = Math.min(100, parseInt(100.0 * evt.loaded / evt.total));
-				});
-			});
-		}
-	}
-})();
-
-(function () {
-	'use strict';
-
-	angular
-		.module('fct.core')
-		.controller('FacultyLayoutController', FacultyLayoutController)
-		.controller('ContactDialogController', ContactDialogController);
-
-	FacultyLayoutController.$inject = ['facultyAuthService', '$mdSidenav', '$rootScope', 'fctToast', '$state', '$mdDialog', '$mdMedia', '$scope'];
-
-	function FacultyLayoutController(facultyAuthService, $mdSidenav, $rootScope, fctToast, $state, $mdDialog, $mdMedia, $scope) {
-		var vm = this;
-
-		$scope.$watch(function () {
-			return $mdMedia('xs') || $mdMedia('sm');
-		});
-
-		angular.extend(vm, {
-			logout: logout,
-			openLeftSidenav: openLeftSidenav,
-			isOpenLeftSidenav: isOpenLeftSidenav,
-			closeLeftSidenav: closeLeftSidenav,
-			contact: contact
-		});
-
-		activate();
-
-		function activate() {
-
-		}
-
-		function logout() {
-			facultyAuthService.logout();
-		}
-
-		$rootScope.$on('logoutSuccessful', logoutSuccessful);
-
-		function logoutSuccessful(event) {
-			fctToast.showToast("Succesfully Logged out", true);
-			$state.go('out.login');
-		}
-
-		function openLeftSidenav() {
-			$mdSidenav('left').open();
-		}
-
-		function isOpenLeftSidenav() {
-			return $mdSidenav('left').isOpen();
-		}
-
-		function closeLeftSidenav() {
-			$mdSidenav('left').close();
-		}
-
-		function contact(ev) {
-			var useFullScreen = $mdMedia('sm') || $mdMedia('xs');
-			$mdDialog.show({
-				controller: 'ContactDialogController',
-				templateUrl: '/templates/components/dialogs/contact.html',
-				parent: angular.element(document.body),
-				targetEvent: ev,
-				clickOutsideToClose: true,
-				fullscreen: useFullScreen // Only for -xs, -sm breakpoints.
-			});
-		}
-	}
-
-	ContactDialogController.$inject = ['$scope', '$mdDialog'];
-
-	function ContactDialogController($scope, $mdDialog) {
-		$scope.cancel = function () {
-			$mdDialog.cancel();
-		};
-
-		$scope.hide = function () {
-			$mdDialog.hide();
-		};
-	}
-})();
-
-(function () {
-	'use strict';
-
-	angular
-		.module('fct.core')
-		.controller('MemberLayoutController', MemberLayoutController);
-
-	MemberLayoutController.$inject = ['memberAuthService', '$mdSidenav', '$rootScope', 'fctToast', '$state', '$scope'];
-
-	function MemberLayoutController(memberAuthService, $mdSidenav, $rootScope, fctToast, $state, $scope) {
-		var vm = this;
-
-		angular.extend(vm, {
-			logout: logout,
-			openLeftSidenav: openLeftSidenav,
-			isOpenLeftSidenav: isOpenLeftSidenav,
-			closeLeftSidenav: closeLeftSidenav,
-		});
-
-		activate();
-
-		function activate() {
-
-		}
-
-		function logout() {
-			memberAuthService.logout();
-		}
-
-		$rootScope.$on('logoutSuccessful', logoutSuccessful);
-
-		function logoutSuccessful(event) {
-			fctToast.showToast("Succesfully Logged out", true);
-			$state.go('out.member_login');
-		}
-
-		function openLeftSidenav() {
-			$mdSidenav('left').open();
-		}
-
-		function isOpenLeftSidenav() {
-			return $mdSidenav('left').isOpen();
-		}
-
-		function closeLeftSidenav() {
-			$mdSidenav('left').close();
-		}
-	}
-
 })();
 
 (function () {
@@ -2878,6 +2204,781 @@
 			$scope.registerForm.$setUntouched();
 		}
 	}
+})();
+
+(function () {
+	'use strict';
+
+	angular
+		.module('fct.core')
+		.controller('AddEventController', AddEventController);
+
+	AddEventController.$inject = ['$stateParams', 'eventService', '$rootScope', '$timeout', 'Upload', '$state', 'fctToast', '$filter', 'memberService'];
+
+	function AddEventController(stateParams, eventService, $rootScope, $timeout, Upload, $state, fctToast, $filter, memberService) {
+		var vm = this;
+		vm.isUpdate = false;
+		vm.myEvent = {
+			'managers': [],
+			'event': "Add",
+		};
+		vm.myEvent.attachments = [];
+		vm.files = [];
+		vm.image = '';
+		vm.myEvent.image = null;
+
+		angular.extend(vm, {
+			save: save,
+			openManagersModal: openManagersModal,
+			uploadFiles: uploadFiles,
+			feeTypeChanged: feeTypeChanged,
+			uploadImage: uploadImage,
+			doneLoading: doneLoading,
+		});
+
+		activate();
+
+		function activate() {
+			//memberService.initializeCKEditor();
+		}
+
+		function doneLoading() {}
+
+		function openManagersModal(total) {
+			vm.myEvent.managers = [];
+			while (total > 0) {
+				var each = {
+					"index": 1
+				};
+				vm.myEvent.managers.push(each);
+				total--;
+			}
+		}
+
+		function feeTypeChanged() {
+			switch (vm.myEvent.fees_type) {
+			case "no_payment":
+				vm.myEvent.fees = 0;
+				vm.feeDisabled = true;
+				vm.myEvent.do_payment = false;
+				break;
+			case "do_payment":
+				vm.myEvent.do_payment = true;
+				break;
+			case "late_payment":
+				vm.myEvent.do_payment = false;
+				break;
+			}
+		}
+
+		function save() {
+			// vm.myEvent.rules = CKEDITOR.instances["editorRules"].getData();
+			// vm.myEvent.specification = CKEDITOR.instances["editorSpecification"].getData();
+			// vm.myEvent.judging_criteria = CKEDITOR.instances["editorJudgingCriteria"].getData();
+			console.log(vm.myEvent);
+			if (vm.myEvent.isUpdate) {
+				return eventService.updateEvent(vm.myEvent).then(registerSuccess).catch(registerFailure);
+			} else {
+				return eventService.addEvent(vm.myEvent).then(registerSuccess).catch(registerFailure);
+			}
+		}
+
+		function registerSuccess(event) {
+			fctToast.showToast("Event Registered.", true);
+			$timeout(function () {
+				$state.go('in_tc.showEvent');
+			});
+		}
+
+		function registerFailure(event, error) {
+			fctToast.showToast(error.data.message);
+		}
+
+		function uploadFiles(files, errFiles) {
+			angular.forEach(files, function (file) {
+				vm.files.push(file);
+				file.upload = Upload.upload({
+					url: '/api/members/upload',
+					data: {
+						file: file
+					}
+				});
+				file.upload.then(function (response) {
+					$timeout(function () {
+						file.result = response.data;
+						var attach = {
+							doc_name: file.name,
+							link: file.result.path,
+						};
+						vm.myEvent.attachments.push(attach);
+					});
+				}, function (response) {
+					if (response.status > 0)
+						vm.errorMsg = response.status + ': ' + response.data;
+				}, function (evt) {
+					file.progress = Math.min(100, parseInt(100.0 * evt.loaded / evt.total));
+				});
+			});
+		}
+
+		function uploadImage(files, errFiles) {
+			angular.forEach(files, function (file) {
+				file.upload = Upload.upload({
+					url: '/api/members/uploadImage',
+					data: {
+						file: file
+					}
+				});
+				file.upload.then(function (response) {
+					$timeout(function () {
+						vm.myEvent.event_image = response.data.path;
+					});
+				}, function (response) {
+					if (response.status > 0) {
+						//console.log(reponse);
+					}
+				}, function (evt) {
+					file.progress = Math.min(100, parseInt(100.0 * evt.loaded / evt.total));
+				});
+			});
+		}
+	}
+})();
+
+(function () {
+	'use strict';
+
+	angular
+		.module('fct.core')
+		.controller('DashboardController', DashboardController);
+
+	DashboardController.$inject = ['$rootScope', 'memberService'];
+
+	function DashboardController($rootScope, memberService) {
+		var vm = this;
+
+		angular.extend(vm, {
+			func: func
+		});
+
+		activate();
+
+		function activate() {
+
+		}
+
+		function func() {
+
+		}
+	}
+})();
+
+(function () {
+    'use strict';
+
+    angular
+      .module('fct.core')
+      .controller('EachEventController', EachEventController);
+
+    EachEventController.$inject = ['$stateParams', 'eventService', '$sce'];
+
+    function EachEventController(stateParams, eventService, $sce) {
+        var vm = this;
+
+        activate();
+
+        function activate() {
+          if(stateParams.eventId !== undefined && stateParams.eventId !== null) {
+            vm.eventId = stateParams.eventId;
+            getEvent();
+          }
+		    }
+
+        function getEvent() {
+          return eventService.getSingleEvent(vm.eventId)
+            .then(getEventSuccess)
+            .catch(getEventFailure);
+        }
+
+        function getEventSuccess(response) {
+          console.log(response);
+          vm.myEvent = response.data;
+          vm.rules = $sce.trustAsHtml(vm.myEvent.rules);
+          vm.judging_criteria = $sce.trustAsHtml(vm.myEvent.judging_criteria);
+          vm.specification = $sce.trustAsHtml(vm.myEvent.specification);
+        }
+
+        function getEventFailure(error) {
+          console.log(error);
+        }
+    }
+})();
+
+(function () {
+    'use strict';
+
+    angular
+      .module('fct.core')
+      .controller('EventCardController', EventCardController);
+
+    EventCardController.$inject = ['eventService', '$mdDialog', 'memberService', '$scope'];
+
+    function EventCardController(eventService, $mdDialog, memberService, $scope) {
+        var vm = this;
+        vm.openCard = false;
+        vm.caret = 'expand_less';
+
+        angular.extend(vm, {
+            deleteEvent: deleteEvent,
+        });
+
+        activate();
+
+        function activate() {
+
+        }
+
+        function deleteEvent(id) {
+          if(id !== undefined && id !== null) {
+            vm.deleteId = id;
+            return memberService.getDeleteModal()
+              .then(confirmedDelete)
+              .catch(unconfirmedDelete);
+          }
+          return null;
+        }
+
+        function confirmedDelete() {
+          return eventService.deleteEvent(vm.deleteId)
+            .then(deleteEventSuccess)
+            .catch(deleteEventFailure);
+        }
+
+        function unconfirmedDelete() {
+          //
+        }
+
+        function deleteEventSuccess(response) {
+          console.log(response);
+          $scope.reload();
+          // vm.reload();
+        }
+
+        function deleteEventFailure(error) {
+          console.log(error);
+          //redirect
+        }
+    }
+})();
+
+(function () {
+	'use strict';
+
+	angular
+		.module('fct.core')
+		.controller('EventRegistrationController', EventRegistrationController);
+
+	EventRegistrationController.$inject = ['memberService'];
+
+	function EventRegistrationController(memberService) {
+		var vm = this;
+
+		// angular.extend(vm, {
+		// 	func: func
+		// });
+
+		activate();
+
+		function activate() {
+			console.log(JSON.stringify(getRegistration()));
+		}
+
+		function getRegistration() {
+			return memberService.getTotalRegistrations();
+		}
+	}
+})();
+
+(function () {
+	'use strict';
+
+	angular
+		.module('fct.core')
+		.controller('MemberSettingsController', MemberSettingsController);
+
+	MemberSettingsController.$inject = ['memberAuthService', 'fctToast', '$scope', '$rootScope', '$timeout'];
+
+	function MemberSettingsController(memberAuthService, fctToast, $scope, $rootScope, $timeout) {
+		var vm = this;
+		vm.updateInfo = false;
+		$scope.changePasswordForm = {};
+		vm.user = {};
+
+		angular.extend(vm, {
+			changePassword: changePassword
+		});
+
+		activate();
+
+		function activate() {
+
+		}
+
+		function changePassword(event) {
+			if (vm.updateInfo) {
+				event.preventDefault();
+			} else {
+				vm.updateInfo = true;
+				memberAuthService.changeMemberPassword(vm.user);
+			}
+		}
+
+		$rootScope.$on('MemberChangePasswordSuccess', MemberChangePasswordSuccess);
+		$rootScope.$on('MemberChangePasswordFailure', MemberChangePasswordFailure);
+
+		function MemberChangePasswordSuccess(event) {
+			fctToast.showToast("Password Changed Successfully", true);
+			$timeout(function () {
+				resetForm();
+			});
+
+		}
+
+		function MemberChangePasswordFailure(event, error) {
+			fctToast.showToast(error.data.message);
+			$timeout(function () {
+				resetForm();
+			});
+		}
+
+		function resetForm() {
+			vm.user = {};
+			vm.updateInfo = false;
+			$scope.changePasswordForm.$setPristine();
+			$scope.changePasswordForm.$setUntouched();
+		}
+	}
+})();
+
+(function () {
+	'use strict';
+
+	angular
+		.module('fct.core')
+		.controller('ParticipantRegistrationController', ParticipantRegistrationController);
+
+	ParticipantRegistrationController.$inject = ['$http'];
+
+	function ParticipantRegistrationController($http) {
+		var vm = this;
+		vm.myParticipant = {
+			eventObject: {
+				event_id: 123123,
+				event_shortcode: 'EVET'
+			},
+			other_participants: []
+		};
+    vm.otherParticipants = [];
+		vm.myParticipant.other_participants = [];
+    vm.maxParticipants = 4;
+    vm.eventPrice = 50;
+    vm.esflag = false;
+    vm.nopflag = false;
+
+		angular.extend(vm, {
+      getParticipantLength : getParticipantLength,
+      save : save,
+      openParticipantModule : openParticipantModule,
+		});
+
+		activate();
+
+		function activate() {
+			var x = '{"eventObject": {"event_id": "123123","event_shortcode": "EVET","event_section": "1","event_name": "1"},"other_participants": [{"title": "Team Member","leaderFlag": false,"$$hashKey": "object:68","name": "cl","email": "d@ddc.c","college_name": "1","branch": "2","semester": "6","mobileno": "43223443223","enrollment": "322342342342343"}],"total_amount": 100,"numberOfParticipant": "2","do_payment": true,"team_leader": {"title": "Team Leader","leaderFlag": true,"$$hashKey": "object:67","name": "fd","email": "s@sd.3","mobileno": "12341232133","college_name": "1","branch": "1","semester": "2","enrollment": "231312312332333"}}';
+			return $http.post('/api/registration/create', x)
+				.then(resolveFunc)
+				.catch(rejectFunc);
+		}
+
+    function openParticipantModule(total) {
+      vm.nopflag = true;
+      var first = true;
+      vm.myParticipant.other_participants = [];
+      while(total > 0) {
+        var each = {"title": (first) ? "Team Leader" : "Team Member",
+                    "leaderFlag": first};
+        vm.myParticipant.other_participants.push(each);
+        first = false;
+        total--;
+      }
+    }
+
+    function getParticipantLength() {
+      return vm.myParticipant.other_participants.length;
+    }
+
+		function save() {
+			vm.myParticipant.do_payment = true;
+			console.log(JSON.stringify(vm.myParticipant));
+			vm.myParticipant.team_leader = vm.myParticipant.other_participants[0];
+			vm.myParticipant.other_participants.splice(0, 1);
+			console.log(JSON.stringify(vm.myParticipant));
+			return $http.post('/api/registration/create', vm.myParticipant)
+				.then(resolveFunc)
+				.catch(rejectFunc);
+		}
+
+		function resolveFunc(response) {
+			console.log(response);
+		}
+
+		function rejectFunc(error) {
+			console.log(error);
+		}
+	}
+})();
+
+(function () {
+    'use strict';
+
+    angular
+      .module('fct.core')
+      .controller('ShowEventController', ShowEventController);
+
+    ShowEventController.$inject = ['eventService'];
+
+    function ShowEventController(eventService) {
+        var vm = this;
+
+        angular.extend(vm, {
+            getEvents: getEvents,
+        });
+
+        activate();
+
+        function activate() {
+          getEvents();
+        }
+
+        function getEvents() {
+            return eventService.getEvent()
+              .then(getEventSuccess)
+              .catch(getEventFailure);
+        }
+
+        function getEventSuccess(response) {
+          console.log(response);
+          vm.dummyEvents = response.data;
+        }
+
+        function getEventFailure(error) {
+          console.log(error);
+        }
+    }
+})();
+
+
+(function () {
+	'use strict';
+
+	angular
+		.module('fct.core')
+		.controller('UpdateEventController', UpdateEventController);
+
+	UpdateEventController.$inject = ['$stateParams', 'eventService', '$rootScope', '$state', 'fctToast', 'memberService', 'Upload', '$timeout'];
+
+	function UpdateEventController(stateParams, eventService, $rootScope, state, fctToast, memberService, Upload, $timeout) {
+		var vm = this;
+		vm.isUpdate = true;
+		vm.myEvent = {
+			'managers': [],
+		};
+		vm.myEvent.attachments = [];
+		vm.files = [];
+		vm.feeDisabled = false;
+		vm.myEvent.do_payment = false;
+		vm.loadIndex = 0;
+		vm.loadCompleted = 3;
+		vm.myEvent.image = null;
+
+		angular.extend(vm, {
+			save: save,
+			openManagersModal: openManagersModal,
+			uploadFiles: uploadFiles,
+			feeTypeChanged: feeTypeChanged,
+			doneLoading: doneLoading,
+			uploadImage: uploadImage,
+		});
+
+		activate();
+
+		function activate() {
+			//memberService.initializeCKEditor();
+			//checkEventId();
+		}
+
+		function doneLoading() {
+			vm.loadIndex++;
+			if(vm.loadIndex == vm.loadCompleted) {
+				checkEventId();
+			}
+		}
+
+		function openManagersModal(total) {
+			vm.myEvent.managers = [];
+			while (total > 0) {
+				var each = {
+					"index": 1
+				};
+				vm.myEvent.managers.push(each);
+				total--;
+			}
+		}
+
+		function checkEventId() {
+			if (stateParams.eventId !== undefined && stateParams.eventId !== null) {
+				vm.eventId = stateParams.eventId;
+				return eventService.getSingleEvent(vm.eventId)
+					.then(onEventGetSuccess)
+					.catch(onEventGetFailure);
+
+			}
+			return null;
+		}
+
+		function onEventGetSuccess(eventData) {
+			console.log(eventData);
+			vm.myEvent = eventData.data;
+			vm.myEvent.event = "Update";
+			vm.myEvent.totalManager = vm.myEvent.managers.length;
+			vm.files = vm.myEvent.attachments;
+			// return [CKEDITOR.instances['editorRules'].setData(vm.myEvent.rules),
+			// 	CKEDITOR.instances['editorSpecification'].setData(vm.myEvent.specification),
+			// 	CKEDITOR.instances['editorJudgingCriteria'].setData(vm.myEvent.judging_criteria)];
+		}
+
+		function onEventGetFailure(error) {
+			console.log(error);
+
+		}
+
+		function feeTypeChanged() {
+			switch (vm.myEvent.fees_type) {
+			case "no_payment":
+				vm.myEvent.fees = 0;
+				vm.feeDisabled = true;
+				vm.myEvent.do_payment = false;
+				break;
+			case "do_payment":
+				vm.myEvent.do_payment = true;
+				break;
+			case "late_payment":
+				vm.myEvent.do_payment = false;
+				break;
+			}
+		}
+
+		function save() {
+			vm.myEvent.rules = CKEDITOR.instances['editorRules'].getData();
+			vm.myEvent.specification = CKEDITOR.instances['editorSpecification'].getData();
+			vm.myEvent.judging_criteria = CKEDITOR.instances['editorJudgingCriteria'].getData();
+			console.log(JSON.stringify(vm.myEvent));
+			return eventService.updateEvent(vm.eventId, vm.myEvent)
+				.then(onUpdateSuccess)
+				.catch(onUpdateFailure);
+		}
+
+		function onUpdateSuccess(response) {
+			console.log(response);
+			fctToast.showToast("Update Success.", true);
+			state.go('in_tc.showEvent');
+		}
+
+		function onUpdateFailure(error) {
+			console.log(error);
+			fctToast.showToast("Please try again later.");
+		}
+
+		function uploadFiles(files, errFiles) {
+			angular.forEach(files, function (file) {
+				vm.files.push(file);
+				file.upload = Upload.upload({
+					url: '/api/members/upload',
+					data: {
+						file: file
+					}
+				});
+				file.upload.then(function (response) {
+					$timeout(function () {
+						file.result = response.data;
+						var attach = {
+							doc_name: file.name,
+							link: file.result.path,
+						};
+						vm.myEvent.attachments.push(attach);
+					});
+				}, function (response) {
+					if (response.status > 0)
+						vm.errorMsg = response.status + ': ' + response.data;
+				}, function (evt) {
+					file.progress = Math.min(100, parseInt(100.0 * evt.loaded / evt.total));
+				});
+			});
+		}
+
+		function uploadImage(files, errFiles) {
+			angular.forEach(files, function (file) {
+				file.upload = Upload.upload({
+					url: '/api/members/uploadImage',
+					data: {
+						file: file
+					}
+				});
+				file.upload.then(function (response) {
+					$timeout(function () {
+						vm.myEvent.event_image = response.data.path;
+					});
+				}, function (response) {
+					if (response.status > 0) {
+						//console.log(reponse);
+					}
+				}, function (evt) {
+					file.progress = Math.min(100, parseInt(100.0 * evt.loaded / evt.total));
+				});
+			});
+		}
+	}
+})();
+
+(function () {
+	'use strict';
+
+	angular
+		.module('fct.core')
+		.controller('FacultyLayoutController', FacultyLayoutController)
+		.controller('ContactDialogController', ContactDialogController);
+
+	FacultyLayoutController.$inject = ['facultyAuthService', '$mdSidenav', '$rootScope', 'fctToast', '$state', '$mdDialog', '$mdMedia', '$scope'];
+
+	function FacultyLayoutController(facultyAuthService, $mdSidenav, $rootScope, fctToast, $state, $mdDialog, $mdMedia, $scope) {
+		var vm = this;
+
+		$scope.$watch(function () {
+			return $mdMedia('xs') || $mdMedia('sm');
+		});
+
+		angular.extend(vm, {
+			logout: logout,
+			openLeftSidenav: openLeftSidenav,
+			isOpenLeftSidenav: isOpenLeftSidenav,
+			closeLeftSidenav: closeLeftSidenav,
+			contact: contact
+		});
+
+		activate();
+
+		function activate() {
+
+		}
+
+		function logout() {
+			facultyAuthService.logout();
+		}
+
+		$rootScope.$on('logoutSuccessful', logoutSuccessful);
+
+		function logoutSuccessful(event) {
+			fctToast.showToast("Succesfully Logged out", true);
+			$state.go('out.login');
+		}
+
+		function openLeftSidenav() {
+			$mdSidenav('left').open();
+		}
+
+		function isOpenLeftSidenav() {
+			return $mdSidenav('left').isOpen();
+		}
+
+		function closeLeftSidenav() {
+			$mdSidenav('left').close();
+		}
+
+		function contact(ev) {
+			var useFullScreen = $mdMedia('sm') || $mdMedia('xs');
+			$mdDialog.show({
+				controller: 'ContactDialogController',
+				templateUrl: '/templates/components/dialogs/contact.html',
+				parent: angular.element(document.body),
+				targetEvent: ev,
+				clickOutsideToClose: true,
+				fullscreen: useFullScreen // Only for -xs, -sm breakpoints.
+			});
+		}
+	}
+
+	ContactDialogController.$inject = ['$scope', '$mdDialog'];
+
+	function ContactDialogController($scope, $mdDialog) {
+		$scope.cancel = function () {
+			$mdDialog.cancel();
+		};
+
+		$scope.hide = function () {
+			$mdDialog.hide();
+		};
+	}
+})();
+
+(function () {
+	'use strict';
+
+	angular
+		.module('fct.core')
+		.controller('MemberLayoutController', MemberLayoutController);
+
+	MemberLayoutController.$inject = ['memberAuthService', '$mdSidenav', '$rootScope', 'fctToast', '$state', '$scope'];
+
+	function MemberLayoutController(memberAuthService, $mdSidenav, $rootScope, fctToast, $state, $scope) {
+		var vm = this;
+
+		angular.extend(vm, {
+			logout: logout,
+			openLeftSidenav: openLeftSidenav,
+			isOpenLeftSidenav: isOpenLeftSidenav,
+			closeLeftSidenav: closeLeftSidenav,
+		});
+
+		activate();
+
+		function activate() {
+
+		}
+
+		function logout() {
+			memberAuthService.logout();
+		}
+
+		$rootScope.$on('logoutSuccessful', logoutSuccessful);
+
+		function logoutSuccessful(event) {
+			fctToast.showToast("Succesfully Logged out", true);
+			$state.go('out.member_login');
+		}
+
+		function openLeftSidenav() {
+			$mdSidenav('left').open();
+		}
+
+		function isOpenLeftSidenav() {
+			return $mdSidenav('left').isOpen();
+		}
+
+		function closeLeftSidenav() {
+			$mdSidenav('left').close();
+		}
+	}
+
 })();
 
 (function() {

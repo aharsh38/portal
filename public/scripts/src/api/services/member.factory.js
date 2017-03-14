@@ -11,6 +11,7 @@
 		var service = {
 			getAllFacultyCoordinators: getAllFacultyCoordinators,
 			verifyFaculty: verifyFaculty,
+			rejectFaculty: rejectFaculty,
 			getTotalRegistrations: getTotalRegistrations,
 			getDeleteModal: getDeleteModal,
 			initializeCKEditor: initializeCKEditor,
@@ -26,6 +27,12 @@
 
 		function verifyFaculty(id) {
 			return $http.patch('/api/members/faculty/verify/' + id)
+				.then(responseFunc)
+				.catch(errorFunc);
+		}
+
+		function rejectFaculty(id) {
+			return $http.patch('/api/members/faculty/reject/' + id)
 				.then(responseFunc)
 				.catch(errorFunc);
 		}

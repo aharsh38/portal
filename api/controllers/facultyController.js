@@ -9,7 +9,6 @@ var _ = require('underscore');
 var registrationController = require('./registrationController')();
 var mailController = require('./mailController')();
 
-
 var facultyController = function (Faculty, Registration) {
 	function throwError(response, error, status, message, errorFor) {
 		response.status(status);
@@ -109,7 +108,9 @@ var facultyController = function (Faculty, Registration) {
 
 
 	function getAllFacultyCoordinators(request, response) {
-		Faculty.find()
+		Faculty.find({
+				rejected: false
+			})
 			.select({
 				name: 1,
 				email: 1,
@@ -359,7 +360,6 @@ var facultyController = function (Faculty, Registration) {
 	ac.exportUVFList = exportUVFList;
 	ac.checkFacultyVerified = checkFacultyVerified;
 	return ac;
-
 };
 
 module.exports = facultyController;
