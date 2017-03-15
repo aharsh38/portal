@@ -15,7 +15,7 @@
         </div>
     </div>
 
-    <div class="margin-top-4" ng-hide="$root.faculty.registrations_count!=0" layout="row" layout-align="center center">
+    <div class="margin-top-4" ng-hide="rdc.noregistration" layout="row" layout-align="center center">
         <div layout="column" flex-gt-xs="50">
             <div layout="row" layout-align="center center">
                 <img flex="50" src="/media/svg/noreg.svg" alt="">
@@ -26,7 +26,7 @@
 
     </div>
 
-    <div class="margin-top-2" ng-show="$root.faculty.registrations_count!=0">
+    <div class="margin-top-2" ng-show="rdc.noregistration">
         <div class="margin-tb-1 registration-card padding-1 padding-lr-gt-xs-3" layout="column" ng-repeat="reg in rdc.registrations">
             <div layout="row" layout-align="" layout-wrap>
                 <p flex-gt-xs="30" class="title">Team Id : <strong>{{reg.teamId}}</strong></p>

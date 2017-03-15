@@ -13,15 +13,22 @@
 		activate();
 
 		function activate() {
-			if ($rootScope.faculty.registrations_count > 0) {
-				return facultyService.getFacultyRegistrations()
-					.then(getRegistrationsSuccess)
-					.catch(getRegistrationsFailure);
-			}
+			// if ($rootScope.faculty.registrations_count > 0) {
+			//
+			// }
+			return facultyService.getFacultyRegistrations()
+				.then(getRegistrationsSuccess)
+				.catch(getRegistrationsFailure);
 		}
 
 		function getRegistrationsSuccess(response) {
-			vm.registrations = response.data;
+			if (response.data.length !== 0) {
+				vm.registrations = response.data;
+				vm.noregistration = false;
+			} else {
+				vm.noregistration = true;
+			}
+
 		}
 
 		function getRegistrationsFailure(error) {
