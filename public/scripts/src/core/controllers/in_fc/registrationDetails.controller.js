@@ -28,7 +28,7 @@
 			} else {
 				vm.noregistration = true;
 			}
-
+			console.log(response);
 		}
 
 		function getRegistrationsFailure(error) {

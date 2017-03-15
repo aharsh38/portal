@@ -24,7 +24,7 @@
         activate();
 
         function activate() {
-            if (angular.isUndefined($rootScope.faculty.student_coordinator)) {
+            if (angular.isUndefined($rootScope.faculty.student_coordinator.name)) {
                 vm.editInfo = true;
             } else {
                 vm.coordinator = $rootScope.faculty.student_coordinator;

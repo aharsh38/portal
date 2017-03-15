@@ -16,6 +16,7 @@
 })();
 
 (function () {
+
 	'use strict';
 
 	angular
@@ -42,24 +43,18 @@
 		.module('fct.core')
 		.run(initializeCore);
 
-	initializeCore.$inject = ['$rootScope', '$interval', 'facultyAuthService'];
+	initializeCore.$inject = ['$rootScope', '$interval'];
 
-	function initializeCore($rootScope, $interval, facultyAuthService) {
+	function initializeCore($rootScope, $interval) {
 		active();
 
 		function active() {
 			preloader();
-			return check();
 		}
 
 		$rootScope.alreadyRedirected = false;
-
-		function check() {
-			if (facultyAuthService.checkFacultyLoggedIn()) {
-				return facultyAuthService.checkVerified();
-			}
-		}
-
+			
+	
 		function preloader() {
 			$rootScope.$on('$viewContentLoading', startPreloader);
 			$rootScope.$on('$viewContentLoaded', stopPreloader);
@@ -1317,7 +1312,7 @@
         activate();
 
         function activate() {
-            if (angular.isUndefined($rootScope.faculty.student_coordinator)) {
+            if (angular.isUndefined($rootScope.faculty.student_coordinator.name)) {
                 vm.editInfo = true;
             } else {
                 vm.coordinator = $rootScope.faculty.student_coordinator;
@@ -1376,9 +1371,9 @@
 		.module('fct.core')
 		.controller('ConfirmRegistrationsController', ConfirmRegistrationsController);
 
-	ConfirmRegistrationsController.$inject = ['memberService', '$mdDialog', 'fctToast', '$scope'];
+	ConfirmRegistrationsController.$inject = ['facultyService', '$mdDialog', 'fctToast', '$scope'];
 
-	function ConfirmRegistrationsController(memberService, $mdDialog, fctToast, $scope) {
+	function ConfirmRegistrationsController(facultyService, $mdDialog, fctToast, $scope) {
 		var vm = this;
 		vm.registration = {};
 		vm.registrationButtonClicked = false;
@@ -1416,7 +1411,7 @@
 
 			$mdDialog.show(confirm).then(function (result) {
 				vm.registration.serialId = result;
-				return memberService.confirmRegistration(vm.registration)
+				return facultyService.confirmRegistration(vm.registration)
 					.then(confirmRegistrationSuccess)
 					.catch(confirmRegistrationFailure);
 			}, function () {
@@ -1525,15 +1520,22 @@
 		activate();
 
 		function activate() {
-			if ($rootScope.faculty.registrations_count > 0) {
-				return facultyService.getFacultyRegistrations()
-					.then(getRegistrationsSuccess)
-					.catch(getRegistrationsFailure);
-			}
+			// if ($rootScope.faculty.registrations_count > 0) {
+			//
+			// }
+			return facultyService.getFacultyRegistrations()
+				.then(getRegistrationsSuccess)
+				.catch(getRegistrationsFailure);
 		}
 
 		function getRegistrationsSuccess(response) {
-			vm.registrations = response.data;
+			if (response.data.length !== 0) {
+				vm.registrations = response.data;
+				vm.noregistration = false;
+			} else {
+				vm.noregistration = true;
+			}
+			console.log(response);
 		}
 
 		function getRegistrationsFailure(error) {

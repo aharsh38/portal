@@ -5,9 +5,9 @@
 		.module('fct.core')
 		.controller('ConfirmRegistrationsController', ConfirmRegistrationsController);
 
-	ConfirmRegistrationsController.$inject = ['memberService', '$mdDialog', 'fctToast', '$scope'];
+	ConfirmRegistrationsController.$inject = ['facultyService', '$mdDialog', 'fctToast', '$scope'];
 
-	function ConfirmRegistrationsController(memberService, $mdDialog, fctToast, $scope) {
+	function ConfirmRegistrationsController(facultyService, $mdDialog, fctToast, $scope) {
 		var vm = this;
 		vm.registration = {};
 		vm.registrationButtonClicked = false;
@@ -45,7 +45,7 @@
 
 			$mdDialog.show(confirm).then(function (result) {
 				vm.registration.serialId = result;
-				return memberService.confirmRegistration(vm.registration)
+				return facultyService.confirmRegistration(vm.registration)
 					.then(confirmRegistrationSuccess)
 					.catch(confirmRegistrationFailure);
 			}, function () {

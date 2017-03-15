@@ -83,6 +83,7 @@ facultyModel.methods.generateJwt = function() {
         verified: this.verified,
         rejected: this.rejected,
         registrations_count: this.registrations_count,
+	student_coordinator: this.student_coordinator,
         collected_amount: this.collected_amount,
         forgot_password: this.forgot_password,
         exp: parseInt(expiry.getTime() / 1000),
