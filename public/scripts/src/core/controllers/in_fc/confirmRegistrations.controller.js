@@ -54,11 +54,12 @@
 		}
 
 		function confirmRegistrationSuccess(response) {
+			console.log(response);
 			vm.registrationButtonClicked = false;
 			vm.registration = {};
 			$scope.confirmRegistrationForm.$setPristine();
 			$scope.confirmRegistrationForm.$setUntouched();
-			fctToast.showToast('Registration Successful', true);
+			fctToast.showToast(response.data.error.for, true);
 		}
 
 		function confirmRegistrationFailure(error) {

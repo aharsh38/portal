@@ -35,6 +35,53 @@ var registrationController = function (Registration) {
 			});
 	}
 
+	function generateSlip2(type, teamid, data) {
+		if (type) {
+			fs.readFile('./api/slips/templates/' + type + '.hbs', function (error, file) {
+				if (!error) {
+					var source = file.toString();
+					var template = Handlebars.compile(source);
+					var result = template(data);
+					fs.writeFile("./api/slips/" + type + "/html/" + teamid + ".html", result, function (error) {
+						if (error) {
+							return {
+								"message": "error",
+								"error": error
+							};
+						} else {
+							var html = fs.readFileSync('./api/slips/' + type + '/html/' + teamid + '.html', 'utf8');
+
+							var options = {
+								format: 'Letter',
+								zoom: 0.5
+							};
+
+							pdf.create(html, options).toFile('./api/slips/' + type + '/' + teamid + '.pdf', function (error, res) {
+								console.log("PDF GENERATE ERROR", error);
+								if (error) {
+									return {
+										"message": "error",
+										"error": error
+									};
+								} else {
+									return {
+										"message": "Done"
+									}
+								}
+							});
+						}
+					});
+				} else {
+					return {
+						"message": "error",
+						"error": error
+					};
+				}
+			});
+		}
+	}
+
+
 	function generateSlip(type, teamid, data, request, response, registration) {
 		if (type) {
 			fs.readFile('./api/slips/templates/' + type + '.hbs', function (error, file) {
@@ -50,7 +97,7 @@ var registrationController = function (Registration) {
 							};
 						} else {
 							var html = fs.readFileSync('./api/slips/' + type + '/html/' + teamid + '.html', 'utf8');
-								
+
 							var options = {
 								format: 'Letter',
 								zoom: 0.5

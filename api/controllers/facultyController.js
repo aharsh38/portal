@@ -23,18 +23,18 @@ var facultyController = function (Faculty, Registration) {
 	}
 
 	function addStudentCoordinator(request, response) {
-		
+
 		request.faculty.student_coordinator = request.body.student_coordinator;
-		console.log(request.faculty);
+		// console.log(request.faculty);
 		request.faculty.save(function (error) {
 			if (error) {
 				throwError(response, error, 500, 'Internal Server error', 'Faculty Register');
 			} else {
-				var token;
-				token = request.faculty.generateJwt();
+				// var token;
+				// token = request.faculty.generateJwt();
 				response.status(200);
 				response.json({
-					"token": token,
+					// "token": token,
 					"message": "success"
 				});
 			}
@@ -48,24 +48,32 @@ var facultyController = function (Faculty, Registration) {
 			.exec(function (error, registration) {
 				if (error) {
 					throwError(response, error, 500, 'Internal Server Error', 'Registration Fetch Failed');
+					console.log("1");
 					return;
+
 				}
 				if (!registration) {
 					throwError(response, error, 404, 'Not Found', 'Registration not found');
+					console.log("2");
 					return;
+
 				} else {
 					if (registration.team_leader.email !== request.body.email) {
 						throwError(response, error, 400, 'Bad Request', 'Team leader email address incorrect');
+						console.log("3");
 						return;
+
 					}
 
 					if (registration.team_leader.mobileno !== request.body.mobileno) {
 						throwError(response, error, 400, 'Bad Request', 'Team leader mobile number incorrect');
+						console.log("4");
 						return;
 					}
 
-					if (registration.team_leader.serialId !== request.body.serialId) {
+					if (registration.serialId !== request.body.serialId) {
 						throwError(response, error, 400, 'Bad Request', 'Serial id is incorrect');
+						console.log("5");
 						return;
 					}
 
@@ -73,6 +81,7 @@ var facultyController = function (Faculty, Registration) {
 						registration.confirmation = true;
 						registration.confirmation_date = new Date();
 						registration.facultyId = request.faculty._id;
+						console.log("6");
 						var confirmedTime = new Date();
 						var data = {
 							teamId: registration.teamId,
@@ -81,11 +90,20 @@ var facultyController = function (Faculty, Registration) {
 							event_section: registration.eventObject.event_section,
 							event_name: registration.eventObject.event_name,
 							faculty_name: request.faculty.name,
-							time: confirmedTime
+							time: confirmedTime,
+							downloadLink: 'http://portal.gtu.ac.in/api/registration/downloadSlip/' + registration.teamId + '?type=confirmPayment'
 						};
+
+						var mailData = [{
+							email: registration.team_leader.email,
+							data: data
+						}];
+
 						if (data) {
-							registrationController.generateSlip('confirmPayment', registration.teamId, data);
-							mailController.sendMails(data, 'Confirmation of your registration', 'mailpreconfirmation');
+							registrationController.generateSlip2('confirmPayment', registration.teamId, data);
+							// console.log("7");
+
+							mailController.sendMails(mailData, 'Confirmation of your registration', 'mailpreconfirmation');
 						} else {
 							throwError(response, error, 404, 'Not Found', 'Generated data not found.');
 						}
@@ -97,6 +115,7 @@ var facultyController = function (Faculty, Registration) {
 							if (error) {
 								throwError(response, error, 520, "Confirming Registration", "Failed");
 							} else {
+								console.log("8");
 								response.status(200).json({
 									"message": "Registration has been Confirmed!"
 								});
@@ -239,10 +258,10 @@ var facultyController = function (Faculty, Registration) {
 							college_code: element.collegeId.code,
 							State: element.collegeId.state
 						};
-						console.log(arrayOfFaculty);
+						// console.log(arrayOfFaculty);
 						data.push(arrayOfFaculty);
 					});
-					console.log(data);
+					// console.log(data);
 					var xls = json2xls(data);
 					fs.writeFileSync('./documents/' + en + '.xlsx', xls, 'binary');
 					if (fs.existsSync('./documents/' + en + '.xlsx')) {

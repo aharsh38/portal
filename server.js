@@ -29,16 +29,16 @@ mongoose.Promise = global.Promise;
 
 var db = mongoose.connect(dbURI);
 
-mongoose.connection.on('connected', function() {
-    console.log('Mongoose connected to ' + dbURI);
+mongoose.connection.on('connected', function () {
+	console.log('Mongoose connected to ' + dbURI);
 });
 
-mongoose.connection.on('error', function(err) {
-    console.log('Mongoose connection error: ' + err);
+mongoose.connection.on('error', function (err) {
+	console.log('Mongoose connection error: ' + err);
 });
 
-mongoose.connection.on('disconnected', function() {
-    console.log('Mongoose disconnected');
+mongoose.connection.on('disconnected', function () {
+	console.log('Mongoose disconnected');
 });
 
 
@@ -48,15 +48,15 @@ app.set('x-powered-by', false);
 
 app.use(express.static('public'));
 
-app.use(function(req, res, next) {
-    res.header("Access-Control-Allow-Origin", "*");
-    res.header("Access-Control-Allow-Headers", "Origin, X-Requested-With, Content-Type, Accept");
-    next();
+app.use(function (req, res, next) {
+	res.header("Access-Control-Allow-Origin", "*");
+	res.header("Access-Control-Allow-Headers", "Origin, X-Requested-With, Content-Type, Accept");
+	next();
 });
 
 app.use(logger('dev'));
 app.use(bodyParser.urlencoded({
-    extended: true
+	extended: true
 }));
 
 app.use(bodyParser.json());
@@ -105,12 +105,12 @@ app.use('/api/registration', registrationRouter);
 
 
 
-app.get('*', function(request, response) {
-    response.sendFile(path.join(__dirname, 'public', 'index.html'));
+app.get('*', function (request, response) {
+	response.sendFile(path.join(__dirname, 'public', 'index.html'));
 });
 
-app.listen(port, function() {
-    console.log("Now Running on port" + port);
+app.listen(port, function () {
+	console.log("Now Running on port" + port);
 });
 
 module.exports = app;
