@@ -231,7 +231,7 @@ var registrationController = function (Registration) {
 							sr_no: index + 1,
 							name: element.team_leader.name,
 							email: element.team_leader.email,
-							monbileno: element.team_leader.mobileno,
+							mobileno: element.team_leader.mobileno,
 							event_section: element.eventObject.event_section,
 							event_name: element.eventObject.event_name
 						};

@@ -540,6 +540,13 @@
 
 
 
+		function get(students) {
+			var link = baseLink + '/studentCoordinator';
+			return $http.put(link, students)
+				.then(resolveFunc)
+				.catch(errorFunc);
+		}
+
 		function resolveFunc(response) {
 			return response;
 		}
@@ -780,6 +787,7 @@
 		var service = {
 			getAllFacultyCoordinators: getAllFacultyCoordinators,
 			verifyFaculty: verifyFaculty,
+			rejectFaculty: rejectFaculty,
 			getTotalRegistrations: getTotalRegistrations,
 			getDeleteModal: getDeleteModal,
 			initializeCKEditor: initializeCKEditor,
@@ -795,6 +803,12 @@
 
 		function verifyFaculty(id) {
 			return $http.patch('/api/members/faculty/verify/' + id)
+				.then(responseFunc)
+				.catch(errorFunc);
+		}
+
+		function rejectFaculty(id) {
+			return $http.patch('/api/members/faculty/reject/' + id)
 				.then(responseFunc)
 				.catch(errorFunc);
 		}
@@ -1544,6 +1558,7 @@
 
 		angular.extend(vm, {
 			verifyFaculty: verifyFaculty,
+			rejectFaculty: rejectFaculty,
 			loadmore: loadmore
 		});
 
@@ -1572,7 +1587,6 @@
 
 		function verifyFaculty(id, index, event) {
 			vm.verifyingIndex = index;
-
 			var confirm = $mdDialog.confirm()
 				.title('Are you sure?')
 				.textContent('You will be Verifying ' + vm.faculties[index].name + ' as a Faculty Coordinator')
@@ -1581,16 +1595,13 @@
 				.ok('Confirm Verification')
 				.theme('normal')
 				.cancel('No, not now !!!');
-
 			$mdDialog.show(confirm).then(function () {
 				return memberService.verifyFaculty(id)
 					.then(verifyFacultySuccess)
 					.catch(verifyFacultyFailure);
 			}, function () {
-				// $scope.status = 'You decided to keep your debt.';
+				//failed
 			});
-
-
 		}
 
 		function verifyFacultySuccess(response) {
@@ -1599,6 +1610,36 @@
 
 		function verifyFacultyFailure(error) {
 			//fctToast.show('FAilure');
+		}
+
+		function rejectFaculty(id, index, event) {
+			vm.rejectionIndex = index;
+			var confirm = $mdDialog.confirm()
+				.title('Are you sure?')
+				.textContent('You will be Rejecting ' + vm.faculties[index].name + ' as a Faculty Coordinator')
+				.ariaLabel('FCVER')
+				.targetEvent(event)
+				.ok('Confirm Rejection')
+				.theme('normal')
+				.cancel('No, not now !!!');
+			$mdDialog.show(confirm).then(function () {
+				return memberService.rejectFaculty(id)
+					.then(rejectFacultySuccess)
+					.catch(rejectFacultyFailure);
+			}, function () {
+				//failed
+			});
+		}
+
+		function rejectFacultySuccess(response) {
+			vm.faculties[vm.rejectionIndex].rejected = true;
+			vm.faculties.splice(vm.rejectionIndex, 1);
+			console.log(response);
+		}
+
+		function rejectFacultyFailure(error) {
+			//fctToast.show('FAilure');
+			console.log(error);
 		}
 
 		function loadmore() {
