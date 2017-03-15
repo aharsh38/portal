@@ -14,23 +14,27 @@
 			'managers': [],
 			'event': "Add",
 		};
-
 		vm.myEvent.attachments = [];
 		vm.files = [];
 		vm.image = '';
+		vm.myEvent.image = null;
 
 		angular.extend(vm, {
 			save: save,
 			openManagersModal: openManagersModal,
 			uploadFiles: uploadFiles,
-			feeTypeChanged: feeTypeChanged
+			feeTypeChanged: feeTypeChanged,
+			uploadImage: uploadImage,
+			doneLoading: doneLoading,
 		});
 
 		activate();
 
 		function activate() {
-			memberService.initializeCKEditor();
+			//memberService.initializeCKEditor();
 		}
+
+		function doneLoading() {}
 
 		function openManagersModal(total) {
 			vm.myEvent.managers = [];
@@ -60,9 +64,9 @@
 		}
 
 		function save() {
-			vm.myEvent.rules = CKEDITOR.instances["editorRules"].getData();
-			vm.myEvent.specification = CKEDITOR.instances["editorSpecification"].getData();
-			vm.myEvent.judging_criteria = CKEDITOR.instances["editorJudgingCriteria"].getData();
+			// vm.myEvent.rules = CKEDITOR.instances["editorRules"].getData();
+			// vm.myEvent.specification = CKEDITOR.instances["editorSpecification"].getData();
+			// vm.myEvent.judging_criteria = CKEDITOR.instances["editorJudgingCriteria"].getData();
 			console.log(vm.myEvent);
 			if (vm.myEvent.isUpdate) {
 				return eventService.updateEvent(vm.myEvent).then(registerSuccess).catch(registerFailure);
@@ -103,6 +107,28 @@
 				}, function (response) {
 					if (response.status > 0)
 						vm.errorMsg = response.status + ': ' + response.data;
+				}, function (evt) {
+					file.progress = Math.min(100, parseInt(100.0 * evt.loaded / evt.total));
+				});
+			});
+		}
+
+		function uploadImage(files, errFiles) {
+			angular.forEach(files, function (file) {
+				file.upload = Upload.upload({
+					url: '/api/members/uploadImage',
+					data: {
+						file: file
+					}
+				});
+				file.upload.then(function (response) {
+					$timeout(function () {
+						vm.myEvent.event_image = response.data.path;
+					});
+				}, function (response) {
+					if (response.status > 0) {
+						//console.log(reponse);
+					}
 				}, function (evt) {
 					file.progress = Math.min(100, parseInt(100.0 * evt.loaded / evt.total));
 				});
