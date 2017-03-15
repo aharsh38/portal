@@ -27,11 +27,11 @@ var facultyController = function (Faculty, Registration) {
 			if (error) {
 				throwError(response, error, 500, 'Internal Server error', 'Faculty Register');
 			} else {
-				// var token;
-				// token = faculty.generateJwt();
+				var token;
+				token = faculty.generateJwt();
 				response.status(200);
 				response.json({
-					//"token": token,
+					"token": token,
 					"message": "success"
 				});
 			}
@@ -339,12 +339,11 @@ var facultyController = function (Faculty, Registration) {
 					console.log(token);
 					response.status(200);
 					response.json({
-						token: token
+						"token": token
 					});
 				} else {
 					throwError(response, null, 401, 'Not Verified', 'Faculty Not Verified');
 				}
-
 			}
 		});
 	}

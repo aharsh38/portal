@@ -9,6 +9,16 @@
 	'use strict';
 
 	angular
+		.module('fct_app', [
+			'fct.api',
+			'fct.core'
+		]);
+})();
+
+(function () {
+	'use strict';
+
+	angular
 		.module('fct.core', [
 			'ngAnimate',
 			'ngMessages',
@@ -68,16 +78,6 @@
 			}
 		}
 	}
-})();
-
-(function () {
-	'use strict';
-
-	angular
-		.module('fct_app', [
-			'fct.api',
-			'fct.core'
-		]);
 })();
 
 	(function () {
@@ -688,12 +688,12 @@
 		}
 
 		function checkVerifiedSuccess(response) {
-			// console.log(response);
+			console.log(response);
 			replaceToken(response.data.token);
 		}
 
 		function checkVerifiedFailure(error) {
-			// console.log(error);
+			console.log(error);
 		}
 
 		function editStudentCoordinator(students) {
@@ -1657,560 +1657,6 @@
 
 	angular
 		.module('fct.core')
-		.controller('FacultyForgotPasswordApplyController', FacultyForgotPasswordApplyController);
-
-	FacultyForgotPasswordApplyController.$inject = ['$scope', 'fctToast', 'facultyAuthService', '$state', '$rootScope'];
-
-	function FacultyForgotPasswordApplyController($scope, fctToast, facultyAuthService, $state, $rootScope) {
-		var vm = this;
-
-		vm.user = {};
-		vm.submitButtonClicked = false;
-		vm.applied = false;
-		$scope.forgotPasswordApplyForm = {};
-
-		angular.extend(vm, {
-			submit: submit
-		});
-
-		console.log("HHHIII");
-
-		function submit(event) {
-			console.log("222");
-			if (vm.submitButtonClicked) {
-				event.preventDefault();
-			} else {
-				vm.submitButtonClicked = true;
-			}
-			var newUser = angular.copy(vm.user);
-			facultyAuthService.facultyForgotPasswordApply(newUser);
-		}
-
-
-
-		$rootScope.$on('SuccessFacultyForgotPasswordApply', facultyForgotPasswordApplySuccess);
-		$rootScope.$on('ErrorFacultyForgotPasswordApply', facultyForgotPasswordApplyFailure);
-
-		function facultyForgotPasswordApplySuccess(event) {
-			vm.submitButtonClicked = false;
-			resetForm();
-		}
-
-		function facultyForgotPasswordApplyFailure(event, error) {
-			vm.submitButtonClicked = false;
-			resetForm(error);
-		}
-
-		function resetForm(error) {
-			if (angular.isUndefined(error)) {
-				vm.user = {};
-				$scope.forgotPasswordApplyForm.$setPristine();
-				$scope.forgotPasswordApplyForm.$setUntouched();
-				vm.applied = true;
-			} else {
-				$scope.forgotPasswordApplyForm.email.$error.not_registered = true;
-			}
-		}
-	}
-})();
-
-(function () {
-	'use strict';
-
-	angular
-		.module('fct.core')
-		.controller('FacultyForgotPasswordSetController', FacultyForgotPasswordSetController);
-
-	FacultyForgotPasswordSetController.$inject = ['$scope', 'fctToast', 'facultyAuthService', '$state', '$rootScope', '$stateParams'];
-
-	function FacultyForgotPasswordSetController($scope, fctToast, facultyAuthService, $state, $rootScope, $stateParams) {
-		var vm = this;
-
-
-		vm.token = Boolean($stateParams.token);
-		// console.log("token", vm.token);
-		vm.user = {};
-		vm.changePasswordButtonClicked = false;
-		vm.set = false;
-		$scope.forgotPasswordSetForm = {};
-
-		angular.extend(vm, {
-			changePassword: changePassword
-		});
-
-		function changePassword() {
-			if (vm.changePasswordButtonClicked) {
-				event.preventDefault();
-			} else {
-				vm.changePasswordButtonClicked = true;
-			}
-			var newUser = angular.copy(vm.user);
-			newUser.token = $stateParams.token;
-			var uid = $stateParams.id;
-
-			facultyAuthService.facultyForgotPasswordSet(newUser, uid);
-		}
-
-		$rootScope.$on('SuccessFacultyForgotPasswordSet', facultyForgotPasswordSetSuccess);
-		$rootScope.$on('ErrorFacultyForgotPasswordSet', facultyForgotPasswordSetFailure);
-
-		function facultyForgotPasswordSetSuccess(event) {
-			vm.changePasswordButtonClicked = false;
-			resetForm();
-		}
-
-		function facultyForgotPasswordSetFailure(event, error) {
-			vm.changePasswordButtonClicked = false;
-			resetForm(error);
-		}
-
-		function resetForm(error) {
-			if (angular.isUndefined(error)) {
-				vm.user = {};
-				$scope.forgotPasswordSetForm.$setPristine();
-				$scope.forgotPasswordSetForm.$setUntouched();
-				vm.set = true;
-			} else {
-				vm.error = true;
-				vm.errorMsg = error.data.error.for;
-				vm.set = true;
-			}
-		}
-	}
-})();
-
-(function () {
-	'use strict';
-
-	angular
-		.module('fct.core')
-		.controller('FacultyLoginController', FacultyLoginController);
-
-	FacultyLoginController.$inject = ['$scope', 'fctToast', 'facultyAuthService', '$state', '$rootScope'];
-
-	function FacultyLoginController($scope, fctToast, facultyAuthService, $state, $rootScope) {
-		var vm = this;
-		vm.user = {};
-		vm.loginButtonClicked = false;
-		$scope.loginForm = {};
-
-		angular.extend(vm, {
-			login: login
-		});
-
-
-		function login() {
-			if (vm.loginButtonClicked) {
-				event.preventDefault();
-			} else {
-				vm.loginButtonClicked = true;
-			}
-			var newUser = angular.copy(vm.user);
-			facultyAuthService.facultyLogin(newUser);
-		}
-
-		$rootScope.$on('SuccessFacultyLogin', loginSuccess);
-		$rootScope.$on('ErrorFacultyLogin', loginFailure);
-
-		function loginSuccess(event) {
-			fctToast.showToast("Succefully Logged In", true);
-			vm.loginButtonClicked = false;
-			resetLogin();
-			$state.go('in_fc.guidelines');
-		}
-
-		function loginFailure(event, error) {
-			var msg = error.data.error.message.message.toString();
-			vm.loginButtonClicked = false;
-			fctToast.showToast(msg);
-			resetLogin(error);
-		}
-
-		function resetLogin(error) {
-			if (angular.isUndefined(error)) {
-				vm.user = {};
-				$scope.loginForm.$setPristine();
-				$scope.loginForm.$setUntouched();
-			} else {
-				if (error.data.error.message.errorState.faculty) {
-					vm.user.email = null;
-					$scope.loginForm.password.$error.incorrect = false;
-					$scope.loginForm.email.$error.not_registered = true;
-				} else {
-					vm.user.password = null;
-					$scope.loginForm.password.$error.incorrect = true;
-				}
-			}
-		}
-
-	}
-})();
-
-(function () {
-	'use strict';
-
-	angular
-		.module('fct.core')
-		.controller('FacultyRegistrationController', FacultyRegistrationController);
-
-	FacultyRegistrationController.$inject = ['facultyAuthService', '$scope', 'fctToast', '$rootScope', '$state', '$timeout', '$q'];
-
-	function FacultyRegistrationController(facultyAuthService, $scope, fctToast, $rootScope, $state, $timeout, $q) {
-		var vm = this;
-		vm.user = {};
-		vm.registerButtonClicked = false;
-
-		// vm.states = loadAll();
-		vm.selectedItem = null;
-		vm.searchText = null;
-		vm.querySearch = querySearch;
-
-		angular.extend(vm, {
-			register: register
-		});
-
-		activate();
-
-		function activate() {
-			return facultyAuthService.getColleges()
-				.then(getCollegesSuccess)
-				.catch(getCollegesError);
-		}
-
-		function getCollegesSuccess(response) {
-			vm.colleges = response.data;
-		}
-
-		function getCollegesError(error) {
-			fctToast.showToast('Error in getting colleges');
-		}
-
-		function register() {
-			if (vm.registerButtonClicked) {
-				event.preventDefault();
-			} else {
-				vm.registerButtonClicked = true;
-			}
-			var newUser = angular.copy(vm.user);
-			facultyAuthService.facultyRegister(newUser);
-		}
-
-		$rootScope.$on('SuccessFacultyRegister', registerSuccess);
-		$rootScope.$on('ErrorFacultyRegister', registerFailure);
-
-		function registerSuccess(event) {
-			fctToast.showToast("Succefully Registered", true);
-			vm.registerButtonClicked = false;
-			resetForm();
-			$state.go('in_fc.guidelines');
-		}
-
-		function registerFailure(event, error) {
-			var msg = 'Email already registered';
-			vm.registerButtonClicked = false;
-			fctToast.showToast(msg);
-			resetForm();
-		}
-
-		function resetForm() {
-			vm.user = {};
-			$scope.registerForm.$setPristine();
-			$scope.registerForm.$setUntouched();
-		}
-
-
-
-		function querySearch(query) {
-			var results = query ? vm.colleges.filter(createFilterFor(query)) : vm.colleges;
-			var deferred = $q.defer();
-			console.log(results);
-			$timeout(function () {
-				deferred.resolve(results);
-			}, Math.random() * 1000, false);
-			return deferred.promise;
-		}
-
-		// function loadAll() {
-		// 	var allStates = 'Alabama, Alaska, Arizona, Arkansas, California, Colorado, Connecticut, Delaware, Florida, Georgia, Hawaii, Idaho, Illinois, Indiana, Iowa, Kansas, Kentucky, Louisiana';
-		//
-		// 	return allStates.split(/, +/g).map(function (state) {
-		// 		return {
-		// 			value: state.toLowerCase(),
-		// 			display: state
-		// 		};
-		// 	});
-		// }
-
-
-		function createFilterFor(query) {
-			var lowercaseQuery = angular.lowercase(query);
-			return function filterFn(college) {
-				var matches = college.name.match(/\b(\w)/g);
-				var acronym = matches.join('');
-				acronym = acronym.toLowerCase();
-				return (college.name.toLowerCase().trim().indexOf(lowercaseQuery) === 0 ||
-					acronym.indexOf(lowercaseQuery) === 0);
-			};
-		}
-	}
-})();
-
-(function () {
-	'use strict';
-
-	angular
-		.module('fct.core')
-		.controller('MemberForgotPasswordApplyController', MemberForgotPasswordApplyController);
-
-	MemberForgotPasswordApplyController.$inject = ['$scope', 'fctToast', 'memberAuthService', '$state', '$rootScope'];
-
-	function MemberForgotPasswordApplyController($scope, fctToast, memberAuthService, $state, $rootScope) {
-		var vm = this;
-
-		vm.user = {};
-		vm.submitButtonClicked = false;
-		vm.applied = false;
-		$scope.forgotPasswordApplyForm = {};
-
-		angular.extend(vm, {
-			submit: submit
-		});
-
-		function submit(event) {
-			console.log("HIII");
-			if (vm.submitButtonClicked) {
-				event.preventDefault();
-			} else {
-				vm.submitButtonClicked = true;
-			}
-			var newUser = angular.copy(vm.user);
-			memberAuthService.memberForgotPasswordApply(newUser);
-		}
-
-		$rootScope.$on('SuccessMemberForgotPasswordApply', memberForgotPasswordApplySuccess);
-		$rootScope.$on('ErrorMemberForgotPasswordApply', memberForgotPasswordApplyFailure);
-
-		function memberForgotPasswordApplySuccess(event) {
-			vm.submitButtonClicked = false;
-			resetForm();
-		}
-
-		function memberForgotPasswordApplyFailure(event, error) {
-			vm.submitButtonClicked = false;
-			resetForm(error);
-		}
-
-		function resetForm(error) {
-			if (angular.isUndefined(error)) {
-				vm.user = {};
-				$scope.forgotPasswordApplyForm.$setPristine();
-				$scope.forgotPasswordApplyForm.$setUntouched();
-				vm.applied = true;
-			} else {
-				$scope.forgotPasswordApplyForm.email.$error.not_registered = true;
-			}
-		}
-	}
-})();
-
-(function () {
-	'use strict';
-
-	angular
-		.module('fct.core')
-		.controller('MemberForgotPasswordSetController', MemberForgotPasswordSetController);
-
-	MemberForgotPasswordSetController.$inject = ['$scope', 'fctToast', 'memberAuthService', '$state', '$rootScope', '$stateParams'];
-
-	function MemberForgotPasswordSetController($scope, fctToast, memberAuthService, $state, $rootScope, $stateParams) {
-		var vm = this;
-
-
-		vm.token = Boolean($stateParams.token);
-		// console.log("token", vm.token);
-		vm.user = {};
-		vm.changePasswordButtonClicked = false;
-		vm.set = false;
-		$scope.forgotPasswordSetForm = {};
-
-		angular.extend(vm, {
-			changePassword: changePassword
-		});
-
-		function changePassword() {
-			if (vm.changePasswordButtonClicked) {
-				event.preventDefault();
-			} else {
-				vm.changePasswordButtonClicked = true;
-			}
-			var newUser = angular.copy(vm.user);
-			newUser.token = $stateParams.token;
-			var uid = $stateParams.id;
-
-			memberAuthService.memberForgotPasswordSet(newUser, uid);
-		}
-
-		$rootScope.$on('SuccessMemberForgotPasswordSet', memberForgotPasswordSetSuccess);
-		$rootScope.$on('ErrorMemberForgotPasswordSet', memberForgotPasswordSetFailure);
-
-		function memberForgotPasswordSetSuccess(event) {
-			vm.changePasswordButtonClicked = false;
-			resetForm();
-		}
-
-		function memberForgotPasswordSetFailure(event, error) {
-			vm.changePasswordButtonClicked = false;
-			resetForm(error);
-		}
-
-		function resetForm(error) {
-			if (angular.isUndefined(error)) {
-				vm.user = {};
-				$scope.forgotPasswordSetForm.$setPristine();
-				$scope.forgotPasswordSetForm.$setUntouched();
-				vm.set = true;
-			} else {
-				vm.error = true;
-				vm.errorMsg = error.data.error.for;
-				vm.set = true;
-			}
-		}
-	}
-})();
-
-(function () {
-	'use strict';
-
-	angular
-		.module('fct.core')
-		.controller('MemberLoginController', MemberLoginController);
-
-	MemberLoginController.$inject = ['$scope', 'fctToast', 'memberAuthService', '$state', '$rootScope'];
-
-	function MemberLoginController($scope, fctToast, memberAuthService, $state, $rootScope) {
-		var vm = this;
-		vm.user = {};
-		vm.loginButtonClicked = false;
-		$scope.loginForm = {};
-
-		angular.extend(vm, {
-			login: login
-		});
-
-
-		function login() {
-			if (vm.loginButtonClicked) {
-				event.preventDefault();
-			} else {
-				vm.loginButtonClicked = true;
-			}
-			var newUser = angular.copy(vm.user);
-			memberAuthService.memberLogin(newUser);
-		}
-
-		$rootScope.$on('SuccessMemberLogin', loginSuccess);
-		$rootScope.$on('ErrorMemberLogin', loginFailure);
-
-		function loginSuccess(event) {
-			fctToast.showToast("Succefully Logged In", true);
-			vm.loginButtonClicked = false;
-			resetLogin();
-			$state.go('in_tc.verifyCoordinator');
-		}
-
-		function loginFailure(event, error) {
-			var msg = error.data.error.message.message.toString();
-			// console.log(error);
-			vm.loginButtonClicked = false;
-			fctToast.showToast(msg);
-			resetLogin(error);
-		}
-
-		function resetLogin(error) {
-			if (angular.isUndefined(error)) {
-				vm.user = {};
-				$scope.loginForm.$setPristine();
-				$scope.loginForm.$setUntouched();
-			} else {
-				if (error.data.error.message.errorState.member) {
-					vm.user.email = null;
-					$scope.loginForm.password.$error.incorrect = false;
-					$scope.loginForm.email.$error.not_registered = true;
-				} else {
-					vm.user.password = null;
-					$scope.loginForm.password.$error.incorrect = true;
-				}
-			}
-		}
-
-	}
-})();
-
-(function () {
-	'use strict';
-
-	angular
-		.module('fct.core')
-		.controller('MemberRegistrationController', MemberRegistrationController);
-
-	MemberRegistrationController.$inject = ['memberAuthService', '$scope', 'fctToast', '$rootScope', '$state'];
-
-	function MemberRegistrationController(memberAuthService, $scope, fctToast, $rootScope, $state) {
-		var vm = this;
-		vm.user = {};
-		vm.registerButtonClicked = false;
-
-		angular.extend(vm, {
-			register: register
-		});
-
-		activate();
-
-		function activate() {
-
-		}
-
-		function register() {
-			if (vm.registerButtonClicked) {
-				event.preventDefault();
-			} else {
-				vm.registerButtonClicked = true;
-			}
-			var newUser = angular.copy(vm.user);
-			console.log(newUser);
-			memberAuthService.memberRegister(newUser);
-		}
-
-		$rootScope.$on('SuccessMemberRegister', registerSuccess);
-		$rootScope.$on('ErrorMemberRegister', registerFailure);
-
-		function registerSuccess(event) {
-			fctToast.showToast("Succefully Registered", true);
-			vm.registerButtonClicked = false;
-			resetForm();
-			$state.go('in_tc.verifyCoordinator');
-		}
-
-		function registerFailure(event, error) {
-			var msg = error.data.errMsg.toString();
-			vm.registerButtonClicked = false;
-			fctToast.showToast(msg);
-			resetForm();
-		}
-
-		function resetForm() {
-			vm.user = {};
-			$scope.registerForm.$setPristine();
-			$scope.registerForm.$setUntouched();
-		}
-	}
-})();
-
-(function () {
-	'use strict';
-
-	angular
-		.module('fct.core')
 		.controller('AddEventController', AddEventController);
 
 	AddEventController.$inject = ['$stateParams', 'eventService', '$rootScope', '$timeout', 'Upload', '$state', 'fctToast', '$filter', 'memberService'];
@@ -2979,6 +2425,560 @@
 		}
 	}
 
+})();
+
+(function () {
+	'use strict';
+
+	angular
+		.module('fct.core')
+		.controller('FacultyForgotPasswordApplyController', FacultyForgotPasswordApplyController);
+
+	FacultyForgotPasswordApplyController.$inject = ['$scope', 'fctToast', 'facultyAuthService', '$state', '$rootScope'];
+
+	function FacultyForgotPasswordApplyController($scope, fctToast, facultyAuthService, $state, $rootScope) {
+		var vm = this;
+
+		vm.user = {};
+		vm.submitButtonClicked = false;
+		vm.applied = false;
+		$scope.forgotPasswordApplyForm = {};
+
+		angular.extend(vm, {
+			submit: submit
+		});
+
+		console.log("HHHIII");
+
+		function submit(event) {
+			console.log("222");
+			if (vm.submitButtonClicked) {
+				event.preventDefault();
+			} else {
+				vm.submitButtonClicked = true;
+			}
+			var newUser = angular.copy(vm.user);
+			facultyAuthService.facultyForgotPasswordApply(newUser);
+		}
+
+
+
+		$rootScope.$on('SuccessFacultyForgotPasswordApply', facultyForgotPasswordApplySuccess);
+		$rootScope.$on('ErrorFacultyForgotPasswordApply', facultyForgotPasswordApplyFailure);
+
+		function facultyForgotPasswordApplySuccess(event) {
+			vm.submitButtonClicked = false;
+			resetForm();
+		}
+
+		function facultyForgotPasswordApplyFailure(event, error) {
+			vm.submitButtonClicked = false;
+			resetForm(error);
+		}
+
+		function resetForm(error) {
+			if (angular.isUndefined(error)) {
+				vm.user = {};
+				$scope.forgotPasswordApplyForm.$setPristine();
+				$scope.forgotPasswordApplyForm.$setUntouched();
+				vm.applied = true;
+			} else {
+				$scope.forgotPasswordApplyForm.email.$error.not_registered = true;
+			}
+		}
+	}
+})();
+
+(function () {
+	'use strict';
+
+	angular
+		.module('fct.core')
+		.controller('FacultyForgotPasswordSetController', FacultyForgotPasswordSetController);
+
+	FacultyForgotPasswordSetController.$inject = ['$scope', 'fctToast', 'facultyAuthService', '$state', '$rootScope', '$stateParams'];
+
+	function FacultyForgotPasswordSetController($scope, fctToast, facultyAuthService, $state, $rootScope, $stateParams) {
+		var vm = this;
+
+
+		vm.token = Boolean($stateParams.token);
+		// console.log("token", vm.token);
+		vm.user = {};
+		vm.changePasswordButtonClicked = false;
+		vm.set = false;
+		$scope.forgotPasswordSetForm = {};
+
+		angular.extend(vm, {
+			changePassword: changePassword
+		});
+
+		function changePassword() {
+			if (vm.changePasswordButtonClicked) {
+				event.preventDefault();
+			} else {
+				vm.changePasswordButtonClicked = true;
+			}
+			var newUser = angular.copy(vm.user);
+			newUser.token = $stateParams.token;
+			var uid = $stateParams.id;
+
+			facultyAuthService.facultyForgotPasswordSet(newUser, uid);
+		}
+
+		$rootScope.$on('SuccessFacultyForgotPasswordSet', facultyForgotPasswordSetSuccess);
+		$rootScope.$on('ErrorFacultyForgotPasswordSet', facultyForgotPasswordSetFailure);
+
+		function facultyForgotPasswordSetSuccess(event) {
+			vm.changePasswordButtonClicked = false;
+			resetForm();
+		}
+
+		function facultyForgotPasswordSetFailure(event, error) {
+			vm.changePasswordButtonClicked = false;
+			resetForm(error);
+		}
+
+		function resetForm(error) {
+			if (angular.isUndefined(error)) {
+				vm.user = {};
+				$scope.forgotPasswordSetForm.$setPristine();
+				$scope.forgotPasswordSetForm.$setUntouched();
+				vm.set = true;
+			} else {
+				vm.error = true;
+				vm.errorMsg = error.data.error.for;
+				vm.set = true;
+			}
+		}
+	}
+})();
+
+(function () {
+	'use strict';
+
+	angular
+		.module('fct.core')
+		.controller('FacultyLoginController', FacultyLoginController);
+
+	FacultyLoginController.$inject = ['$scope', 'fctToast', 'facultyAuthService', '$state', '$rootScope'];
+
+	function FacultyLoginController($scope, fctToast, facultyAuthService, $state, $rootScope) {
+		var vm = this;
+		vm.user = {};
+		vm.loginButtonClicked = false;
+		$scope.loginForm = {};
+
+		angular.extend(vm, {
+			login: login
+		});
+
+
+		function login() {
+			if (vm.loginButtonClicked) {
+				event.preventDefault();
+			} else {
+				vm.loginButtonClicked = true;
+			}
+			var newUser = angular.copy(vm.user);
+			facultyAuthService.facultyLogin(newUser);
+		}
+
+		$rootScope.$on('SuccessFacultyLogin', loginSuccess);
+		$rootScope.$on('ErrorFacultyLogin', loginFailure);
+
+		function loginSuccess(event) {
+			fctToast.showToast("Succefully Logged In", true);
+			vm.loginButtonClicked = false;
+			resetLogin();
+			$state.go('in_fc.guidelines');
+		}
+
+		function loginFailure(event, error) {
+			var msg = error.data.error.message.message.toString();
+			vm.loginButtonClicked = false;
+			fctToast.showToast(msg);
+			resetLogin(error);
+		}
+
+		function resetLogin(error) {
+			if (angular.isUndefined(error)) {
+				vm.user = {};
+				$scope.loginForm.$setPristine();
+				$scope.loginForm.$setUntouched();
+			} else {
+				if (error.data.error.message.errorState.faculty) {
+					vm.user.email = null;
+					$scope.loginForm.password.$error.incorrect = false;
+					$scope.loginForm.email.$error.not_registered = true;
+				} else {
+					vm.user.password = null;
+					$scope.loginForm.password.$error.incorrect = true;
+				}
+			}
+		}
+
+	}
+})();
+
+(function () {
+	'use strict';
+
+	angular
+		.module('fct.core')
+		.controller('FacultyRegistrationController', FacultyRegistrationController);
+
+	FacultyRegistrationController.$inject = ['facultyAuthService', '$scope', 'fctToast', '$rootScope', '$state', '$timeout', '$q'];
+
+	function FacultyRegistrationController(facultyAuthService, $scope, fctToast, $rootScope, $state, $timeout, $q) {
+		var vm = this;
+		vm.user = {};
+		vm.registerButtonClicked = false;
+
+		// vm.states = loadAll();
+		vm.selectedItem = null;
+		vm.searchText = null;
+		vm.querySearch = querySearch;
+
+		angular.extend(vm, {
+			register: register
+		});
+
+		activate();
+
+		function activate() {
+			return facultyAuthService.getColleges()
+				.then(getCollegesSuccess)
+				.catch(getCollegesError);
+		}
+
+		function getCollegesSuccess(response) {
+			vm.colleges = response.data;
+		}
+
+		function getCollegesError(error) {
+			fctToast.showToast('Error in getting colleges');
+		}
+
+		function register() {
+			if (vm.registerButtonClicked) {
+				event.preventDefault();
+			} else {
+				vm.registerButtonClicked = true;
+			}
+			var newUser = angular.copy(vm.user);
+			facultyAuthService.facultyRegister(newUser);
+		}
+
+		$rootScope.$on('SuccessFacultyRegister', registerSuccess);
+		$rootScope.$on('ErrorFacultyRegister', registerFailure);
+
+		function registerSuccess(event) {
+			fctToast.showToast("Succefully Registered", true);
+			vm.registerButtonClicked = false;
+			resetForm();
+			$state.go('in_fc.guidelines');
+		}
+
+		function registerFailure(event, error) {
+			var msg = 'Email already registered';
+			vm.registerButtonClicked = false;
+			fctToast.showToast(msg);
+			resetForm();
+		}
+
+		function resetForm() {
+			vm.user = {};
+			$scope.registerForm.$setPristine();
+			$scope.registerForm.$setUntouched();
+		}
+
+
+
+		function querySearch(query) {
+			var results = query ? vm.colleges.filter(createFilterFor(query)) : vm.colleges;
+			var deferred = $q.defer();
+			console.log(results);
+			$timeout(function () {
+				deferred.resolve(results);
+			}, Math.random() * 1000, false);
+			return deferred.promise;
+		}
+
+		// function loadAll() {
+		// 	var allStates = 'Alabama, Alaska, Arizona, Arkansas, California, Colorado, Connecticut, Delaware, Florida, Georgia, Hawaii, Idaho, Illinois, Indiana, Iowa, Kansas, Kentucky, Louisiana';
+		//
+		// 	return allStates.split(/, +/g).map(function (state) {
+		// 		return {
+		// 			value: state.toLowerCase(),
+		// 			display: state
+		// 		};
+		// 	});
+		// }
+
+
+		function createFilterFor(query) {
+			var lowercaseQuery = angular.lowercase(query);
+			return function filterFn(college) {
+				var matches = college.name.match(/\b(\w)/g);
+				var acronym = matches.join('');
+				acronym = acronym.toLowerCase();
+				return (college.name.toLowerCase().trim().indexOf(lowercaseQuery) === 0 ||
+					acronym.indexOf(lowercaseQuery) === 0);
+			};
+		}
+	}
+})();
+
+(function () {
+	'use strict';
+
+	angular
+		.module('fct.core')
+		.controller('MemberForgotPasswordApplyController', MemberForgotPasswordApplyController);
+
+	MemberForgotPasswordApplyController.$inject = ['$scope', 'fctToast', 'memberAuthService', '$state', '$rootScope'];
+
+	function MemberForgotPasswordApplyController($scope, fctToast, memberAuthService, $state, $rootScope) {
+		var vm = this;
+
+		vm.user = {};
+		vm.submitButtonClicked = false;
+		vm.applied = false;
+		$scope.forgotPasswordApplyForm = {};
+
+		angular.extend(vm, {
+			submit: submit
+		});
+
+		function submit(event) {
+			console.log("HIII");
+			if (vm.submitButtonClicked) {
+				event.preventDefault();
+			} else {
+				vm.submitButtonClicked = true;
+			}
+			var newUser = angular.copy(vm.user);
+			memberAuthService.memberForgotPasswordApply(newUser);
+		}
+
+		$rootScope.$on('SuccessMemberForgotPasswordApply', memberForgotPasswordApplySuccess);
+		$rootScope.$on('ErrorMemberForgotPasswordApply', memberForgotPasswordApplyFailure);
+
+		function memberForgotPasswordApplySuccess(event) {
+			vm.submitButtonClicked = false;
+			resetForm();
+		}
+
+		function memberForgotPasswordApplyFailure(event, error) {
+			vm.submitButtonClicked = false;
+			resetForm(error);
+		}
+
+		function resetForm(error) {
+			if (angular.isUndefined(error)) {
+				vm.user = {};
+				$scope.forgotPasswordApplyForm.$setPristine();
+				$scope.forgotPasswordApplyForm.$setUntouched();
+				vm.applied = true;
+			} else {
+				$scope.forgotPasswordApplyForm.email.$error.not_registered = true;
+			}
+		}
+	}
+})();
+
+(function () {
+	'use strict';
+
+	angular
+		.module('fct.core')
+		.controller('MemberForgotPasswordSetController', MemberForgotPasswordSetController);
+
+	MemberForgotPasswordSetController.$inject = ['$scope', 'fctToast', 'memberAuthService', '$state', '$rootScope', '$stateParams'];
+
+	function MemberForgotPasswordSetController($scope, fctToast, memberAuthService, $state, $rootScope, $stateParams) {
+		var vm = this;
+
+
+		vm.token = Boolean($stateParams.token);
+		// console.log("token", vm.token);
+		vm.user = {};
+		vm.changePasswordButtonClicked = false;
+		vm.set = false;
+		$scope.forgotPasswordSetForm = {};
+
+		angular.extend(vm, {
+			changePassword: changePassword
+		});
+
+		function changePassword() {
+			if (vm.changePasswordButtonClicked) {
+				event.preventDefault();
+			} else {
+				vm.changePasswordButtonClicked = true;
+			}
+			var newUser = angular.copy(vm.user);
+			newUser.token = $stateParams.token;
+			var uid = $stateParams.id;
+
+			memberAuthService.memberForgotPasswordSet(newUser, uid);
+		}
+
+		$rootScope.$on('SuccessMemberForgotPasswordSet', memberForgotPasswordSetSuccess);
+		$rootScope.$on('ErrorMemberForgotPasswordSet', memberForgotPasswordSetFailure);
+
+		function memberForgotPasswordSetSuccess(event) {
+			vm.changePasswordButtonClicked = false;
+			resetForm();
+		}
+
+		function memberForgotPasswordSetFailure(event, error) {
+			vm.changePasswordButtonClicked = false;
+			resetForm(error);
+		}
+
+		function resetForm(error) {
+			if (angular.isUndefined(error)) {
+				vm.user = {};
+				$scope.forgotPasswordSetForm.$setPristine();
+				$scope.forgotPasswordSetForm.$setUntouched();
+				vm.set = true;
+			} else {
+				vm.error = true;
+				vm.errorMsg = error.data.error.for;
+				vm.set = true;
+			}
+		}
+	}
+})();
+
+(function () {
+	'use strict';
+
+	angular
+		.module('fct.core')
+		.controller('MemberLoginController', MemberLoginController);
+
+	MemberLoginController.$inject = ['$scope', 'fctToast', 'memberAuthService', '$state', '$rootScope'];
+
+	function MemberLoginController($scope, fctToast, memberAuthService, $state, $rootScope) {
+		var vm = this;
+		vm.user = {};
+		vm.loginButtonClicked = false;
+		$scope.loginForm = {};
+
+		angular.extend(vm, {
+			login: login
+		});
+
+
+		function login() {
+			if (vm.loginButtonClicked) {
+				event.preventDefault();
+			} else {
+				vm.loginButtonClicked = true;
+			}
+			var newUser = angular.copy(vm.user);
+			memberAuthService.memberLogin(newUser);
+		}
+
+		$rootScope.$on('SuccessMemberLogin', loginSuccess);
+		$rootScope.$on('ErrorMemberLogin', loginFailure);
+
+		function loginSuccess(event) {
+			fctToast.showToast("Succefully Logged In", true);
+			vm.loginButtonClicked = false;
+			resetLogin();
+			$state.go('in_tc.verifyCoordinator');
+		}
+
+		function loginFailure(event, error) {
+			var msg = error.data.error.message.message.toString();
+			// console.log(error);
+			vm.loginButtonClicked = false;
+			fctToast.showToast(msg);
+			resetLogin(error);
+		}
+
+		function resetLogin(error) {
+			if (angular.isUndefined(error)) {
+				vm.user = {};
+				$scope.loginForm.$setPristine();
+				$scope.loginForm.$setUntouched();
+			} else {
+				if (error.data.error.message.errorState.member) {
+					vm.user.email = null;
+					$scope.loginForm.password.$error.incorrect = false;
+					$scope.loginForm.email.$error.not_registered = true;
+				} else {
+					vm.user.password = null;
+					$scope.loginForm.password.$error.incorrect = true;
+				}
+			}
+		}
+
+	}
+})();
+
+(function () {
+	'use strict';
+
+	angular
+		.module('fct.core')
+		.controller('MemberRegistrationController', MemberRegistrationController);
+
+	MemberRegistrationController.$inject = ['memberAuthService', '$scope', 'fctToast', '$rootScope', '$state'];
+
+	function MemberRegistrationController(memberAuthService, $scope, fctToast, $rootScope, $state) {
+		var vm = this;
+		vm.user = {};
+		vm.registerButtonClicked = false;
+
+		angular.extend(vm, {
+			register: register
+		});
+
+		activate();
+
+		function activate() {
+
+		}
+
+		function register() {
+			if (vm.registerButtonClicked) {
+				event.preventDefault();
+			} else {
+				vm.registerButtonClicked = true;
+			}
+			var newUser = angular.copy(vm.user);
+			console.log(newUser);
+			memberAuthService.memberRegister(newUser);
+		}
+
+		$rootScope.$on('SuccessMemberRegister', registerSuccess);
+		$rootScope.$on('ErrorMemberRegister', registerFailure);
+
+		function registerSuccess(event) {
+			fctToast.showToast("Succefully Registered", true);
+			vm.registerButtonClicked = false;
+			resetForm();
+			$state.go('in_tc.verifyCoordinator');
+		}
+
+		function registerFailure(event, error) {
+			var msg = error.data.errMsg.toString();
+			vm.registerButtonClicked = false;
+			fctToast.showToast(msg);
+			resetForm();
+		}
+
+		function resetForm() {
+			vm.user = {};
+			$scope.registerForm.$setPristine();
+			$scope.registerForm.$setUntouched();
+		}
+	}
 })();
 
 (function() {
