@@ -29,6 +29,7 @@
 			'validation.match',
 			'ngMdIcons',
 			'angularMoment',
+			'ckeditor'
 			// 'fct.api'
 		]);
 
@@ -1290,82 +1291,82 @@
     }
 })();
 
-(function () {
-	'use strict';
+(function() {
+    'use strict';
 
-	angular
-		.module('fct.core')
-		.controller('AddStudentController', AddStudentController);
+    angular
+        .module('fct.core')
+        .controller('AddStudentController', AddStudentController);
 
-	AddStudentController.$inject = ['$http', 'facultyAuthService', '$rootScope', 'fctToast'];
+    AddStudentController.$inject = ['$http', 'facultyAuthService', '$rootScope', 'fctToast'];
 
-	function AddStudentController($http, facultyAuthService, $rootScope, fctToast) {
-		var vm = this;
-		vm.coordinator = {};
-		vm.editInfo = false;
-		vm.preInfo = false;
-		vm.updateButtonClicked = false;
-		vm.addButtonClicked = false;
+    function AddStudentController($http, facultyAuthService, $rootScope, fctToast) {
+        var vm = this;
+        vm.coordinator = {};
+        vm.editInfo = false;
+        vm.preInfo = false;
+        vm.updateButtonClicked = false;
+        vm.addButtonClicked = false;
 
-		angular.extend(vm, {
-			update: update,
-			addStudentCoordinator: addStudentCoordinator,
-			edit: edit
-		});
+        angular.extend(vm, {
+            update: update,
+            addStudentCoordinator: addStudentCoordinator,
+            edit: edit
+        });
 
-		activate();
+        activate();
 
-		function activate() {
-			if (!$rootScope.faculty.student_coordinator.name) {
-				vm.editInfo = true;
-			} else {
-				vm.coordinator = $rootScope.faculty.student_coordinator;
-				vm.preInfo = true;
-			}
-		}
+        function activate() {
+            if (angular.isUndefined($rootScope.faculty.student_coordinator)) {
+                vm.editInfo = true;
+            } else {
+                vm.coordinator = $rootScope.faculty.student_coordinator;
+                vm.preInfo = true;
+            }
+        }
 
-		function update(event) {
-			vm.updateButtonClicked = true;
-			return facultyAuthService.editStudentCoordinator({
-					student_coordinator: vm.coordinator
-				})
-				.then(editStudentCoordinatorSuccess)
-				.catch(editStudentCoordinatorFailure);
-		}
+        function update(event) {
+            vm.updateButtonClicked = true;
+            return facultyAuthService.editStudentCoordinator({
+                    student_coordinator: vm.coordinator
+                })
+                .then(editStudentCoordinatorSuccess)
+                .catch(editStudentCoordinatorFailure);
+        }
 
-		function edit() {
-			vm.editInfo = true;
-		}
+        function edit() {
+            vm.editInfo = true;
+        }
 
-		function addStudentCoordinator(event) {
-			vm.addButtonClicked = true;
-			return facultyAuthService.editStudentCoordinator({
-					student_coordinator: vm.coordinator
-				})
-				.then(addStudentCoordinatorSuccess)
-				.catch(editStudentCoordinatorFailure);
-		}
+        function addStudentCoordinator(event) {
+            vm.addButtonClicked = true;
+            return facultyAuthService.editStudentCoordinator({
+                    student_coordinator: vm.coordinator
+                })
+                .then(addStudentCoordinatorSuccess)
+                .catch(editStudentCoordinatorFailure);
+        }
 
-		function addStudentCoordinatorSuccess(response) {
-			vm.preInfo = true;
-			vm.editInfo = false;
-			vm.addButtonClicked = false;
-			fctToast.showToast('Student Coordinator Details Added Successfuly', true);
-		}
+        function addStudentCoordinatorSuccess(response) {
+            vm.preInfo = true;
+            vm.editInfo = false;
+            vm.addButtonClicked = false;
+            fctToast.showToast('Student Coordinator Details Added Successfuly', true);
+        }
 
-		function editStudentCoordinatorSuccess(response) {
-			vm.editInfo = false;
-			vm.updateButtonClicked = false;
-			fctToast.showToast('Student Coordinator Details Updated Successfuly', true);
-		}
+        function editStudentCoordinatorSuccess(response) {
+            vm.editInfo = false;
+            vm.updateButtonClicked = false;
+            fctToast.showToast('Student Coordinator Details Updated Successfuly', true);
+        }
 
-		function editStudentCoordinatorFailure(error) {
-			vm.editInfo = false;
-			vm.addButtonClicked = false;
-			vm.updateButtonClicked = false;
-			fctToast.showToast('Error!! Try Again');
-		}
-	}
+        function editStudentCoordinatorFailure(error) {
+            vm.editInfo = false;
+            vm.addButtonClicked = false;
+            vm.updateButtonClicked = false;
+            fctToast.showToast('Error!! Try Again');
+        }
+    }
 })();
 
 (function () {
@@ -1667,23 +1668,27 @@
 			'managers': [],
 			'event': "Add",
 		};
-
 		vm.myEvent.attachments = [];
 		vm.files = [];
 		vm.image = '';
+		vm.myEvent.image = null;
 
 		angular.extend(vm, {
 			save: save,
 			openManagersModal: openManagersModal,
 			uploadFiles: uploadFiles,
-			feeTypeChanged: feeTypeChanged
+			feeTypeChanged: feeTypeChanged,
+			uploadImage: uploadImage,
+			doneLoading: doneLoading,
 		});
 
 		activate();
 
 		function activate() {
-			memberService.initializeCKEditor();
+			//memberService.initializeCKEditor();
 		}
+
+		function doneLoading() {}
 
 		function openManagersModal(total) {
 			vm.myEvent.managers = [];
@@ -1713,9 +1718,9 @@
 		}
 
 		function save() {
-			vm.myEvent.rules = CKEDITOR.instances["editorRules"].getData();
-			vm.myEvent.specification = CKEDITOR.instances["editorSpecification"].getData();
-			vm.myEvent.judging_criteria = CKEDITOR.instances["editorJudgingCriteria"].getData();
+			// vm.myEvent.rules = CKEDITOR.instances["editorRules"].getData();
+			// vm.myEvent.specification = CKEDITOR.instances["editorSpecification"].getData();
+			// vm.myEvent.judging_criteria = CKEDITOR.instances["editorJudgingCriteria"].getData();
 			console.log(vm.myEvent);
 			if (vm.myEvent.isUpdate) {
 				return eventService.updateEvent(vm.myEvent).then(registerSuccess).catch(registerFailure);
@@ -1756,6 +1761,28 @@
 				}, function (response) {
 					if (response.status > 0)
 						vm.errorMsg = response.status + ': ' + response.data;
+				}, function (evt) {
+					file.progress = Math.min(100, parseInt(100.0 * evt.loaded / evt.total));
+				});
+			});
+		}
+
+		function uploadImage(files, errFiles) {
+			angular.forEach(files, function (file) {
+				file.upload = Upload.upload({
+					url: '/api/members/uploadImage',
+					data: {
+						file: file
+					}
+				});
+				file.upload.then(function (response) {
+					$timeout(function () {
+						vm.myEvent.event_image = response.data.path;
+					});
+				}, function (response) {
+					if (response.status > 0) {
+						//console.log(reponse);
+					}
 				}, function (evt) {
 					file.progress = Math.min(100, parseInt(100.0 * evt.loaded / evt.total));
 				});
@@ -2104,9 +2131,9 @@
 		.module('fct.core')
 		.controller('UpdateEventController', UpdateEventController);
 
-	UpdateEventController.$inject = ['$stateParams', 'eventService', '$rootScope', '$state', 'fctToast', 'memberService'];
+	UpdateEventController.$inject = ['$stateParams', 'eventService', '$rootScope', '$state', 'fctToast', 'memberService', 'Upload', '$timeout'];
 
-	function UpdateEventController(stateParams, eventService, $rootScope, state, fctToast, memberService) {
+	function UpdateEventController(stateParams, eventService, $rootScope, state, fctToast, memberService, Upload, $timeout) {
 		var vm = this;
 		vm.isUpdate = true;
 		vm.myEvent = {
@@ -2116,19 +2143,31 @@
 		vm.files = [];
 		vm.feeDisabled = false;
 		vm.myEvent.do_payment = false;
+		vm.loadIndex = 0;
+		vm.loadCompleted = 3;
+		vm.myEvent.image = null;
 
 		angular.extend(vm, {
 			save: save,
 			openManagersModal: openManagersModal,
 			uploadFiles: uploadFiles,
-			feeTypeChanged: feeTypeChanged
+			feeTypeChanged: feeTypeChanged,
+			doneLoading: doneLoading,
+			uploadImage: uploadImage,
 		});
 
 		activate();
 
 		function activate() {
-			memberService.initializeCKEditor();
-			checkEventId();
+			//memberService.initializeCKEditor();
+			//checkEventId();
+		}
+
+		function doneLoading() {
+			vm.loadIndex++;
+			if(vm.loadIndex == vm.loadCompleted) {
+				checkEventId();
+			}
 		}
 
 		function openManagersModal(total) {
@@ -2159,10 +2198,9 @@
 			vm.myEvent.event = "Update";
 			vm.myEvent.totalManager = vm.myEvent.managers.length;
 			vm.files = vm.myEvent.attachments;
-			return [CKEDITOR.instances['editorRules'].setData(vm.myEvent.rules),
-				CKEDITOR.instances['editorSpecification'].setData(vm.myEvent.specification),
-				CKEDITOR.instances['editorJudgingCriteria'].setData(vm.myEvent.judging_criteria)
-			];
+			// return [CKEDITOR.instances['editorRules'].setData(vm.myEvent.rules),
+			// 	CKEDITOR.instances['editorSpecification'].setData(vm.myEvent.specification),
+			// 	CKEDITOR.instances['editorJudgingCriteria'].setData(vm.myEvent.judging_criteria)];
 		}
 
 		function onEventGetFailure(error) {
@@ -2228,6 +2266,28 @@
 				}, function (response) {
 					if (response.status > 0)
 						vm.errorMsg = response.status + ': ' + response.data;
+				}, function (evt) {
+					file.progress = Math.min(100, parseInt(100.0 * evt.loaded / evt.total));
+				});
+			});
+		}
+
+		function uploadImage(files, errFiles) {
+			angular.forEach(files, function (file) {
+				file.upload = Upload.upload({
+					url: '/api/members/uploadImage',
+					data: {
+						file: file
+					}
+				});
+				file.upload.then(function (response) {
+					$timeout(function () {
+						vm.myEvent.event_image = response.data.path;
+					});
+				}, function (response) {
+					if (response.status > 0) {
+						//console.log(reponse);
+					}
 				}, function (evt) {
 					file.progress = Math.min(100, parseInt(100.0 * evt.loaded / evt.total));
 				});

@@ -178,22 +178,45 @@
             <li ng-repeat="f in ec.errFiles" style="font:smaller">{{f.name}} {{f.$error}} {{f.$errorParam}}
             </li>
           </ul>
+        <div flex layout="row">
+          <md-button ngf-select="ec.uploadImage($files, $invalidFiles)"
+              class="md-raised md-primary" flex="20" accept="image/*" ngf-max-size="10MB">
+              Upload Image
+          </md-button>
+        </div>
+        <div class="margin-1">
+        <ul ng-show="ec.myEvent.event_image != null">
+          <li style="font:smaller">
+            <span>Event Image {{ec.myEvent.event_image.$errorParam}}</span>
+            <span ng-show="ec.isUpdate">{{ec.myEvent.event_image.doc_name}} {{ec.myEvent.event_image.$errorParam}}</span>
+            <md-button class="md-icon-button md-raised md-primary" ng-click="ec.myEvent.event_image = null"
+              md-no-ink="true">
+                <ng-md-icon icon="delete" size="20">
+                </ng-md-icon>
+            </md-button>
+            <br/>
+            <span class="progress margin-1" ng-show="ec.myEvent.event_image.progress >= 0">
+              <div style="width:{{ec.myEvent.event_image.progress}}%;" flex="100" ng-bind="ec.myEvent.event_image.progress + '%'"></div>
+            </span>
+          </li>
+        </ul>
+      </div>
         </div>
         </div>
       </div>
         <div layout="column" flex="100" class="margin-2">
           <h3>Rules</h3>
-          <div id="editorRules">
+          <div id="editorRules" ckeditor="options" ng-model="ec.myEvent.rules" ready="ec.doneLoading()">
       		</div>
         </div>
         <div layout="column" flex="100">
           <h3>Specification</h3>
-          <div id="editorSpecification">
+          <div id="editorSpecification" ckeditor="options" ng-model="ec.myEvent.specification" ready="ec.doneLoading()">
       		</div>
         </div>
         <div layout="column" flex="100">
           <h3>Judging Criteria</h3>
-          <div id="editorJudgingCriteria">
+          <div id="editorJudgingCriteria" ckeditor="options" ng-model="ec.myEvent.judging_criteria" ready="ec.doneLoading()">
       		</div>
         </div>
         <md-button class="md-primary md-raised" type="submit" ng-click="ec.save()">

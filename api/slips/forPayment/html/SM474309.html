@@ -1,11 +1,11 @@
-
+<!-- <img src="../../templates/gtfheader.jpg" alt=""> -->
 <!DOCTYPE html>
 <html>
     <head>
         <meta charset="utf-8">
         <title>GT17 Receipt</title>
     </head>
-    <body style="font-family: sans-serif;" style="width:100%; overflow: hidden; zoom:0.7">
+    <body style="font-family: sans-serif;zoom:0.72">
         <svg version="1.1" id="Layer_1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" x="0px" y="0px" width="800px" height="192px" viewBox="0 0 1000 240" enable-background="new 0 0 1000 240" xml:space="preserve">
             <g>
             	<path fill="#31318D" d="M145.644,160.927c0.614,0.321,1.316,0.337,1.949,0.314c3.051-0.103,6.098,0.079,9.146,0.1
@@ -4572,58 +4572,42 @@
         </svg>
 
         <div class="container" style="width: 100%;">
-            <h2 style="text-align: center;color: #303F9F;">
-                Receipt for Workshop
+            <h2 style="text-align: center;color: #B71C1C;">
+                Receipt for Registration Confirmation
             </h2>
-            <p style="text-align: center;color:#F44336"><strong>Receipt to be submitted at L.D. College of Engineering</strong></p>
-            <p style="margin-top:20px; text-align: right; padding-right:50px">Date: <strong>{{date}}</strong></p>
-            <!-- <p style="margin-top:10px; margin-bottom:10px; padding-left: 50px; line-height:24px;">
+
+            <p style="margin-top:20px; text-align: right; padding-right:20px">Date: <strong>March 15, 2017</strong></p>
+            <p style="margin-top:10px; margin-bottom:10px; padding-left: 50px; line-height:24px;">
                 <span style="width:300px">
-                    Team Id: <strong>{{teamId}}</strong>
+                    Team Id: <strong>SM474309</strong>
                 </span><br>
+                <span style="width:300px">
+                    Team Leader Name: <strong>Jinita patel</strong>
+                </span><br>
+                <span style="width:300px">
+                    Team Leader Email Id: <strong>jinitapatel29497@gmail.com</strong>
+                </span><br>
+                <span style="width:300px">
+                    Team Leader Mobile No: <strong>7405077540</strong>
+                </span><br>
+            </p>
 
-            </p> -->
-            <h3 style="margin-left:50px;margin-bottom:5px !important;margin-top:5px">Participants Information:</h3>
-            <table style="margin: 20px 50px; width: 88%" border="1">
-                <thead>
-                    <th>Name</th>
-                    <th>Enrollment Number</th>
-                    <th>Mobile Number</th>
-                </thead>
-                <tbody>
-                    <tr>
-                        <td>&nbsp;&nbsp;{{team_leader.name}}</td>
-                        <td>&nbsp;&nbsp;{{team_leader.enrollment}}</td>
-                        <td>&nbsp;&nbsp;{{team_leader.mobileno}}</td>
-                    </tr>
-                    {{#other_participants}}
-                    <tr>
-                        <td>&nbsp;&nbsp;{{name}}</td>
-                        <td>&nbsp;&nbsp;{{enrollment}}</td>
-                        <td>&nbsp;&nbsp;{{mobileno}}</td>
-                    </tr>
-                    {{/other_participants}}
-                </tbody>
-            </table>
+            <p style="margin-top:20px; margin-bottom:20px; padding-left: 50px; line-height:24px;">
+                Event: <strong>Quiz-Wiz</strong><br>
+                Event Section: <strong>Softmania</strong><br>
+            </p>
 
+            <p style="text-align: center;">Please don't share the following serial key with anyone else other than Faculty Coordinator</p>
+            <h3 style="text-align: center; margin-bottom:30px">Serial Id: <span style="color: #1A237E;">FtmL10MmJPT0</span></h3>
 
-
-
-            <!-- <h3 style="text-align: center; margin-bottom:30px">Serial Id: <span style="color: #1A237E;">{{serialId}}</span></h3> -->
-
-            <h3 style="text-align:right;padding-right:30px; margin: 0px 20px 20px 50px">
-                <span style="float:left">Workshop: <span style="color:#0D47A1">{{eventObject.event_name}}</span></span>
-                <span style="float:right">Total Amount: <span style="color:#388E3C"> &#8377;{{amount}}</span></span></h3>
-            <div style="clear: both;"></div>
+            <h3 style="text-align:right;padding-right:30px;">Total Amount: <span style="color:#388E3C"> &#8377;50</span></h3>
             <hr style="margin-top:30px;">
             <p style="margin-top:30px; margin-bottom:30px; padding-left: 50px; line-height:22px;">
                 <strong style="text-decoration:underline">Instructions:</strong><br>
-                1. This receipt needs to be submitted at Registration Desk in L.D. College of Engineering along with
-                <br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;the amount to be paid for confirmation.<br>
-                2. This receipt must not be accepted by any Faculty Coordinator assigned by GTU.<br>
-                3. Confirmation can be done at L.D. College of Engineering until 30th March before 11 am.<br>
-                3. All the team members registered must be present on the day of the event. Cancellation of any one
-                <br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;member in the receipt will not conclude in the reduction of the amount.<br>
+                1. This receipt needs to be submitted to a Faculty Coordinator assigned in GTU affiliated colleges.<br>
+                2. This slip will not be accepted at GTU CENTRAL TECHFEST on 30-31st March 2017.<br>
+                3. Team Leader will get a confirmation mail after the Faculty Coordinator has confirmed the respective <br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;registration on GTU's portal.<br>
+                4. Team Leader will get the Receipt for admission in events through mail after 23rd March 2017 <br>
             </p>
 
             <p style="margin-top:30px; margin-bottom:30px; padding-left: 50px; line-height:22px;">
