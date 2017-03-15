@@ -5,38 +5,44 @@
 		.module('fct.core')
 		.controller('DashboardController', DashboardController);
 
-	DashboardController.$inject = ['$rootScope', 'memberService'];
+	DashboardController.$inject = ['$rootScope', 'memberService', '$window'];
 
-	function DashboardController($rootScope, memberService) {
+	function DashboardController($rootScope, memberService, $window) {
 		var vm = this;
 
 		angular.extend(vm, {
+			getVFS: getVFS,
+			getUVF: getUVF,
 		});
 
 		activate();
 
-		function activate() {alert('dsfsdf');
-			getVFSCount();
-			getUVFCount();
+		function activate() {
+			getVFS();
+			getUVF();
 		}
 
-		function getVFSCount() {
+		function getVFS() {
 			return memberService.getVerifyFacultyStudent()
 				.then(function(response) {
-					console.log(response);
+					vm.VFSPath = response.data.path;
+					// $window.open(response.data.path);
+					//console.log(response);
 				})
 				.catch(function(error) {
-					console.log(error);
+					//console.log(error);
 				});
 		}
 
-		function getUVFCount() {
+		function getUVF() {
 			return memberService.getUnverifiedFaculty()
 				.then(function(response) {
-					console.log(response);
+					vm.UVFPath = response.data.path;
+					// $window.open(response.data.path);
+					//console.log(response);
 				})
 				.catch(function(error) {
-					console.log(error);
+					//console.log(error);
 				});
 		}
 

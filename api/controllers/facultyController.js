@@ -12,6 +12,7 @@ var mailController = require('./mailController')();
 var facultyController = function(Faculty, Registration) {
     function throwError(response, error, status, message, errorFor) {
         response.status(status);
+        console.log(error);
         response.json({
             "error": {
                 "message": message,
