@@ -116,8 +116,14 @@ var facultyController = function (Faculty, Registration) {
 								throwError(response, error, 520, "Confirming Registration", "Failed");
 							} else {
 								console.log("8");
-								response.status(200).json({
-									"message": "Registration has been Confirmed!"
+								request.faculty.save(function (error) {
+									if (error) {
+										throwError(response, error, 520, "Confirming Registration", "Failed");
+									} else {
+										response.status(200).json({
+											"message": "Registration has been Confirmed!"
+										});
+									}
 								});
 							}
 						});
