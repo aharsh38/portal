@@ -347,7 +347,6 @@ var facultyController = function (Faculty, Registration) {
 				} else {
 					throwError(response, null, 401, 'Not Verified', 'Faculty Not Verified');
 				}
-
 			}
 		});
 	}

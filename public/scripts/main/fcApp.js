@@ -745,12 +745,12 @@
 		}
 
 		function checkVerifiedSuccess(response) {
-			// console.log(response);
+			console.log(response);
 			replaceToken(response.data.token);
 		}
 
 		function checkVerifiedFailure(error) {
-			// console.log(error);
+			console.log(error);
 		}
 
 		function editStudentCoordinator(students) {
