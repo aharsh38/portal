@@ -28,7 +28,7 @@ var facultyController = function (Faculty, Registration) {
 				throwError(response, error, 500, 'Internal Server error', 'Faculty Register');
 			} else {
 				var token;
-				token = faculty.generateJwt();
+				token = request.faculty.generateJwt();
 				response.status(200);
 				response.json({
 					"token": token,
