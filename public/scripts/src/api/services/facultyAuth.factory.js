@@ -17,8 +17,8 @@
 			facultyForgotPasswordApply: facultyForgotPasswordApply,
 			facultyForgotPasswordSet: facultyForgotPasswordSet,
 			getColleges: getColleges,
-			checkVerified: checkVerified,
-			editStudentCoordinator: editStudentCoordinator
+			checkVerified: checkVerified
+			// editStudentCoordinator: editStudentCoordinator
 		};
 
 		return service;
@@ -31,7 +31,7 @@
 				payload = $window.atob(payload);
 				payload = JSON.parse(payload);
 
-				if (angular.isDefined(payload.registrations_count)) {
+				if (angular.isDefined(payload.collegeId)) {
 					$rootScope.faculty = {};
 					$rootScope.faculty.email = payload.email;
 					$rootScope.faculty.mobileno = payload.mobileno;
@@ -40,6 +40,7 @@
 					$rootScope.faculty.rejected = payload.rejected;
 					$rootScope.faculty.forgot_password = payload.forgot_password;
 					$rootScope.faculty.id = payload._id;
+					$rootScope.collegeId = payload.collegeId;
 					// $rootScope.faculty.registrations_count = payload.registrations_count;
 					// $rootScope.faculty.collected_amount = payload.collected_amount;
 					// $rootScope.faculty.student_coordinator = payload.student_coordinator;
@@ -193,21 +194,7 @@
 			console.log(error);
 		}
 
-		function editStudentCoordinator(students) {
-			var link = '/api/faculty/' + $rootScope.faculty.id + '/addStudentCoordinator';
-			return $http.post(link, students)
-				.then(editStudentCoordinatorSuccess)
-				.catch(editStudentCoordinatorFailure);
-		}
 
-		function editStudentCoordinatorSuccess(response) {
-			replaceToken(response.data.token);
-			return response;
-		}
-
-		function editStudentCoordinatorFailure(error) {
-			return error;
-		}
 
 		function functionName(error) {
 			return error;

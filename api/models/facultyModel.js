@@ -83,6 +83,7 @@ facultyModel.methods.generateJwt = function () {
 		verified: this.verified,
 		rejected: this.rejected,
 		forgot_password: this.forgot_password,
+		collegeId: this.collegeId,
 		exp: parseInt(expiry.getTime() / 1000),
 	}, config.secrets.faculty);
 };

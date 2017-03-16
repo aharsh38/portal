@@ -239,7 +239,6 @@ var registrationController = function (Registration) {
 		var teamId = request.params.teamId;
 		response.status(200);
 		response.download('./api/slips/' + type + '/' + teamId + '.pdf', function (error, data) {
-			console.log("Error", error);
 			if (error) {
 				throwError(response, error, null, 'Slip Download', 'Download Failed');
 			} else {
