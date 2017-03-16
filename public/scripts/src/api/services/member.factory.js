@@ -16,6 +16,7 @@
 			getDeleteModal: getDeleteModal,
 			getVerifyFacultyStudent: getVerifyFacultyStudent,
 			getUnverifiedFaculty: getUnverifiedFaculty,
+			getUnconfirmedRegistration: getUnconfirmedRegistration,
 		};
 
 		return service;

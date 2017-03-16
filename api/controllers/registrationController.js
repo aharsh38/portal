@@ -36,7 +36,7 @@ var registrationController = function (Registration) {
 	}
 
 	function generateSlip(type, teamid, data, request, response, registration) {
-		if (type) {
+		if (type) {console.log('donwload skip');
 			fs.readFile('./api/slips/templates/' + type + '.hbs', function (error, file) {
 				if (!error) {
 					var source = file.toString();
@@ -54,7 +54,6 @@ var registrationController = function (Registration) {
 							var options = {
 								format: 'Letter'
 							};
-
 							pdf.create(html, options).toFile('./api/slips/' + type + '/' + teamid + '.pdf', function (error, res) {
 								console.log("PDF GENERATE ERROR", error);
 								if (error) {
@@ -63,7 +62,6 @@ var registrationController = function (Registration) {
 										"error": error
 									};
 								} else {
-
 									registration.save(function (error) {
 										if (error) {
 											throwError(response, error, 500, 'Internal Server error', 'Event Register');
@@ -75,8 +73,6 @@ var registrationController = function (Registration) {
 											} else if (request.body.late_payment) {
 												dnlink += 'latePayment';
 											}
-
-
 											response.status(200);
 											response.json({
 												downloadSlip: dnlink
@@ -137,7 +133,6 @@ var registrationController = function (Registration) {
 		registration.late_payment = request.body.late_payment;
 		registration.teamId = request.body.eventObject.event_shortcode + rand.generateDigits(6);
 		// registration.teamId = "SC" + rand.generateDigits(6);
-
 		var slip;
 		var dataToGeneratePDF;
 
@@ -147,10 +142,8 @@ var registrationController = function (Registration) {
 			month: 'long',
 			day: 'numeric'
 		});
-
 		if (registration.do_payment) {
 			registration.serialId = rand.generate(12);
-
 			dataToGeneratePDF = {
 				teamId: registration.teamId,
 				serialId: registration.serialId,
@@ -160,12 +153,12 @@ var registrationController = function (Registration) {
 				eventObject: registration.eventObject
 			};
 			slip = generateSlip('forPayment', registration.teamId, dataToGeneratePDF, request, response, registration);
-		} else if (request.body.latePayment) {
+		} else if (request.body.latePayment) {console.log('4');
 			dataToGeneratePDF = {
 				teamId: registration.teamId,
 				team_leader: registration.team_leader,
 				other_participants: registration.other_participants
-			};
+			};console.log('5');
 			slip = generateSlip('latePayment', registration.teamId, dataToGeneratePDF);
 		}
 	}
