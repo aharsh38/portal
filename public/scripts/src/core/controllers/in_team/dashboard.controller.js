@@ -11,17 +11,44 @@
 		var vm = this;
 
 		angular.extend(vm, {
-			func: func
+			getVFS: getVFS,
+			getUVF: getUVF
 		});
 
 		activate();
 
 		function activate() {
-
+			return memberService.getVerifyFacultyStudent()
+				.then(function (response) {
+					vm.VFSPath = response.data.path;
+					// $window.open(response.data.path);
+					//console.log(response);
+				})
+				.catch(function (error) {
+					//console.log(error);
+				});
 		}
 
-		function func() {
+		function getUVF() {
+			return memberService.getUnverifiedFaculty()
+				.then(function (response) {
+					vm.UVFPath = response.data.path;
+					// $window.open(response.data.path);
+					//console.log(response);
+				})
+				.catch(function (error) {
+					//console.log(error);
+				});
+		}
 
+		function getUnconfirmedRegistration() {
+			return memberService.getUnconfirmedRegistration()
+				.then(function (response) {
+					console.log(reponse);
+				})
+				.catch(function (error) {
+					//console.log(error);
+				});
 		}
 	}
 })();

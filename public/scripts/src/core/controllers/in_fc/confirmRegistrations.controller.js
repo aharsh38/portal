@@ -59,8 +59,18 @@
 			vm.registration = {};
 			$scope.confirmRegistrationForm.$setPristine();
 			$scope.confirmRegistrationForm.$setUntouched();
-			var msg = response.data.message;
-			fctToast.showToast(msg, true);
+
+			var msg;
+
+			if (response.status == 400) {
+				msg = response.data.error.for;
+				fctToast.showToast(msg);
+			}
+
+			if (msg) {
+				msg = response.data.message;
+				fctToast.showToast(msg, true);
+			}
 		}
 
 		function confirmRegistrationFailure(error) {
