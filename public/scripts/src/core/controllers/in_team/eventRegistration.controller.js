@@ -17,11 +17,31 @@
 		activate();
 
 		function activate() {
-			console.log(JSON.stringify(getRegistration()));
+			getRegistration();
+			var input = {
+				event_name: "somethon",
+				do_payment: true,
+			};
+			var x = JSON.stringify(input);
+			return memberService.getEventRegistrationExcel(x).then(function (response) {
+				console.log(response);
+			})
+			.catch(function (error) {
+
+			});
 		}
 
 		function getRegistration() {
-			return memberService.getTotalRegistrations();
+			return memberService.getRegistrationsByEvent().then(success).catch(failure);
+		}
+
+		function success(response) {
+			vm.eventDetails = response.data;
+			console.log(response);
+		}
+
+		function failure(error) {
+			console.log(error);
 		}
 	}
 })();

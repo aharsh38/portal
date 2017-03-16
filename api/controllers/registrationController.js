@@ -153,12 +153,12 @@ var registrationController = function (Registration) {
 				eventObject: registration.eventObject
 			};
 			slip = generateSlip('forPayment', registration.teamId, dataToGeneratePDF, request, response, registration);
-		} else if (request.body.latePayment) {console.log('4');
+		} else if (request.body.latePayment) {
 			dataToGeneratePDF = {
 				teamId: registration.teamId,
 				team_leader: registration.team_leader,
 				other_participants: registration.other_participants
-			};console.log('5');
+			};
 			slip = generateSlip('latePayment', registration.teamId, dataToGeneratePDF);
 		}
 	}
@@ -227,11 +227,8 @@ var registrationController = function (Registration) {
 							event_section: element.eventObject.event_section,
 							event_name: element.eventObject.event_name
 						};
-						console.log(arrayOfRegistration);
 						data.push(arrayOfRegistration);
 					});
-					console.log(data);
-
 					if (data) {
 						var xls = json2xls(data);
 						fs.writeFileSync('./documents/' + en + '.xlsx', xls, 'binary');
@@ -256,12 +253,10 @@ var registrationController = function (Registration) {
 	}
 
 	function exportRegistration(request, response) {
-		var x = request.body.do_payment;
 		Registration.find({
-				"eventObject.event_name": request.body.event_name,
-				confirmation: x
+				"eventObject.event_name": request.body.event_name
 			})
-			.exec(function (error, registrations) {
+			.exec(function (error, registrations) {console.log(registrations);
 				var en = request.body.event_name;
 				if (error) {
 					throwError(response, error, 500, 'Internal Server Error', 'Registration Fetch Failed');
@@ -286,17 +281,21 @@ var registrationController = function (Registration) {
 					// console.log(participantsData);
 					if (participantsData) {
 						var xls = json2xls(participantsData);
-						fs.writeFileSync('./documents/' + en + '.xlsx', xls, 'binary');
+						fs.writeFileSync('./public/documents/' + en + '.xlsx', xls, 'binary');
 					}
-					if (fs.existsSync('./documents/' + en + '.xlsx')) {
-						response.download('./documents/' + en + '.xlsx', function (error) {
-							if (error) {
-								console.log(error);
-								//To Add Throwerror
-							} else {
-								fs.unlinkSync('./documents/' + en + '.xlsx');
-							}
+					if (fs.existsSync('./public/documents/' + en + '.xlsx')) {
+						response.status(200);
+						response.json({
+							path:'/documents/'+en+'.xlsx'
 						});
+						// response.download('./documents/' + en + '.xlsx', function (error) {
+						// 	if (error) {
+						// 		console.log(error);
+						// 		//To Add Throwerror
+						// 	} else {
+						// 		fs.unlinkSync('./documents/' + en + '.xlsx');
+						// 	}
+						// });
 					} else {
 						console.log('File doesn\'t exist');
 						//to add throw error
@@ -306,33 +305,65 @@ var registrationController = function (Registration) {
 	}
 
 	function getAllEventsRegistrationData(request, response) {
-		var data = [];
-		Registration.find().exec(function (error, registrations) {
-			var totalConfirmed = _.countBy(registrations, function (element, index, list) {
-				if (element.confirmation) {
-					return element.eventObject.event_name;
-				}
-			});
+		Registration.aggregate(
+				[{
+					$group: {
+						_id: {eventName: "$eventObject.event_name", confirmed: "$confirmation"},
+						total: {$sum: 1}
+					}
+				}],
+				function(error, data) {
+						if (error) {
+								throwError(response, "Finding all registrations according to event", error);
+						} else {
+							response.json(data);
+						}
+				});
 
-			var totalNotConfirmed = _.countBy(registrations, function (element, index, list) {
-				if (!element.confirmation) {
-					return element.eventObject.event_name;
-				}
-			});
 
-			var arrayToSend = [];
-			var allEvents = _.keys(totalConfirmed);
-			_.each(allEvents, function (element, index, list) {
-				var obj = {
-					event_name: element,
-					confirmed_registrations: totalConfirmed[element],
-					not_confirmed_registrations: totalNotConfirmed[element]
-				};
-				arrayToSend.push(obj);
-			});
 
-			response.json(_.rest(arrayToSend));
-		});
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+		// var allEvents = [];
+		// Registration.find().exec(function (error, registrations) {
+		// 	_.each(registrations, function (element, index, list) {
+		// 		var eventName = element.eventObject.event_name.toString();
+		// 		if(allEvents.eventName === undefined) {
+		// 			var each = {
+		// 				event_name: eventName,
+		// 				confirmed_registrations: 0,
+		// 				not_confirmed_registrations: 0
+		// 			};
+		// 			allEvents.push(each);
+		// 		}
+		// 		_(allEvents).filter(function (obj) {
+		// 		    if(obj.event_name === eventName) {
+		// 					if(element.confirmation) {
+		// 						obj.confirmed_registrations++;
+		// 					} else {
+		// 						obj.not_confirmed_registrations++;
+		// 					}
+		// 				}
+		// 		});
+		// 	});
+		// 	response.status(200);
+		// 	response.json(allEvents);
+		// });
 	}
 
 	function oneTimeEditAllow(request, response) {

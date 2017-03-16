@@ -18,8 +18,8 @@
 		activate();
 
 		function activate() {
-			// getVFS();
-			// getUVF();
+			getVFS();
+			getUVF();
 			// getUnconfirmedRegistration();
 		}
 

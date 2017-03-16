@@ -17,6 +17,8 @@
 			getVerifyFacultyStudent: getVerifyFacultyStudent,
 			getUnverifiedFaculty: getUnverifiedFaculty,
 			getUnconfirmedRegistration: getUnconfirmedRegistration,
+			getRegistrationsByEvent: getRegistrationsByEvent,
+			getEventRegistrationExcel: getEventRegistrationExcel
 		};
 
 		return service;
@@ -45,6 +47,12 @@
 				.catch(errorFunc);
 		}
 
+		function getRegistrationsByEvent() {
+			return $http.get('/api/members/registration/eventRegistrationData')
+				.then(responseFunc)
+				.catch(errorFunc);
+		}
+
 		function getVerifyFacultyStudent() {
 			return $http.get('/api/members/exportVFSList')
 				.then(responseFunc)
@@ -59,6 +67,12 @@
 
 		function getUnconfirmedRegistration() {
 			return $http.get('/api/members/registration/exportUnconfirmedRegistration')
+				.then(responseFunc)
+				.catch(errorFunc);
+		}
+
+		function getEventRegistrationExcel(request) {
+			return $http.post('/api/members/registrations/export', request)
 				.then(responseFunc)
 				.catch(errorFunc);
 		}

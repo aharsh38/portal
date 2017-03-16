@@ -27,7 +27,7 @@
 			var token = getToken();
 			var payload;
 			if (token) {
-				payload = token.split('.')[1];alert(token);
+				payload = token.split('.')[1];
 				payload = $window.atob(payload);
 				payload = JSON.parse(payload);
 				if (angular.isDefined(payload.registrations_count)) {

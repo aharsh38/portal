@@ -189,8 +189,7 @@ var facultyController = function (Faculty, Registration) {
 				}
 			});
 	}
-
-
+	
     function exportVFSList(request, response) {
         Faculty.find({
                 verified: true,
@@ -216,7 +215,6 @@ var facultyController = function (Faculty, Registration) {
                 if (!facultystudent) {
                     throwError(response, error, 404, 'Not Found', 'Faculty not found');
                 } else {
-                    console.log(facultystudent);
                     var en = "ConfirmedFacultyList";
                     if(fs.existsSync('./public/documents/' + en + '.xlsx')){
                       fs.unlinkSync('./public/documents/' + en + '.xlsx');
@@ -239,10 +237,8 @@ var facultyController = function (Faculty, Registration) {
                             college_code: element.collegeId.code,
                             State: element.collegeId.state
                         };
-                        console.log(arrayOfFaculty);
                         data.push(arrayOfFaculty);
                     });
-                    console.log(data);
                     var xls = json2xls(data);
                     fs.writeFileSync('./public/documents/' + en + '.xlsx', xls, 'binary');
                     if (fs.existsSync('./public/documents/' + en + '.xlsx')) {
@@ -282,7 +278,6 @@ var facultyController = function (Faculty, Registration) {
                 if (!faculty) {
                     throwError(response, error, 404, 'Not Found', 'Faculty not found');
                 } else {
-                    console.log(faculty);
                     var en = "UnconfirmedFacultyList";
                     if(fs.existsSync('./public/documents/' + en + '.xlsx')){
                       fs.unlinkSync('./public/documents/' + en + '.xlsx');
@@ -303,7 +298,6 @@ var facultyController = function (Faculty, Registration) {
                         // console.log(arrayOfFaculty);
                         data.push(arrayOfFaculty);
                     });
-                    console.log("FINAL DATA",data);
                     var xls = json2xls(data);
                     fs.writeFileSync('./public/documents/' + en + '.xlsx', xls, 'binary');
                     if (fs.existsSync('./public/documents/' + en + '.xlsx')) {
