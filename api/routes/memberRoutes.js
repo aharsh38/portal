@@ -37,19 +37,44 @@ var memberRoutes = function(Faculty, Member, Registration, College, Events) {
     memberRouter.patch('/faculty/verify/:facultyId', memberController.verifyFaculty);
     memberRouter.patch('/faculty/reject/:facultyId', memberController.rejectFaculty);
 
-  	memberRouter.get('/registration/eventRegistrationData', registrationController.getAllEventsRegistrationData);
+    <<
+    <<
+    <<
+    < HEAD
+    memberRouter.get('/registration/eventRegistrationData', registrationController.getAllEventsRegistrationData);
     memberRouter.get('/registration/exportUnconfirmedRegistration', registrationController.exportUnconfirmedRegistration);
     memberRouter.get('/faculty', facultyController.getAllFacultyCoordinators);
 
+    ===
+    ===
+    =
+    memberRouter.get('/registration/exportUnconfirmedRegistration', registrationController.exportUnconfirmedRegistration);
+    memberRouter.get('/faculty', facultyController.getAllFacultyCoordinators);
+
+    memberRouter.get('/exportVFSList', facultyController.exportVFSList);
+    memberRouter.get('/exportUVFList', facultyController.exportUVFList); >>>
+    >>>
+    >
+    staging_main
     // memberRouter.get('/registrations/', registrationController.getAllEventsRegistrationData);
     memberRouter.get('/importCollege', collegeController.importCollege);
 
     memberRouter.post('/upload', eventController.uploadDocs);
     memberRouter.post('/uploadImage', eventController.uploadImage);
 
+    <<
+    <<
+    <<
+    < HEAD
     memberRouter.get('/exportVFSList', facultyController.exportVFSList);
     memberRouter.get('/exportUVFList', facultyController.exportUVFList);
 
+    ===
+    ===
+    = >>>
+    >>>
+    >
+    staging_main
     memberRouter.route('/events_in_section').get(eventController.getEventsBySection);
     memberRouter.route('/events')
         .post(eventController.createEvent)
@@ -61,7 +86,18 @@ var memberRoutes = function(Faculty, Member, Registration, College, Events) {
         .delete(eventController.deleteEvent);
 
     // memberRouter.get('/registrations/', registrationController.getRegistration);
-    memberRouter.post('/registrations/export', registrationController.exportRegistration);
+    <<
+    <<
+    <<
+    < HEAD
+    memberRouter.post('/registrations/export', registrationController.exportRegistration); ===
+    ===
+    =
+    // memberRouter.post('/registrations/export', registrationController.exportRegistration);
+    >>>
+    >>>
+    >
+    staging_main
     // memberRouter.get('/registrations/allEventsExport', registrationController.exportForCertificate);
 
     memberRouter.patch('/settings/changePassword', memberController.memberChangePassword);
