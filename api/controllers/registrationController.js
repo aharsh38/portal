@@ -212,9 +212,12 @@ var registrationController = function (Registration) {
 			dataToGeneratePDF = {
 				teamId: registration.teamId,
 				team_leader: registration.team_leader,
-				other_participants: registration.other_participants
+				date: nd,
+				amount: registration.total_amount,
+				other_participants: registration.other_participants,
+				eventObject: registration.eventObject
 			};
-			slip = generateSlip('latePayment', registration.teamId, dataToGeneratePDF);
+			slip = generateSlip('latePayment', registration.teamId, dataToGeneratePDF, request, response, registration);
 		}
 	}
 
