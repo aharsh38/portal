@@ -1,4 +1,5 @@
 (function () {
+
 	'use strict';
 
 	angular
@@ -12,6 +13,7 @@
 			'validation.match',
 			'ngMdIcons',
 			'angularMoment',
+			'ckeditor'
 			// 'fct.api'
 		]);
 
@@ -24,24 +26,18 @@
 		.module('fct.core')
 		.run(initializeCore);
 
-	initializeCore.$inject = ['$rootScope', '$interval', 'facultyAuthService'];
+	initializeCore.$inject = ['$rootScope', '$interval'];
 
-	function initializeCore($rootScope, $interval, facultyAuthService) {
+	function initializeCore($rootScope, $interval) {
 		active();
 
 		function active() {
 			preloader();
-			return check();
 		}
 
 		$rootScope.alreadyRedirected = false;
-
-		function check() {
-			if (facultyAuthService.checkFacultyLoggedIn()) {
-				return facultyAuthService.checkVerified();
-			}
-		}
-
+			
+	
 		function preloader() {
 			$rootScope.$on('$viewContentLoading', startPreloader);
 			$rootScope.$on('$viewContentLoaded', stopPreloader);

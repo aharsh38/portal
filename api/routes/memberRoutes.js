@@ -24,6 +24,11 @@ var memberRoutes = function(Faculty, Member, Registration, College, Events) {
         next();
     });
 
+    memberRouter.use('/uploadImage', multipartMiddleware, function(request, response, next) {
+        console.log("Mulipart");
+        next();
+    });
+
     memberRouter.param('teamId', registrationMiddleware);
     memberRouter.param('facultyId', facultyMiddleware);
     memberRouter.param('eventId', eventMiddleware);
@@ -53,10 +58,6 @@ var memberRoutes = function(Faculty, Member, Registration, College, Events) {
         .get(eventController.getSingleEvent)
         .put(eventController.updateEvent)
         .delete(eventController.deleteEvent);
-
-    // memberRouter.get('/registrations/', registrationController.getRegistration);
-    // memberRouter.post('/registrations/export', registrationController.exportRegistration);
-    // memberRouter.get('/registrations/allEventsExport', registrationController.exportForCertificate);
 
     memberRouter.patch('/settings/changePassword', memberController.memberChangePassword);
 

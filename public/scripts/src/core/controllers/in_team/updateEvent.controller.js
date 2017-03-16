@@ -5,9 +5,9 @@
 		.module('fct.core')
 		.controller('UpdateEventController', UpdateEventController);
 
-	UpdateEventController.$inject = ['$stateParams', 'eventService', '$rootScope', '$state', 'fctToast', 'memberService'];
+	UpdateEventController.$inject = ['$stateParams', 'eventService', '$rootScope', '$state', 'fctToast', 'memberService', 'Upload', '$timeout'];
 
-	function UpdateEventController(stateParams, eventService, $rootScope, state, fctToast, memberService) {
+	function UpdateEventController(stateParams, eventService, $rootScope, state, fctToast, memberService, Upload, $timeout) {
 		var vm = this;
 		vm.isUpdate = true;
 		vm.myEvent = {
@@ -17,19 +17,31 @@
 		vm.files = [];
 		vm.feeDisabled = false;
 		vm.myEvent.do_payment = false;
+		vm.loadIndex = 0;
+		vm.loadCompleted = 3;
+		vm.myEvent.image = null;
 
 		angular.extend(vm, {
 			save: save,
 			openManagersModal: openManagersModal,
 			uploadFiles: uploadFiles,
-			feeTypeChanged: feeTypeChanged
+			feeTypeChanged: feeTypeChanged,
+			doneLoading: doneLoading,
+			uploadImage: uploadImage,
 		});
 
 		activate();
 
 		function activate() {
-			memberService.initializeCKEditor();
-			checkEventId();
+			//memberService.initializeCKEditor();
+			//checkEventId();
+		}
+
+		function doneLoading() {
+			vm.loadIndex++;
+			if(vm.loadIndex == vm.loadCompleted) {
+				checkEventId();
+			}
 		}
 
 		function openManagersModal(total) {
@@ -60,10 +72,9 @@
 			vm.myEvent.event = "Update";
 			vm.myEvent.totalManager = vm.myEvent.managers.length;
 			vm.files = vm.myEvent.attachments;
-			return [CKEDITOR.instances['editorRules'].setData(vm.myEvent.rules),
-				CKEDITOR.instances['editorSpecification'].setData(vm.myEvent.specification),
-				CKEDITOR.instances['editorJudgingCriteria'].setData(vm.myEvent.judging_criteria)
-			];
+			// return [CKEDITOR.instances['editorRules'].setData(vm.myEvent.rules),
+			// 	CKEDITOR.instances['editorSpecification'].setData(vm.myEvent.specification),
+			// 	CKEDITOR.instances['editorJudgingCriteria'].setData(vm.myEvent.judging_criteria)];
 		}
 
 		function onEventGetFailure(error) {
@@ -129,6 +140,28 @@
 				}, function (response) {
 					if (response.status > 0)
 						vm.errorMsg = response.status + ': ' + response.data;
+				}, function (evt) {
+					file.progress = Math.min(100, parseInt(100.0 * evt.loaded / evt.total));
+				});
+			});
+		}
+
+		function uploadImage(files, errFiles) {
+			angular.forEach(files, function (file) {
+				file.upload = Upload.upload({
+					url: '/api/members/uploadImage',
+					data: {
+						file: file
+					}
+				});
+				file.upload.then(function (response) {
+					$timeout(function () {
+						vm.myEvent.event_image = response.data.path;
+					});
+				}, function (response) {
+					if (response.status > 0) {
+						//console.log(reponse);
+					}
 				}, function (evt) {
 					file.progress = Math.min(100, parseInt(100.0 * evt.loaded / evt.total));
 				});

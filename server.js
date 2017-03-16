@@ -7,18 +7,36 @@ var logger = require('morgan');
 var passport = require('passport');
 var config = require('./api/config/config');
 require('./api/config/passport');
+var dbURI = config.mongoURI;
 
-// var dbURI = config.mongoURI;
+var https = require('https');
+var http = require('http');
+var fs = require('fs');
+
+var certi_options = {
+    key: fs.readFileSync('key.pem'),
+    cert: fs.readFileSync('cert.pem')
+};
 
 //var dbURI = "mongodb://localhost/gtutechfest1";
 
+// var dbURI = "mongodb://localhost/gtutestingFinal";
+//var dbURI = "mongodb://localhost/gtutesting";
+
+// var dbURI = 'mongodb://hraw1699:fdtdcdr6m@ds161039.mlab.com:61039/gtutechfesttest';
 //var dbURI = "mongodb://localhost/gtutestingFinal";
 //var dbURI = "mongodb://localhost/gtutesting";
 
-var dbURI = 'mongodb://gtutest1:fdtdcdr6m@ds161039.mlab.com:61039/gtutechfesttest';
+//var dbURI = 'mongodb://gtutest1:fdtdcdr6m@ds161039.mlab.com:61039/gtutechfesttest';
 //var dbURI = 'mongodb://hraw1699:fdtdcdr6m@ds161039.mlab.com:61039/gtutechfesttest';
 
+
 // var dbURI = config.testMongo;
+
+// var a = https.createServer(certi_options, function() {
+//     console.log("Now Running on port" + port);
+// }).listen(port);
+
 
 mongoose.Promise = global.Promise;
 
@@ -104,17 +122,11 @@ app.get('*', function(request, response) {
     response.sendFile(path.join(__dirname, 'public', 'index.html'));
 });
 
-app.listen(port, function() {
-    console.log("Now Running on port" + port);
-});
+// app.listen(port, function () {
+//
+// });
+
+http.createServer(app).listen(9000);
+https.createServer(certi_options, app).listen(443);
 
 module.exports = app;
-// app.get('/download', function(request, response){
-// 		response.download('./api/slips/SM019423.pdf', function(error, data){
-// 			if (error) {
-// 					response.send("error");
-// 			} else {
-// 					response.status(404).send(data);
-// 			}
-// 		});
-// });

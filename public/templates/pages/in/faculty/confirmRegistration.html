@@ -24,7 +24,7 @@
 
             <md-input-container>
                 <label>Team Leader Mobile No</label>
-                <input type="text" name="mobileno" required ng-model="crc.registration.mobileno" ng-pattern="/^[7-9]{3}[0-9]{7}$/">
+                <input type="text" name="mobileno" required ng-model="crc.registration.mobileno" ng-pattern="/^[0-9]{10}$/">
                 <div ng-messages="confirmRegistrationForm.mobileno.$error">
                     <div ng-message="required">This is required.</div>
                     <div ng-message="maxlength">Invalid Mobile No.</div>

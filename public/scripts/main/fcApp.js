@@ -16,6 +16,7 @@
 })();
 
 (function () {
+
 	'use strict';
 
 	angular
@@ -29,6 +30,7 @@
 			'validation.match',
 			'ngMdIcons',
 			'angularMoment',
+			'ckeditor'
 			// 'fct.api'
 		]);
 
@@ -41,24 +43,18 @@
 		.module('fct.core')
 		.run(initializeCore);
 
-	initializeCore.$inject = ['$rootScope', '$interval', 'facultyAuthService'];
+	initializeCore.$inject = ['$rootScope', '$interval'];
 
-	function initializeCore($rootScope, $interval, facultyAuthService) {
+	function initializeCore($rootScope, $interval) {
 		active();
 
 		function active() {
 			preloader();
-			return check();
 		}
 
 		$rootScope.alreadyRedirected = false;
-
-		function check() {
-			if (facultyAuthService.checkFacultyLoggedIn()) {
-				return facultyAuthService.checkVerified();
-			}
-		}
-
+			
+	
 		function preloader() {
 			$rootScope.$on('$viewContentLoading', startPreloader);
 			$rootScope.$on('$viewContentLoaded', stopPreloader);
@@ -519,7 +515,9 @@
 
 		var service = {
 			confirmRegistration: confirmRegistration,
-			getFacultyRegistrations: getFacultyRegistrations
+			getFacultyRegistrations: getFacultyRegistrations,
+			getStudentCoordinator: getStudentCoordinator,
+			editStudentCoordinator: editStudentCoordinator
 		};
 
 		return service;
@@ -547,6 +545,31 @@
 				.catch(errorFunc);
 		}
 
+		function editStudentCoordinator(student) {
+			var link = baseLink + '/studentCoordinator';
+			return $http.post(link, student)
+				.then(editStudentCoordinatorSuccess)
+				.catch(editStudentCoordinatorFailure);
+		}
+
+		function getStudentCoordinator() {
+			var link = baseLink + '/studentCoordinator';
+			return $http.get(link)
+				.then(resolveFunc)
+				.catch(errorFunc);
+		}
+
+		function editStudentCoordinatorSuccess(response) {
+			// replaceToken(response.data.token);
+			return response;
+		}
+
+		function editStudentCoordinatorFailure(error) {
+			return error;
+		}
+
+
+
 		function resolveFunc(response) {
 			return response;
 		}
@@ -554,6 +577,8 @@
 		function errorFunc(error) {
 			return error;
 		}
+
+
 	}
 })();
 
@@ -576,8 +601,8 @@
 			facultyForgotPasswordApply: facultyForgotPasswordApply,
 			facultyForgotPasswordSet: facultyForgotPasswordSet,
 			getColleges: getColleges,
-			checkVerified: checkVerified,
-			editStudentCoordinator: editStudentCoordinator
+			checkVerified: checkVerified
+			// editStudentCoordinator: editStudentCoordinator
 		};
 
 		return service;
@@ -590,7 +615,7 @@
 				payload = $window.atob(payload);
 				payload = JSON.parse(payload);
 
-				if (angular.isDefined(payload.registrations_count)) {
+				if (angular.isDefined(payload.collegeId)) {
 					$rootScope.faculty = {};
 					$rootScope.faculty.email = payload.email;
 					$rootScope.faculty.mobileno = payload.mobileno;
@@ -599,11 +624,12 @@
 					$rootScope.faculty.rejected = payload.rejected;
 					$rootScope.faculty.forgot_password = payload.forgot_password;
 					$rootScope.faculty.id = payload._id;
-					$rootScope.faculty.registrations_count = payload.registrations_count;
-					$rootScope.faculty.collected_amount = payload.collected_amount;
-					$rootScope.faculty.student_coordinator = payload.student_coordinator;
+					$rootScope.collegeId = payload.collegeId;
+					// $rootScope.faculty.registrations_count = payload.registrations_count;
+					// $rootScope.faculty.collected_amount = payload.collected_amount;
+					// $rootScope.faculty.student_coordinator = payload.student_coordinator;
 					return (payload.exp > Date.now() / 1000);
-					console.log($rootScope.faculty);
+					// console.log($rootScope.faculty);
 				} else {
 					return false;
 				}
@@ -744,29 +770,15 @@
 		}
 
 		function checkVerifiedSuccess(response) {
-			// console.log(response);
+			console.log(response);
 			replaceToken(response.data.token);
 		}
 
 		function checkVerifiedFailure(error) {
-			// console.log(error);
+			console.log(error);
 		}
 
-		function editStudentCoordinator(students) {
-			var link = '/api/faculty/' + $rootScope.faculty.id + '/addStudentCoordinator';
-			return $http.post(link, students)
-				.then(editStudentCoordinatorSuccess)
-				.catch(editStudentCoordinatorFailure);
-		}
 
-		function editStudentCoordinatorSuccess(response) {
-			replaceToken(response.data.token);
-			return response;
-		}
-
-		function editStudentCoordinatorFailure(error) {
-			return error;
-		}
 
 		function functionName(error) {
 			return error;
@@ -1297,9 +1309,9 @@
 		.module('fct.core')
 		.controller('AddStudentController', AddStudentController);
 
-	AddStudentController.$inject = ['$http', 'facultyAuthService', '$rootScope', 'fctToast'];
+	AddStudentController.$inject = ['$http', 'facultyService', '$rootScope', 'fctToast'];
 
-	function AddStudentController($http, facultyAuthService, $rootScope, fctToast) {
+	function AddStudentController($http, facultyService, $rootScope, fctToast) {
 		var vm = this;
 		vm.coordinator = {};
 		vm.editInfo = false;
@@ -1316,17 +1328,28 @@
 		activate();
 
 		function activate() {
-			if (!$rootScope.faculty.student_coordinator.name) {
-				vm.editInfo = true;
-			} else {
-				vm.coordinator = $rootScope.faculty.student_coordinator;
+			return facultyService.getStudentCoordinator()
+				.then(getStudentCoordinatorSuccess)
+				.catch(getStudentCoordinatorFailure);
+
+		}
+
+		function getStudentCoordinatorSuccess(response) {
+			if (response.data.student_coordinator) {
+				vm.coordinator = response.data.student_coordinator;
 				vm.preInfo = true;
+			} else {
+				vm.editInfo = true;
 			}
+		}
+
+		function getStudentCoordinatorFailure(error) {
+			// console.log(error);
 		}
 
 		function update(event) {
 			vm.updateButtonClicked = true;
-			return facultyAuthService.editStudentCoordinator({
+			return facultyService.editStudentCoordinator({
 					student_coordinator: vm.coordinator
 				})
 				.then(editStudentCoordinatorSuccess)
@@ -1339,7 +1362,7 @@
 
 		function addStudentCoordinator(event) {
 			vm.addButtonClicked = true;
-			return facultyAuthService.editStudentCoordinator({
+			return facultyService.editStudentCoordinator({
 					student_coordinator: vm.coordinator
 				})
 				.then(addStudentCoordinatorSuccess)
@@ -1375,9 +1398,9 @@
 		.module('fct.core')
 		.controller('ConfirmRegistrationsController', ConfirmRegistrationsController);
 
-	ConfirmRegistrationsController.$inject = ['memberService', '$mdDialog', 'fctToast', '$scope'];
+	ConfirmRegistrationsController.$inject = ['facultyService', '$mdDialog', 'fctToast', '$scope'];
 
-	function ConfirmRegistrationsController(memberService, $mdDialog, fctToast, $scope) {
+	function ConfirmRegistrationsController(facultyService, $mdDialog, fctToast, $scope) {
 		var vm = this;
 		vm.registration = {};
 		vm.registrationButtonClicked = false;
@@ -1415,7 +1438,7 @@
 
 			$mdDialog.show(confirm).then(function (result) {
 				vm.registration.serialId = result;
-				return memberService.confirmRegistration(vm.registration)
+				return facultyService.confirmRegistration(vm.registration)
 					.then(confirmRegistrationSuccess)
 					.catch(confirmRegistrationFailure);
 			}, function () {
@@ -1424,11 +1447,13 @@
 		}
 
 		function confirmRegistrationSuccess(response) {
+			console.log(response);
 			vm.registrationButtonClicked = false;
 			vm.registration = {};
 			$scope.confirmRegistrationForm.$setPristine();
 			$scope.confirmRegistrationForm.$setUntouched();
-			fctToast.showToast('Registration Successful', true);
+			var msg = response.data.message;
+			fctToast.showToast(msg, true);
 		}
 
 		function confirmRegistrationFailure(error) {
@@ -1520,23 +1545,28 @@
 
 	function RegistrationDetailsController(fctToast, $rootScope, facultyService) {
 		var vm = this;
-
+		vm.noregistration = true;
 		activate();
 
 		function activate() {
-			if ($rootScope.faculty.registrations_count > 0) {
-				return facultyService.getFacultyRegistrations()
-					.then(getRegistrationsSuccess)
-					.catch(getRegistrationsFailure);
-			}
+			return facultyService.getFacultyRegistrations()
+				.then(getRegistrationsSuccess)
+				.catch(getRegistrationsFailure);
 		}
 
 		function getRegistrationsSuccess(response) {
-			vm.registrations = response.data;
+
+			if (response.data.registrations.length !== 0) {
+				vm.registrations = response.data.registrations;
+				vm.registrations_count = response.data.totalRegistrations;
+				vm.collected_amount = response.data.totalCollectedAmount;
+				vm.noregistration = false;
+			} else {
+				vm.noregistration = true;
+			}
 		}
 
 		function getRegistrationsFailure(error) {
-			console.log(error);
 			fctToast.showToast('Internal Server Error');
 		}
 	}
@@ -1667,23 +1697,27 @@
 			'managers': [],
 			'event': "Add",
 		};
-
 		vm.myEvent.attachments = [];
 		vm.files = [];
 		vm.image = '';
+		vm.myEvent.image = null;
 
 		angular.extend(vm, {
 			save: save,
 			openManagersModal: openManagersModal,
 			uploadFiles: uploadFiles,
-			feeTypeChanged: feeTypeChanged
+			feeTypeChanged: feeTypeChanged,
+			uploadImage: uploadImage,
+			doneLoading: doneLoading,
 		});
 
 		activate();
 
 		function activate() {
-			memberService.initializeCKEditor();
+			//memberService.initializeCKEditor();
 		}
+
+		function doneLoading() {}
 
 		function openManagersModal(total) {
 			vm.myEvent.managers = [];
@@ -1713,9 +1747,9 @@
 		}
 
 		function save() {
-			vm.myEvent.rules = CKEDITOR.instances["editorRules"].getData();
-			vm.myEvent.specification = CKEDITOR.instances["editorSpecification"].getData();
-			vm.myEvent.judging_criteria = CKEDITOR.instances["editorJudgingCriteria"].getData();
+			// vm.myEvent.rules = CKEDITOR.instances["editorRules"].getData();
+			// vm.myEvent.specification = CKEDITOR.instances["editorSpecification"].getData();
+			// vm.myEvent.judging_criteria = CKEDITOR.instances["editorJudgingCriteria"].getData();
 			console.log(vm.myEvent);
 			if (vm.myEvent.isUpdate) {
 				return eventService.updateEvent(vm.myEvent).then(registerSuccess).catch(registerFailure);
@@ -1756,6 +1790,28 @@
 				}, function (response) {
 					if (response.status > 0)
 						vm.errorMsg = response.status + ': ' + response.data;
+				}, function (evt) {
+					file.progress = Math.min(100, parseInt(100.0 * evt.loaded / evt.total));
+				});
+			});
+		}
+
+		function uploadImage(files, errFiles) {
+			angular.forEach(files, function (file) {
+				file.upload = Upload.upload({
+					url: '/api/members/uploadImage',
+					data: {
+						file: file
+					}
+				});
+				file.upload.then(function (response) {
+					$timeout(function () {
+						vm.myEvent.event_image = response.data.path;
+					});
+				}, function (response) {
+					if (response.status > 0) {
+						//console.log(reponse);
+					}
 				}, function (evt) {
 					file.progress = Math.min(100, parseInt(100.0 * evt.loaded / evt.total));
 				});
@@ -2104,9 +2160,9 @@
 		.module('fct.core')
 		.controller('UpdateEventController', UpdateEventController);
 
-	UpdateEventController.$inject = ['$stateParams', 'eventService', '$rootScope', '$state', 'fctToast', 'memberService'];
+	UpdateEventController.$inject = ['$stateParams', 'eventService', '$rootScope', '$state', 'fctToast', 'memberService', 'Upload', '$timeout'];
 
-	function UpdateEventController(stateParams, eventService, $rootScope, state, fctToast, memberService) {
+	function UpdateEventController(stateParams, eventService, $rootScope, state, fctToast, memberService, Upload, $timeout) {
 		var vm = this;
 		vm.isUpdate = true;
 		vm.myEvent = {
@@ -2116,19 +2172,31 @@
 		vm.files = [];
 		vm.feeDisabled = false;
 		vm.myEvent.do_payment = false;
+		vm.loadIndex = 0;
+		vm.loadCompleted = 3;
+		vm.myEvent.image = null;
 
 		angular.extend(vm, {
 			save: save,
 			openManagersModal: openManagersModal,
 			uploadFiles: uploadFiles,
-			feeTypeChanged: feeTypeChanged
+			feeTypeChanged: feeTypeChanged,
+			doneLoading: doneLoading,
+			uploadImage: uploadImage,
 		});
 
 		activate();
 
 		function activate() {
-			memberService.initializeCKEditor();
-			checkEventId();
+			//memberService.initializeCKEditor();
+			//checkEventId();
+		}
+
+		function doneLoading() {
+			vm.loadIndex++;
+			if(vm.loadIndex == vm.loadCompleted) {
+				checkEventId();
+			}
 		}
 
 		function openManagersModal(total) {
@@ -2159,10 +2227,9 @@
 			vm.myEvent.event = "Update";
 			vm.myEvent.totalManager = vm.myEvent.managers.length;
 			vm.files = vm.myEvent.attachments;
-			return [CKEDITOR.instances['editorRules'].setData(vm.myEvent.rules),
-				CKEDITOR.instances['editorSpecification'].setData(vm.myEvent.specification),
-				CKEDITOR.instances['editorJudgingCriteria'].setData(vm.myEvent.judging_criteria)
-			];
+			// return [CKEDITOR.instances['editorRules'].setData(vm.myEvent.rules),
+			// 	CKEDITOR.instances['editorSpecification'].setData(vm.myEvent.specification),
+			// 	CKEDITOR.instances['editorJudgingCriteria'].setData(vm.myEvent.judging_criteria)];
 		}
 
 		function onEventGetFailure(error) {
@@ -2228,6 +2295,28 @@
 				}, function (response) {
 					if (response.status > 0)
 						vm.errorMsg = response.status + ': ' + response.data;
+				}, function (evt) {
+					file.progress = Math.min(100, parseInt(100.0 * evt.loaded / evt.total));
+				});
+			});
+		}
+
+		function uploadImage(files, errFiles) {
+			angular.forEach(files, function (file) {
+				file.upload = Upload.upload({
+					url: '/api/members/uploadImage',
+					data: {
+						file: file
+					}
+				});
+				file.upload.then(function (response) {
+					$timeout(function () {
+						vm.myEvent.event_image = response.data.path;
+					});
+				}, function (response) {
+					if (response.status > 0) {
+						//console.log(reponse);
+					}
 				}, function (evt) {
 					file.progress = Math.min(100, parseInt(100.0 * evt.loaded / evt.total));
 				});
