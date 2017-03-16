@@ -91,6 +91,11 @@ var facultyController = function (Faculty, Registration) {
 
 						// console.log("6");
 						var confirmedTime = new Date();
+						var nd = confirmedTime.toLocaleDateString('en-US', {
+							year: 'numeric',
+							month: 'long',
+							day: 'numeric'
+						});
 						var data = {
 							teamId: registration.teamId,
 							team_leader: registration.team_leader,
