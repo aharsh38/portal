@@ -208,7 +208,7 @@ var registrationController = function (Registration) {
 				eventObject: registration.eventObject
 			};
 			slip = generateSlip('forPayment', registration.teamId, dataToGeneratePDF, request, response, registration);
-		} else if (request.body.latePayment) {
+		} else if (request.body.late_payment) {
 			dataToGeneratePDF = {
 				teamId: registration.teamId,
 				team_leader: registration.team_leader,
