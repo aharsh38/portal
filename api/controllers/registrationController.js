@@ -222,12 +222,12 @@ var registrationController = function (Registration) {
 	function downloadConfirmSlip(request, response) {
 		var type = 'confirmPayment';
 		var teamId = request.params.teamId;
-		response.status(200);
+
 		response.download('./api/slips/' + type + '/' + teamId + '.pdf', function (error, data) {
-			console.log("Error", error);
 			if (error) {
 				throwError(response, error, null, 'Slip Download', 'Download Failed');
 			} else {
+				response.status(200);
 				response.send(data);
 			}
 		});
@@ -237,11 +237,12 @@ var registrationController = function (Registration) {
 	function downloadSlip(request, response) {
 		var type = request.query.type;
 		var teamId = request.params.teamId;
-		response.status(200);
+
 		response.download('./api/slips/' + type + '/' + teamId + '.pdf', function (error, data) {
 			if (error) {
 				throwError(response, error, null, 'Slip Download', 'Download Failed');
 			} else {
+				response.status(200);
 				response.send(data);
 			}
 		});
