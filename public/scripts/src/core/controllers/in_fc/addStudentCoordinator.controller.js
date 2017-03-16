@@ -5,9 +5,9 @@
 		.module('fct.core')
 		.controller('AddStudentController', AddStudentController);
 
-	AddStudentController.$inject = ['$http', 'facultyAuthService', '$rootScope', 'fctToast'];
+	AddStudentController.$inject = ['$http', 'facultyService', '$rootScope', 'fctToast'];
 
-	function AddStudentController($http, facultyAuthService, $rootScope, fctToast) {
+	function AddStudentController($http, facultyService, $rootScope, fctToast) {
 		var vm = this;
 		vm.coordinator = {};
 		vm.editInfo = false;
@@ -24,17 +24,28 @@
 		activate();
 
 		function activate() {
-			if (angular.isUndefined($rootScope.faculty.student_coordinator) && !$rootScope.faculty.student_coordinator.name) {
-				vm.editInfo = true;
-			} else {
-				vm.coordinator = $rootScope.faculty.student_coordinator;
+			return facultyService.getStudentCoordinator()
+				.then(getStudentCoordinatorSuccess)
+				.catch(getStudentCoordinatorFailure);
+
+		}
+
+		function getStudentCoordinatorSuccess(response) {
+			if (response.data.student_coordinator) {
+				vm.coordinator = response.data.student_coordinator;
 				vm.preInfo = true;
+			} else {
+				vm.editInfo = true;
 			}
+		}
+
+		function getStudentCoordinatorFailure(error) {
+			// console.log(error);
 		}
 
 		function update(event) {
 			vm.updateButtonClicked = true;
-			return facultyAuthService.editStudentCoordinator({
+			return facultyService.editStudentCoordinator({
 					student_coordinator: vm.coordinator
 				})
 				.then(editStudentCoordinatorSuccess)
@@ -47,7 +58,7 @@
 
 		function addStudentCoordinator(event) {
 			vm.addButtonClicked = true;
-			return facultyAuthService.editStudentCoordinator({
+			return facultyService.editStudentCoordinator({
 					student_coordinator: vm.coordinator
 				})
 				.then(addStudentCoordinatorSuccess)

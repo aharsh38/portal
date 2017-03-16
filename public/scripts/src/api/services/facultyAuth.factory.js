@@ -40,11 +40,11 @@
 					$rootScope.faculty.rejected = payload.rejected;
 					$rootScope.faculty.forgot_password = payload.forgot_password;
 					$rootScope.faculty.id = payload._id;
-					$rootScope.faculty.registrations_count = payload.registrations_count;
-					$rootScope.faculty.collected_amount = payload.collected_amount;
-					$rootScope.faculty.student_coordinator = payload.student_coordinator;
+					// $rootScope.faculty.registrations_count = payload.registrations_count;
+					// $rootScope.faculty.collected_amount = payload.collected_amount;
+					// $rootScope.faculty.student_coordinator = payload.student_coordinator;
 					return (payload.exp > Date.now() / 1000);
-					console.log($rootScope.faculty);
+					// console.log($rootScope.faculty);
 				} else {
 					return false;
 				}

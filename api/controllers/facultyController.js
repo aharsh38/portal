@@ -23,22 +23,32 @@ var facultyController = function (Faculty, Registration) {
 	}
 
 	function addStudentCoordinator(request, response) {
-
 		request.faculty.student_coordinator = request.body.student_coordinator;
-		// console.log(request.faculty);
 		request.faculty.save(function (error) {
 			if (error) {
 				throwError(response, error, 500, 'Internal Server error', 'Faculty Register');
 			} else {
-				// var token;
-				// token = request.faculty.generateJwt();
 				response.status(200);
 				response.json({
-					// "token": token,
 					"message": "success"
 				});
 			}
 		});
+	}
+
+	function getStudentCoordinator(request, response) {
+		if (request.faculty.student_coordinator.name !== undefined) {
+			response.status(200);
+			response.json({
+				"message": "Student Coordinator found",
+				"student_coordinator": request.faculty.student_coordinator
+			});
+		} else {
+			response.status(404);
+			response.json({
+				"message": "Student Coordinator not found"
+			});
+		}
 	}
 
 	function confirmRegistration(request, response) {
@@ -78,10 +88,8 @@ var facultyController = function (Faculty, Registration) {
 					}
 
 					if (registration.confirmation === false) {
-						registration.confirmation = true;
-						registration.confirmation_date = new Date();
-						registration.facultyId = request.faculty._id;
-						console.log("6");
+
+						// console.log("6");
 						var confirmedTime = new Date();
 						var data = {
 							teamId: registration.teamId,
@@ -91,7 +99,7 @@ var facultyController = function (Faculty, Registration) {
 							event_name: registration.eventObject.event_name,
 							faculty_name: request.faculty.name,
 							time: confirmedTime,
-							downloadLink: 'http://portal.gtu.ac.in/api/registration/downloadSlip/' + registration.teamId + '?type=confirmPayment'
+							downloadLink: 'http://portal.gtu.ac.in/api/registration/confirm/downloadSlip/' + registration.teamId
 						};
 
 						var mailData = [{
@@ -99,34 +107,70 @@ var facultyController = function (Faculty, Registration) {
 							data: data
 						}];
 
-						if (data) {
-							registrationController.generateSlip2('confirmPayment', registration.teamId, data);
-							// console.log("7");
 
-							mailController.sendMails(mailData, 'Confirmation of your registration', 'mailpreconfirmation');
-						} else {
-							throwError(response, error, 404, 'Not Found', 'Generated data not found.');
-						}
-
-						request.faculty.registrations = request.faculty.registrations + (1 + registration.other_participants.length);
-						request.faculty.collected_amount = registration.total_amount + request.faculty.collected_amount;
-
-						registration.save(function (error) {
-							if (error) {
-								throwError(response, error, 520, "Confirming Registration", "Failed");
-							} else {
-								console.log("8");
-								request.faculty.save(function (error) {
+						// registrationController.generateSlip2('confirmPayment', registration.teamId, data);
+						var type = 'confirmPayment';
+						var teamid = registration.teamId;
+						fs.readFile('./api/slips/templates/' + type + '.hbs', function (error, file) {
+							if (!error) {
+								var source = file.toString();
+								var template = Handlebars.compile(source);
+								var result = template(data);
+								fs.writeFile("./api/slips/" + type + "/html/" + teamid + ".html", result, function (error) {
 									if (error) {
-										throwError(response, error, 520, "Confirming Registration", "Failed");
+										throwError(response, error, 400, 'Bad Request', 'PDF Conversion Failed');
 									} else {
-										response.status(200).json({
-											"message": "Registration has been Confirmed!"
+										var html = fs.readFileSync('./api/slips/' + type + '/html/' + teamid + '.html', 'utf8');
+
+										var options = {
+											format: 'Letter',
+											zoom: 0.5
+										};
+
+										pdf.create(html, options).toFile('./api/slips/' + type + '/' + teamid + '.pdf', function (error, res) {
+											// console.log("PDF GENERATE ERROR", error);
+											if (error) {
+												throwError(response, error, 400, 'Bad Request', 'PDF Creation Failed');
+											} else {
+
+												mailController.sendMails(mailData, 'Confirmation of your registration', 'mailpreconfirmation');
+
+												registration.confirmation = true;
+												registration.confirmation_date = new Date();
+												registration.facultyId = request.faculty._id;
+												request.faculty.registrations_count = parseInt(request.faculty.registrations_count) + 1;
+												request.faculty.collected_amount = parseInt(registration.total_amount) + parseInt(request.faculty.collected_amount);
+
+												request.faculty.registrations_count = parseInt(request.faculty.registrations_count);
+
+												request.faculty.collected_amount = parseInt(request.faculty.collected_amount);
+
+												registration.save(function (error) {
+													if (error) {
+														throwError(response, error, 520, "Confirming Registration", "Failed");
+													} else {
+														// console.log("8");
+														request.faculty.save(function (error) {
+															if (error) {
+																throwError(response, error, 520, "Confirming Registration", "Failed");
+															} else {
+																response.status(200).json({
+																	"message": "Registration has been Confirmed!"
+																});
+															}
+														});
+													}
+												});
+											}
 										});
 									}
 								});
+							} else {
+								throwError(response, error, 404, 'Not Found', 'Generated data not found.');
 							}
 						});
+
+
 					} else {
 						throwError(response, error, 403, 'Forbidden', 'Registration confirmed already!');
 					}
@@ -191,18 +235,22 @@ var facultyController = function (Faculty, Registration) {
 
 	function seeRegistration(request, response) {
 		Registration.findOne({
-				facultyId: request.body.facultyId
+				facultyId: request.faculty._id
 			})
-			.exec(function (error, registration) {
+			.exec(function (error, registrations) {
 				if (error) {
 					throwError(response, error, 500, 'Internal Server Error', 'Registration Fetch Failed');
 					return;
 				}
-				if (!registration) {
+				if (!registrations) {
 					throwError(response, error, 404, 'Not Found', 'Registration not found');
 				} else {
 					response.status(200);
-					response.json(registration);
+					response.json({
+						"totalRegistrations": request.faculty.registrations_count,
+						"totalCollectedAmount": request.faculty.collected_amount,
+						"registrations": registrations
+					});
 				}
 			});
 	}
@@ -382,6 +430,7 @@ var facultyController = function (Faculty, Registration) {
 	ac.facultyChangePassword = facultyChangePassword;
 	ac.getAllFacultyCoordinators = getAllFacultyCoordinators;
 	ac.addStudentCoordinator = addStudentCoordinator;
+	ac.getStudentCoordinator = getStudentCoordinator;
 	ac.getFaculty = getFaculty;
 	ac.exportVFSList = exportVFSList;
 	ac.exportUVFList = exportUVFList;

@@ -1,21 +1,21 @@
 <div class="margin-tb-gt-xs-4 margin-lr-gt-xs-2 bg-white margin-xs-1 padding-tb-3 padding-lr-xs-1 padding-lr-gt-xs-2 page" md-whiteframe="5" layout="column">
     <h2>Registration Details</h2>
 
-    <div layout-gt-xs="row" ng-show="$root.faculty.registrations_count!=0" class="margin-top-3" layout-align="space-between center">
+    <div layout-gt-xs="row" ng-show="!rdc.noregistration" class="margin-top-3" layout-align="space-between center">
         <h3 flex-gt-xs="35" class="margin-bottom-xs-2">Summary:</h3>
 
         <div flex-gt-xs="25" class="summary-card padding-tb-1 padding-lr-2 margin-lr-1">
             <p class="text-underline">Total Registrations</p>
-            <p><strong>{{$root.faculty.registrations_count}}</strong></p>
+            <p><strong>{{rdc.registrations_count}}</strong></p>
         </div>
 
         <div flex-gt-xs="25" class="summary-card bg-green padding-tb-1 padding-lr-2 margin-lr-1">
             <p class="text-underline">Collected Amount</p>
-            <p><strong>{{$root.faculty.collected_amount|currency:'&#8377;':0}}</strong></p>
+            <p><strong>{{rdc.collected_amount|currency:'&#8377;':0}}</strong></p>
         </div>
     </div>
 
-    <div class="margin-top-4" ng-hide="rdc.noregistration" layout="row" layout-align="center center">
+    <div class="margin-top-4" ng-show="rdc.noregistration" layout="row" layout-align="center center">
         <div layout="column" flex-gt-xs="50">
             <div layout="row" layout-align="center center">
                 <img flex="50" src="/media/svg/noreg.svg" alt="">
@@ -26,7 +26,7 @@
 
     </div>
 
-    <div class="margin-top-2" ng-show="rdc.noregistration">
+    <div class="margin-top-2" ng-show="!rdc.noregistration">
         <div class="margin-tb-1 registration-card padding-1 padding-lr-gt-xs-3" layout="column" ng-repeat="reg in rdc.registrations">
             <div layout="row" layout-align="" layout-wrap>
                 <p flex-gt-xs="30" class="title">Team Id : <strong>{{reg.teamId}}</strong></p>

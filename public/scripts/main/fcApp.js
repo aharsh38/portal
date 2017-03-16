@@ -6,6 +6,16 @@
 })();
 
 (function () {
+	'use strict';
+
+	angular
+		.module('fct_app', [
+			'fct.api',
+			'fct.core'
+		]);
+})();
+
+(function () {
 
 	'use strict';
 
@@ -63,16 +73,6 @@
 			}
 		}
 	}
-})();
-
-(function () {
-	'use strict';
-
-	angular
-		.module('fct_app', [
-			'fct.api',
-			'fct.core'
-		]);
 })();
 
 	(function () {
@@ -515,7 +515,9 @@
 
 		var service = {
 			confirmRegistration: confirmRegistration,
-			getFacultyRegistrations: getFacultyRegistrations
+			getFacultyRegistrations: getFacultyRegistrations,
+			getStudentCoordinator: getStudentCoordinator,
+			editStudentCoordinator: editStudentCoordinator
 		};
 
 		return service;
@@ -543,6 +545,31 @@
 				.catch(errorFunc);
 		}
 
+		function editStudentCoordinator(student) {
+			var link = baseLink + '/studentCoordinator';
+			return $http.post(link, student)
+				.then(editStudentCoordinatorSuccess)
+				.catch(editStudentCoordinatorFailure);
+		}
+
+		function getStudentCoordinator() {
+			var link = baseLink + '/studentCoordinator';
+			return $http.get(link)
+				.then(resolveFunc)
+				.catch(errorFunc);
+		}
+
+		function editStudentCoordinatorSuccess(response) {
+			// replaceToken(response.data.token);
+			return response;
+		}
+
+		function editStudentCoordinatorFailure(error) {
+			return error;
+		}
+
+
+
 		function resolveFunc(response) {
 			return response;
 		}
@@ -550,6 +577,8 @@
 		function errorFunc(error) {
 			return error;
 		}
+
+
 	}
 })();
 
@@ -595,11 +624,11 @@
 					$rootScope.faculty.rejected = payload.rejected;
 					$rootScope.faculty.forgot_password = payload.forgot_password;
 					$rootScope.faculty.id = payload._id;
-					$rootScope.faculty.registrations_count = payload.registrations_count;
-					$rootScope.faculty.collected_amount = payload.collected_amount;
-					$rootScope.faculty.student_coordinator = payload.student_coordinator;
+					// $rootScope.faculty.registrations_count = payload.registrations_count;
+					// $rootScope.faculty.collected_amount = payload.collected_amount;
+					// $rootScope.faculty.student_coordinator = payload.student_coordinator;
 					return (payload.exp > Date.now() / 1000);
-					console.log($rootScope.faculty);
+					// console.log($rootScope.faculty);
 				} else {
 					return false;
 				}
@@ -1293,9 +1322,9 @@
 		.module('fct.core')
 		.controller('AddStudentController', AddStudentController);
 
-	AddStudentController.$inject = ['$http', 'facultyAuthService', '$rootScope', 'fctToast'];
+	AddStudentController.$inject = ['$http', 'facultyService', '$rootScope', 'fctToast'];
 
-	function AddStudentController($http, facultyAuthService, $rootScope, fctToast) {
+	function AddStudentController($http, facultyService, $rootScope, fctToast) {
 		var vm = this;
 		vm.coordinator = {};
 		vm.editInfo = false;
@@ -1312,17 +1341,28 @@
 		activate();
 
 		function activate() {
-			if (angular.isUndefined($rootScope.faculty.student_coordinator) && !$rootScope.faculty.student_coordinator.name) {
-				vm.editInfo = true;
-			} else {
-				vm.coordinator = $rootScope.faculty.student_coordinator;
+			return facultyService.getStudentCoordinator()
+				.then(getStudentCoordinatorSuccess)
+				.catch(getStudentCoordinatorFailure);
+
+		}
+
+		function getStudentCoordinatorSuccess(response) {
+			if (response.data.student_coordinator) {
+				vm.coordinator = response.data.student_coordinator;
 				vm.preInfo = true;
+			} else {
+				vm.editInfo = true;
 			}
+		}
+
+		function getStudentCoordinatorFailure(error) {
+			// console.log(error);
 		}
 
 		function update(event) {
 			vm.updateButtonClicked = true;
-			return facultyAuthService.editStudentCoordinator({
+			return facultyService.editStudentCoordinator({
 					student_coordinator: vm.coordinator
 				})
 				.then(editStudentCoordinatorSuccess)
@@ -1335,7 +1375,7 @@
 
 		function addStudentCoordinator(event) {
 			vm.addButtonClicked = true;
-			return facultyAuthService.editStudentCoordinator({
+			return facultyService.editStudentCoordinator({
 					student_coordinator: vm.coordinator
 				})
 				.then(addStudentCoordinatorSuccess)
@@ -1425,7 +1465,8 @@
 			vm.registration = {};
 			$scope.confirmRegistrationForm.$setPristine();
 			$scope.confirmRegistrationForm.$setUntouched();
-			fctToast.showToast(response.data.error.for, true);
+			var msg = response.data.message;
+			fctToast.showToast(msg, true);
 		}
 
 		function confirmRegistrationFailure(error) {
@@ -1517,30 +1558,28 @@
 
 	function RegistrationDetailsController(fctToast, $rootScope, facultyService) {
 		var vm = this;
-
+		vm.noregistration = true;
 		activate();
 
 		function activate() {
-			// if ($rootScope.faculty.registrations_count > 0) {
-			//
-			// }
 			return facultyService.getFacultyRegistrations()
 				.then(getRegistrationsSuccess)
 				.catch(getRegistrationsFailure);
 		}
 
 		function getRegistrationsSuccess(response) {
-			if (response.data.length !== 0) {
-				vm.registrations = response.data;
+
+			if (response.data.registrations.length !== 0) {
+				vm.registrations = response.data.registrations;
+				vm.registrations_count = response.data.totalRegistrations;
+				vm.collected_amount = response.data.totalCollectedAmount;
 				vm.noregistration = false;
 			} else {
 				vm.noregistration = true;
 			}
-			console.log(response);
 		}
 
 		function getRegistrationsFailure(error) {
-			console.log(error);
 			fctToast.showToast('Internal Server Error');
 		}
 	}

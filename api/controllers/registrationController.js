@@ -66,7 +66,7 @@ var registrationController = function (Registration) {
 								} else {
 									return {
 										"message": "Done"
-									}
+									};
 								}
 							});
 						}
@@ -219,6 +219,20 @@ var registrationController = function (Registration) {
 	}
 
 
+	function downloadConfirmSlip(request, response) {
+		var type = 'confirmPayment';
+		var teamId = request.params.teamId;
+		response.status(200);
+		response.download('./api/slips/' + type + '/' + teamId + '.pdf', function (error, data) {
+			console.log("Error", error);
+			if (error) {
+				throwError(response, error, null, 'Slip Download', 'Download Failed');
+			} else {
+				response.send(data);
+			}
+		});
+	}
+
 
 	function downloadSlip(request, response) {
 		var type = request.query.type;
@@ -250,7 +264,11 @@ var registrationController = function (Registration) {
 					throwError(response, error, 404, 'Not Found', 'Registrations not found');
 				} else {
 					response.status(200);
-					response.json(registrations);
+					response.json({
+						"totalRegistrations": request.faculty.registrations_count,
+						"totalCollectedAmount": request.faculty.collected_amount,
+						"registrations": registrations
+					});
 				}
 			});
 	}
@@ -444,6 +462,7 @@ var registrationController = function (Registration) {
 	ac.register = register;
 	ac.getRegistration = getRegistration;
 	ac.downloadSlip = downloadSlip;
+	ac.downloadConfirmSlip = downloadConfirmSlip;
 	ac.getFacultyRegistrations = getFacultyRegistrations;
 	ac.exportRegistration = exportRegistration;
 	ac.getAllEventsRegistrationData = getAllEventsRegistrationData;

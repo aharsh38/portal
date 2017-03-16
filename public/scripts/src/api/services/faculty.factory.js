@@ -12,7 +12,9 @@
 
 		var service = {
 			confirmRegistration: confirmRegistration,
-			getFacultyRegistrations: getFacultyRegistrations
+			getFacultyRegistrations: getFacultyRegistrations,
+			getStudentCoordinator: getStudentCoordinator,
+			editStudentCoordinator: editStudentCoordinator
 		};
 
 		return service;
@@ -40,6 +42,31 @@
 				.catch(errorFunc);
 		}
 
+		function editStudentCoordinator(student) {
+			var link = baseLink + '/studentCoordinator';
+			return $http.post(link, student)
+				.then(editStudentCoordinatorSuccess)
+				.catch(editStudentCoordinatorFailure);
+		}
+
+		function getStudentCoordinator() {
+			var link = baseLink + '/studentCoordinator';
+			return $http.get(link)
+				.then(resolveFunc)
+				.catch(errorFunc);
+		}
+
+		function editStudentCoordinatorSuccess(response) {
+			// replaceToken(response.data.token);
+			return response;
+		}
+
+		function editStudentCoordinatorFailure(error) {
+			return error;
+		}
+
+
+
 		function resolveFunc(response) {
 			return response;
 		}
@@ -47,5 +74,7 @@
 		function errorFunc(error) {
 			return error;
 		}
+
+
 	}
 })();

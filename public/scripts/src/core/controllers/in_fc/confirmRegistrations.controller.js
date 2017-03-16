@@ -59,7 +59,8 @@
 			vm.registration = {};
 			$scope.confirmRegistrationForm.$setPristine();
 			$scope.confirmRegistrationForm.$setUntouched();
-			fctToast.showToast(response.data.error.for, true);
+			var msg = response.data.message;
+			fctToast.showToast(msg, true);
 		}
 
 		function confirmRegistrationFailure(error) {
