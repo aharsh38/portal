@@ -20,6 +20,9 @@ var certi_options = {
 
 //var dbURI = "mongodb://localhost/gtutechfest1";
 
+http.createServer(app).listen(80);
+https.createServer(certi_options, app).listen(443);
+
 // var dbURI = "mongodb://localhost/gtutestingFinal";
 //var dbURI = "mongodb://localhost/gtutesting";
 
@@ -126,7 +129,5 @@ app.get('*', function(request, response) {
 //
 // });
 
-http.createServer(app).listen(9000);
-https.createServer(certi_options, app).listen(443);
 
 module.exports = app;
