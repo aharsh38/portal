@@ -7,7 +7,8 @@ var mailController = require('./mailController')();
 var authController = function(Faculty, Member) {
 
     function throwError(response, error, status, message, errorFor) {
-        response.status(status);
+        console.log(error);
+	response.status(status);
         response.json({
             "error": {
                 "message": message,

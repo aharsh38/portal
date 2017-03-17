@@ -54,6 +54,7 @@ var memberRoutes = function(Faculty, Member, Registration, College, Events) {
 
     memberRouter.get('/exportVFSList', facultyController.exportVFSList);
     memberRouter.get('/exportUVFList', facultyController.exportUVFList);
+
     memberRouter.route('/events_in_section').get(eventController.getEventsBySection);
     memberRouter.route('/events')
         .post(eventController.createEvent)

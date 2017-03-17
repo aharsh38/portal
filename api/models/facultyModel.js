@@ -82,9 +82,8 @@ facultyModel.methods.generateJwt = function() {
         mobileno: this.mobileno,
         verified: this.verified,
         rejected: this.rejected,
-        registrations_count: this.registrations_count,
-        collected_amount: this.collected_amount,
         forgot_password: this.forgot_password,
+        collegeId: this.collegeId,
         exp: parseInt(expiry.getTime() / 1000),
     }, config.secrets.faculty);
 };
