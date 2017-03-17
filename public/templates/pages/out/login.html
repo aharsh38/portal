@@ -6,7 +6,7 @@
                 <label>Email</label>
                 <input required type="email" name="email" ng-model="flc.user.email" minlength="10" maxlength="100"
                 ng-pattern="/^.+@.+\..+$/" />
-                <div ng-messages="loginForm.email.$error" >
+                <div ng-messages="loginForm.email.$error">
                     <div ng-message="not_registered">E-mail address not registered.</div>
                     <div ng-message="required">This is required.</div>
                     <div ng-message="email">Invalid e-mail address.</div>

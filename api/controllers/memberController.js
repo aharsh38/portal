@@ -30,7 +30,6 @@ var memberController = function(Faculty, Member, College) {
                     throwError(response, error, 500, 'Internal Server Error', 'Faculty Verified Failed');
                 } else {
                     // console.log("req",request.faculty._id);
-                    console.log(college);
                     college.facultyId = request.faculty._id;
                     college.faculty_assigned = true;
                     college.save(function(error) {

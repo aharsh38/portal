@@ -1,6 +1,7 @@
 var express = require('express');
 var multipart = require('connect-multiparty');
 
+
 var memberRoutes = function (Faculty, Member, Registration, College, Events) {
 	var memberRouter = express.Router();
 	var multipartMiddleware = multipart({
@@ -28,11 +29,6 @@ var memberRoutes = function (Faculty, Member, Registration, College, Events) {
 		next();
 	});
 
-	memberRouter.use('/uploadIcon', multipartMiddleware, function (request, response, next) {
-		console.log("Mulipart");
-		next();
-	});
-
 	memberRouter.param('teamId', registrationMiddleware);
 	memberRouter.param('facultyId', facultyMiddleware);
 	memberRouter.param('eventId', eventMiddleware);
@@ -42,6 +38,12 @@ var memberRoutes = function (Faculty, Member, Registration, College, Events) {
 	memberRouter.patch('/faculty/verify/:facultyId', memberController.verifyFaculty);
 	memberRouter.patch('/faculty/reject/:facultyId', memberController.rejectFaculty);
 
+
+	memberRouter.get('/registration/eventRegistrationData', registrationController.getAllEventsRegistrationData);
+	memberRouter.get('/registration/exportUnconfirmedRegistration', registrationController.exportUnconfirmedRegistration);
+	memberRouter.get('/faculty', facultyController.getAllFacultyCoordinators);
+
+
 	memberRouter.get('/registration/exportUnconfirmedRegistration', registrationController.exportUnconfirmedRegistration);
 	memberRouter.get('/faculty', facultyController.getAllFacultyCoordinators);
 
@@ -50,16 +52,14 @@ var memberRoutes = function (Faculty, Member, Registration, College, Events) {
 
 	memberRouter.post('/upload', eventController.uploadDocs);
 	memberRouter.post('/uploadImage', eventController.uploadImage);
-	// memberRouter.post('/uploadIcon', eventController.uploadIcon);
 
 	memberRouter.get('/exportVFSList', facultyController.exportVFSList);
 	memberRouter.get('/exportUVFList', facultyController.exportUVFList);
 
-	memberRouter.route('/events_in_section').get(eventController.getEventsBySection);
+	// memberRouter.route('/events_in_section').get(eventController.getEventsBySection);
 	memberRouter.route('/events')
 		.post(eventController.createEvent)
 		.get(eventController.getAllEvents);
-
 
 	memberRouter.route('/events/:eventId')
 		.get(eventController.getSingleEvent)
@@ -67,7 +67,7 @@ var memberRoutes = function (Faculty, Member, Registration, College, Events) {
 		.delete(eventController.deleteEvent);
 
 	// memberRouter.get('/registrations/', registrationController.getRegistration);
-	// memberRouter.post('/registrations/export', registrationController.exportRegistration);
+	memberRouter.post('/registrations/export', registrationController.exportRegistration);
 	// memberRouter.get('/registrations/allEventsExport', registrationController.exportForCertificate);
 
 	memberRouter.patch('/settings/changePassword', memberController.memberChangePassword);

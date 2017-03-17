@@ -12,7 +12,8 @@
         <md-card-title>
           <md-card-title-text>
             <span class="md-headline text-center">Collected Amount</span>
-              <span class="text-center "><h1>0</h1></span>
+            <br/>
+            <span class="text-center "><h1>0</h1></span>
           </md-card-title-text>
         </md-card-title>
       </md-card>
@@ -34,9 +35,10 @@
       </md-card>
     </div>
       <div layout="row">
-      <md-button flex="33" ng-show="!detail.verified" ng-click="vcc.verifyFaculty(detail._id, $index)" class="md-raised md-success margin-lr-1" md-no-ink="true">Export Faculty Student Coordinator</md-button>
-      <md-button flex="33" ng-show="!detail.verified" ng-click="vcc.verifyFaculty(detail._id, $index)" class="md-raised md-success margin-lr-1" md-no-ink="true">Export Participant List</md-button>
-     <md-button flex="33" ng-show="!detail.verified" ng-click="vcc.verifyFaculty(detail._id, $index)" class="md-raised md-success margin-lr-1" md-no-ink="true">Export Unconfirmed Registrations</md-button>
+      <md-button flex="50" ng-show="!detail.verified" ng-if="dc.VFSPath" href="{{dc.VFSPath}}" target="_self" class="md-raised md-primary margin-lr-1" md-no-ink="true">Export Verified Faculty Coordinators</md-button>
+      <md-button flex="50" ng-show="!detail.verified" ng-if="dc.UVFPath" href="{{dc.UVFPath}}" target="_self" class="md-raised md-primary margin-lr-1" md-no-ink="true">Export Unverified Faculty Coordinators</md-button>
+      <md-button ng-hide="true" flex="33" ng-show="!detail.verified" ng-click="" class="md-raised md-success margin-lr-1" md-no-ink="true">Export Participant List</md-button>
+     <md-button ng-hide="true" flex="33" ng-show="!detail.verified" ng-click="" class="md-raised md-success margin-lr-1" md-no-ink="true">Export Unconfirmed Registrations</md-button>
       </div>
   </div>
   <!-- </div> -->

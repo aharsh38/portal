@@ -12,9 +12,9 @@ var mobileRoutes = function (Registration, Events) {
 	mobileRouter.param('teamId', registrationMiddleware);
 	mobileRouter.param('eventId', eventMiddleware);
 
-	mobileRouter.get('/eventBySection', eventController.getEventsBySection);
+	// mobileRouter.get('/eventBySection', eventController.getEventsBySection);
 	mobileRouter.get('/getSingleEvent/:eventId', eventController.getSingleEvent);
-	mobileRouter.post('/create', registrationController.register);
+	// mobileRouter.post('/create', registrationController.register);
 	mobileRouter.get('/downloadSlip/:teamId', registrationController.downloadSlip);
 	mobileRouter.get('/getAllEvents', eventController.getAllEvents);
 	mobileRouter.get('/eventSection/:eventsection', eventController.getEventsBySectionM);

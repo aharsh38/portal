@@ -79,12 +79,12 @@ var authController = function(Faculty, Member) {
                 } else {
                     faculty.forgot_password = true;
                     faculty.forgot_password_token = random.generate(32);
-
+					var url = encodeURI('http://portal.gtu.ac.in/forgotPasswordSet?token=' + faculty.forgot_password_token + '&id=' + faculty._id);
                     var data = [{
                         email: faculty.email,
                         data: {
                             name: faculty.name,
-                            link: 'http://portal.gtu.ac.in/forgotPasswordSet?token=' + faculty.forgot_password_token + '&id=' + faculty._id
+                            link: url
                         }
                     }];
 
@@ -194,13 +194,14 @@ var authController = function(Faculty, Member) {
                 } else {
                     member.forgot_password = true;
                     member.forgot_password_token = random.generate(32);
+					var url = encodeURI('http://portal.gtu.ac.in/member/forgotPasswordSet?token=' + faculty.forgot_password_token + '&id=' + faculty._id);
 
                     var dataToSend = [{
 
                         email: member.email,
                         data: {
                             name: member.name,
-                            link: 'http://portal.gtu.ac.in/member/forgotPasswordSet?token=' + member.forgot_password_token + '&id=' + member._id
+                            link: url
                         }
 
                     }];

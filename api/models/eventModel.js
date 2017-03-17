@@ -58,6 +58,9 @@ var eventModel = new Schema({
     event_image: {
         type: String
     },
+    event_icon: {
+        type: String
+    },
     attachments: [{
         doc_name: String,
         link: String

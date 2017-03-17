@@ -1,6 +1,6 @@
 (function () {
 	'use strict';
-
+//df
 	angular
 		.module('fct.core')
 		.controller('FacultyForgotPasswordSetController', FacultyForgotPasswordSetController);

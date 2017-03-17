@@ -6,6 +6,16 @@
 })();
 
 (function () {
+	'use strict';
+
+	angular
+		.module('fct_app', [
+			'fct.api',
+			'fct.core'
+		]);
+})();
+
+(function () {
 
 	'use strict';
 
@@ -63,16 +73,6 @@
 			}
 		}
 	}
-})();
-
-(function () {
-	'use strict';
-
-	angular
-		.module('fct_app', [
-			'fct.api',
-			'fct.core'
-		]);
 })();
 
 	(function () {
@@ -197,7 +197,9 @@
 					})
 					.state('in_tc.dashboard', {
 						url: '/dashboard',
-						templateUrl: '/templates/pages/in/dashboard.html'
+						templateUrl: '/templates/pages/in/dashboard.html',
+						controller: 'DashboardController',
+						controllerAs: 'dc'
 					})
 					.state('in_tc.eventRegistrations', {
 						url: '/eventRegistration',
@@ -582,208 +584,207 @@
 	}
 })();
 
-(function () {
-	'use strict';
+(function() {
+    'use strict';
 
-	angular
-		.module('fct.api')
-		.factory('facultyAuthService', facultyAuthService);
+    angular
+        .module('fct.api')
+        .factory('facultyAuthService', facultyAuthService);
 
-	facultyAuthService.$inject = ['$http', '$window', '$rootScope'];
+    facultyAuthService.$inject = ['$http', '$window', '$rootScope'];
 
-	function facultyAuthService($http, $window, $rootScope) {
-		var service = {
-			facultyLogin: facultyLogin,
-			facultyRegister: facultyRegister,
-			checkFacultyLoggedIn: checkFacultyLoggedIn,
-			changeFacultyPassword: changeFacultyPassword,
-			logout: logout,
-			facultyForgotPasswordApply: facultyForgotPasswordApply,
-			facultyForgotPasswordSet: facultyForgotPasswordSet,
-			getColleges: getColleges,
-			checkVerified: checkVerified
-			// editStudentCoordinator: editStudentCoordinator
-		};
+    function facultyAuthService($http, $window, $rootScope) {
+        var service = {
+            facultyLogin: facultyLogin,
+            facultyRegister: facultyRegister,
+            checkFacultyLoggedIn: checkFacultyLoggedIn,
+            changeFacultyPassword: changeFacultyPassword,
+            logout: logout,
+            facultyForgotPasswordApply: facultyForgotPasswordApply,
+            facultyForgotPasswordSet: facultyForgotPasswordSet,
+            getColleges: getColleges,
+            checkVerified: checkVerified
+            // editStudentCoordinator: editStudentCoordinator
+        };
 
-		return service;
+        return service;
 
-		function checkFacultyLoggedIn() {
-			var token = getToken();
-			var payload;
-			if (token) {
-				payload = token.split('.')[1];
-				payload = $window.atob(payload);
-				payload = JSON.parse(payload);
+        function checkFacultyLoggedIn() {
+            var token = getToken();
+            var payload;
+            if (token) {
+                payload = token.split('.')[1];
+                payload = $window.atob(payload);
+                payload = JSON.parse(payload);
+                if (angular.isDefined(payload.collegeId)) {
+                    $rootScope.faculty = {};
+                    $rootScope.faculty.email = payload.email;
+                    $rootScope.faculty.mobileno = payload.mobileno;
+                    $rootScope.faculty.name = payload.name;
+                    $rootScope.faculty.verified = payload.verified;
+                    $rootScope.faculty.rejected = payload.rejected;
+                    $rootScope.faculty.forgot_password = payload.forgot_password;
+                    $rootScope.faculty.id = payload._id;
+                    $rootScope.collegeId = payload.collegeId;
+                    // $rootScope.faculty.registrations_count = payload.registrations_count;
+                    // $rootScope.faculty.collected_amount = payload.collected_amount;
+                    // $rootScope.faculty.student_coordinator = payload.student_coordinator;
+                    return (payload.exp > Date.now() / 1000);
+                    // console.log($rootScope.faculty);
+                } else {
+                    return false;
+                }
 
-				if (angular.isDefined(payload.collegeId)) {
-					$rootScope.faculty = {};
-					$rootScope.faculty.email = payload.email;
-					$rootScope.faculty.mobileno = payload.mobileno;
-					$rootScope.faculty.name = payload.name;
-					$rootScope.faculty.verified = payload.verified;
-					$rootScope.faculty.rejected = payload.rejected;
-					$rootScope.faculty.forgot_password = payload.forgot_password;
-					$rootScope.faculty.id = payload._id;
-					$rootScope.collegeId = payload.collegeId;
-					// $rootScope.faculty.registrations_count = payload.registrations_count;
-					// $rootScope.faculty.collected_amount = payload.collected_amount;
-					// $rootScope.faculty.student_coordinator = payload.student_coordinator;
-					return (payload.exp > Date.now() / 1000);
-					// console.log($rootScope.faculty);
-				} else {
-					return false;
-				}
+            } else {
+                return false;
+            }
+        }
 
-			} else {
-				return false;
-			}
-		}
-
-		function replaceToken(token) {
-			removeToken();
-			saveToken(token);
-		}
-
-
-		function saveToken(token) {
-			$window.localStorage['auth-token'] = token;
-		}
-
-		function getToken() {
-			if ($window.localStorage['auth-token']) {
-				return $window.localStorage['auth-token'];
-			} else {
-				return null;
-			}
-		}
-
-		function removeToken() {
-			$window.localStorage.removeItem('auth-token');
-		}
+        function replaceToken(token) {
+            removeToken();
+            saveToken(token);
+        }
 
 
-		function facultyLogin(user) {
-			return $http.post('/api/auth/faculty/login', user)
-				.then(facultyLoginSuccess)
-				.catch(facultyLoginFailure);
-		}
+        function saveToken(token) {
+            $window.localStorage['auth-token'] = token;
+        }
 
-		function facultyRegister(user) {
-			return $http.post('/api/auth/faculty/register', user)
-				.then(facultyRegisterSuccess)
-				.catch(facultyRegisterFailure);
-		}
+        function getToken() {
+            if ($window.localStorage['auth-token']) {
+                return $window.localStorage['auth-token'];
+            } else {
+                return null;
+            }
+        }
 
-		function facultyRegisterSuccess(response) {
-			saveToken(response.data.token);
-			$rootScope.$broadcast('SuccessFacultyRegister');
-		}
-
-		function facultyRegisterFailure(error) {
-			$rootScope.$broadcast('ErrorFacultyRegister', error);
-		}
+        function removeToken() {
+            $window.localStorage.removeItem('auth-token');
+        }
 
 
-		function facultyLoginSuccess(response) {
-			saveToken(response.data.token);
-			$rootScope.$broadcast('SuccessFacultyLogin');
-			// checkFacultyLoggedIn();
-		}
+        function facultyLogin(user) {
+            return $http.post('/api/auth/faculty/login', user)
+                .then(facultyLoginSuccess)
+                .catch(facultyLoginFailure);
+        }
 
-		function facultyLoginFailure(error) {
-			$rootScope.$broadcast('ErrorFacultyLogin', error);
-		}
+        function facultyRegister(user) {
+            return $http.post('/api/auth/faculty/register', user)
+                .then(facultyRegisterSuccess)
+                .catch(facultyRegisterFailure);
+        }
 
-		function getColleges() {
-			return $http.get('/api/college/getAllCollege')
-				.then(getCollegesSuccess)
-				.catch(getCollegesFailure);
-		}
+        function facultyRegisterSuccess(response) {
+            saveToken(response.data.token);
+            $rootScope.$broadcast('SuccessFacultyRegister');
+        }
 
-		function getCollegesSuccess(response) {
-			return response;
-		}
-
-		function getCollegesFailure(error) {
-			return error;
-		}
-
-		function changeFacultyPassword(passwordObject) {
-			if (checkFacultyLoggedIn()) {
-				if ($rootScope.faculty) {
-					passwordObject.facultyId = $rootScope.faculty.id;
-					var changePasswordLink = "/api/faculty/settings/changePassword";
-					$http.patch(changePasswordLink, passwordObject)
-						.then(changePasswordSuccess)
-						.catch(changePasswordFailure);
-				}
-			}
-		}
-
-		function changePasswordSuccess(response) {
-			$rootScope.$broadcast('FacultyChangePasswordSuccess');
-		}
-
-		function changePasswordFailure(error) {
-			$rootScope.$broadcast('FacultyChangePasswordFailure', error);
-		}
-
-		function facultyForgotPasswordApply(faculty) {
-			$http.post('/api/auth/faculty/forgotPasswordApply', faculty)
-				.then(facultyForgotPasswordApplySuccess)
-				.catch(facultyForgotPasswordApplyFailure);
-		}
-
-		function facultyForgotPasswordApplySuccess(response) {
-			$rootScope.$broadcast('SuccessFacultyForgotPasswordApply');
-		}
-
-		function facultyForgotPasswordApplyFailure(error) {
-			$rootScope.$broadcast('ErrorFacultyForgotPasswordApply', error);
-		}
-
-		function facultyForgotPasswordSet(faculty, id) {
-			var link = '/api/auth/faculty/' + id + '/forgotPasswordSet';
-			$http.post(link, faculty)
-				.then(facultyForgotPasswordSetSuccess)
-				.catch(facultyForgotPasswordSetFailure);
-		}
-
-		function facultyForgotPasswordSetSuccess(response) {
-			$rootScope.$broadcast('SuccessFacultyForgotPasswordSet');
-		}
-
-		function facultyForgotPasswordSetFailure() {
-			$rootScope.$broadcast('ErrorFacultyForgotPasswordSet', error);
-		}
-
-		function logout() {
-			removeToken();
-			$rootScope.$broadcast('logoutSuccessful');
-		}
-
-		function checkVerified() {
-			console.log($rootScope.faculty);
-			$http.get('/api/faculty/check')
-				.then(checkVerifiedSuccess)
-				.catch(checkVerifiedFailure);
-		}
-
-		function checkVerifiedSuccess(response) {
-			console.log(response);
-			replaceToken(response.data.token);
-		}
-
-		function checkVerifiedFailure(error) {
-			console.log(error);
-		}
+        function facultyRegisterFailure(error) {
+            $rootScope.$broadcast('ErrorFacultyRegister', error);
+        }
 
 
+        function facultyLoginSuccess(response) {
+            saveToken(response.data.token);
+            $rootScope.$broadcast('SuccessFacultyLogin');
+            // checkFacultyLoggedIn();
+        }
 
-		function functionName(error) {
-			return error;
-		}
-	}
+        function facultyLoginFailure(error) {
+            $rootScope.$broadcast('ErrorFacultyLogin', error);
+        }
+
+        function getColleges() {
+            return $http.get('/api/college/getAllCollege')
+                .then(getCollegesSuccess)
+                .catch(getCollegesFailure);
+        }
+
+        function getCollegesSuccess(response) {
+            return response;
+        }
+
+        function getCollegesFailure(error) {
+            return error;
+        }
+
+        function changeFacultyPassword(passwordObject) {
+            if (checkFacultyLoggedIn()) {
+                if ($rootScope.faculty) {
+                    passwordObject.facultyId = $rootScope.faculty.id;
+                    var changePasswordLink = "/api/faculty/settings/changePassword";
+                    $http.patch(changePasswordLink, passwordObject)
+                        .then(changePasswordSuccess)
+                        .catch(changePasswordFailure);
+                }
+            }
+        }
+
+        function changePasswordSuccess(response) {
+            $rootScope.$broadcast('FacultyChangePasswordSuccess');
+        }
+
+        function changePasswordFailure(error) {
+            $rootScope.$broadcast('FacultyChangePasswordFailure', error);
+        }
+
+        function facultyForgotPasswordApply(faculty) {
+            $http.post('/api/auth/faculty/forgotPasswordApply', faculty)
+                .then(facultyForgotPasswordApplySuccess)
+                .catch(facultyForgotPasswordApplyFailure);
+        }
+
+        function facultyForgotPasswordApplySuccess(response) {
+            $rootScope.$broadcast('SuccessFacultyForgotPasswordApply');
+        }
+
+        function facultyForgotPasswordApplyFailure(error) {
+            $rootScope.$broadcast('ErrorFacultyForgotPasswordApply', error);
+        }
+
+        function facultyForgotPasswordSet(faculty, id) {
+            var link = '/api/auth/faculty/' + id + '/forgotPasswordSet';
+            $http.post(link, faculty)
+                .then(facultyForgotPasswordSetSuccess)
+                .catch(facultyForgotPasswordSetFailure);
+        }
+
+        function facultyForgotPasswordSetSuccess(response) {
+            $rootScope.$broadcast('SuccessFacultyForgotPasswordSet');
+        }
+
+        function facultyForgotPasswordSetFailure() {
+            $rootScope.$broadcast('ErrorFacultyForgotPasswordSet', error);
+        }
+
+        function logout() {
+            removeToken();
+            $rootScope.$broadcast('logoutSuccessful');
+        }
+
+        function checkVerified() {
+            console.log($rootScope.faculty);
+            $http.get('/api/faculty/check')
+                .then(checkVerifiedSuccess)
+                .catch(checkVerifiedFailure);
+        }
+
+        function checkVerifiedSuccess(response) {
+            console.log(response);
+            replaceToken(response.data.token);
+        }
+
+        function checkVerifiedFailure(error) {
+            console.log(error);
+        }
+
+
+
+        function functionName(error) {
+            return error;
+        }
+    }
 })();
 
 (function () {
@@ -802,7 +803,11 @@
 			rejectFaculty: rejectFaculty,
 			getTotalRegistrations: getTotalRegistrations,
 			getDeleteModal: getDeleteModal,
-			initializeCKEditor: initializeCKEditor,
+			getVerifyFacultyStudent: getVerifyFacultyStudent,
+			getUnverifiedFaculty: getUnverifiedFaculty,
+			getUnconfirmedRegistration: getUnconfirmedRegistration,
+			getRegistrationsByEvent: getRegistrationsByEvent,
+			getEventRegistrationExcel: getEventRegistrationExcel
 		};
 
 		return service;
@@ -831,40 +836,66 @@
 				.catch(errorFunc);
 		}
 
-		function confirmRegistration(registration) {
-
+		function getRegistrationsByEvent() {
+			return $http.get('/api/members/registration/eventRegistrationData')
+				.then(responseFunc)
+				.catch(errorFunc);
 		}
 
-		function initializeCKEditor() {
-			if ( CKEDITOR.env.ie && CKEDITOR.env.version < 9 )
-				CKEDITOR.tools.enableHtml5Elements( document );
-				CKEDITOR.config.height = 150;
-				CKEDITOR.config.width = 'auto';
-				var initSample = ( function() {
-					var wysiwygareaAvailable = isWysiwygareaAvailable();
-					return function() {
-						var editorElement = CKEDITOR.document.getById( 'editor' );
-						if ( wysiwygareaAvailable ) {
-							CKEDITOR.replace( 'editorRules' );
-							CKEDITOR.replace( 'editorSpecification' );
-							CKEDITOR.replace( 'editorJudgingCriteria' );
-						} else {
-							editorElement.setAttribute( 'contenteditable', 'true' );
-							CKEDITOR.inline( 'editorRules' );
-							CKEDITOR.inline( 'editorSpecification' );
-							CKEDITOR.inline( 'editorJudgingCriteria' );
-						}
-					};
-
-				function isWysiwygareaAvailable() {
-					if ( CKEDITOR.revision == ( '%RE' + 'V%' ) ) {
-						return true;
-					}
-					return !!CKEDITOR.plugins.get( 'wysiwygarea' );
-				}
-			} )();
-			initSample();
+		function getVerifyFacultyStudent() {
+			return $http.get('/api/members/exportVFSList')
+				.then(responseFunc)
+				.catch(errorFunc);
 		}
+
+		function getUnverifiedFaculty() {
+			return $http.get('/api/members/exportUVFList')
+				.then(responseFunc)
+				.catch(errorFunc);
+		}
+
+		function getUnconfirmedRegistration() {
+			return $http.get('/api/members/registration/exportUnconfirmedRegistration')
+				.then(responseFunc)
+				.catch(errorFunc);
+		}
+
+		function getEventRegistrationExcel(request) {
+			return $http.post('/api/members/registrations/export', request)
+				.then(responseFunc)
+				.catch(errorFunc);
+		}
+
+		// function initializeCKEditor() {
+		// 	if ( CKEDITOR.env.ie && CKEDITOR.env.version < 9 )
+		// 		CKEDITOR.tools.enableHtml5Elements( document );
+		// 		CKEDITOR.config.height = 150;
+		// 		CKEDITOR.config.width = 'auto';
+		// 		var initSample = ( function() {
+		// 			var wysiwygareaAvailable = isWysiwygareaAvailable();
+		// 			return function() {
+		// 				var editorElement = CKEDITOR.document.getById( 'editor' );
+		// 				if ( wysiwygareaAvailable ) {
+		// 					CKEDITOR.replace( 'editorRules' );
+		// 					CKEDITOR.replace( 'editorSpecification' );
+		// 					CKEDITOR.replace( 'editorJudgingCriteria' );
+		// 				} else {
+		// 					editorElement.setAttribute( 'contenteditable', 'true' );
+		// 					CKEDITOR.inline( 'editorRules' );
+		// 					CKEDITOR.inline( 'editorSpecification' );
+		// 					CKEDITOR.inline( 'editorJudgingCriteria' );
+		// 				}
+		// 			};
+		//
+		// 		function isWysiwygareaAvailable() {
+		// 			if ( CKEDITOR.revision == ( '%RE' + 'V%' ) ) {
+		// 				return true;
+		// 			}
+		// 			return !!CKEDITOR.plugins.get( 'wysiwygarea' );
+		// 		}
+		// 	} )();
+		// 	initSample();
+		// }
 
 		function getDeleteModal() {
 			var confirm = $mdDialog.confirm()
@@ -1696,6 +1727,137 @@
 
 	angular
 		.module('fct.core')
+		.controller('FacultyLayoutController', FacultyLayoutController)
+		.controller('ContactDialogController', ContactDialogController);
+
+	FacultyLayoutController.$inject = ['facultyAuthService', '$mdSidenav', '$rootScope', 'fctToast', '$state', '$mdDialog', '$mdMedia', '$scope'];
+
+	function FacultyLayoutController(facultyAuthService, $mdSidenav, $rootScope, fctToast, $state, $mdDialog, $mdMedia, $scope) {
+		var vm = this;
+
+		$scope.$watch(function () {
+			return $mdMedia('xs') || $mdMedia('sm');
+		});
+
+		angular.extend(vm, {
+			logout: logout,
+			openLeftSidenav: openLeftSidenav,
+			isOpenLeftSidenav: isOpenLeftSidenav,
+			closeLeftSidenav: closeLeftSidenav,
+			contact: contact
+		});
+
+		activate();
+
+		function activate() {
+
+		}
+
+		function logout() {
+			facultyAuthService.logout();
+		}
+
+		$rootScope.$on('logoutSuccessful', logoutSuccessful);
+
+		function logoutSuccessful(event) {
+			fctToast.showToast("Succesfully Logged out", true);
+			$state.go('out.login');
+		}
+
+		function openLeftSidenav() {
+			$mdSidenav('left').open();
+		}
+
+		function isOpenLeftSidenav() {
+			return $mdSidenav('left').isOpen();
+		}
+
+		function closeLeftSidenav() {
+			$mdSidenav('left').close();
+		}
+
+		function contact(ev) {
+			var useFullScreen = $mdMedia('sm') || $mdMedia('xs');
+			$mdDialog.show({
+				controller: 'ContactDialogController',
+				templateUrl: '/templates/components/dialogs/contact.html',
+				parent: angular.element(document.body),
+				targetEvent: ev,
+				clickOutsideToClose: true,
+				fullscreen: useFullScreen // Only for -xs, -sm breakpoints.
+			});
+		}
+	}
+
+	ContactDialogController.$inject = ['$scope', '$mdDialog'];
+
+	function ContactDialogController($scope, $mdDialog) {
+		$scope.cancel = function () {
+			$mdDialog.cancel();
+		};
+
+		$scope.hide = function () {
+			$mdDialog.hide();
+		};
+	}
+})();
+
+(function () {
+	'use strict';
+
+	angular
+		.module('fct.core')
+		.controller('MemberLayoutController', MemberLayoutController);
+
+	MemberLayoutController.$inject = ['memberAuthService', '$mdSidenav', '$rootScope', 'fctToast', '$state', '$scope'];
+
+	function MemberLayoutController(memberAuthService, $mdSidenav, $rootScope, fctToast, $state, $scope) {
+		var vm = this;
+
+		angular.extend(vm, {
+			logout: logout,
+			openLeftSidenav: openLeftSidenav,
+			isOpenLeftSidenav: isOpenLeftSidenav,
+			closeLeftSidenav: closeLeftSidenav,
+		});
+
+		activate();
+
+		function activate() {
+
+		}
+
+		function logout() {
+			memberAuthService.logout();
+		}
+
+		$rootScope.$on('logoutSuccessful', logoutSuccessful);
+
+		function logoutSuccessful(event) {
+			fctToast.showToast("Succesfully Logged out", true);
+			$state.go('out.member_login');
+		}
+
+		function openLeftSidenav() {
+			$mdSidenav('left').open();
+		}
+
+		function isOpenLeftSidenav() {
+			return $mdSidenav('left').isOpen();
+		}
+
+		function closeLeftSidenav() {
+			$mdSidenav('left').close();
+		}
+	}
+
+})();
+
+(function () {
+	'use strict';
+
+	angular
+		.module('fct.core')
 		.controller('AddEventController', AddEventController);
 
 	AddEventController.$inject = ['$stateParams', 'eventService', '$rootScope', '$timeout', 'Upload', '$state', 'fctToast', '$filter', 'memberService'];
@@ -1718,6 +1880,7 @@
 			uploadFiles: uploadFiles,
 			feeTypeChanged: feeTypeChanged,
 			uploadImage: uploadImage,
+			uploadIconImage: uploadIconImage,
 			doneLoading: doneLoading,
 		});
 
@@ -1788,12 +1951,12 @@
 						file: file
 					}
 				});
-				file.upload.then(function (response) {
+				file.upload.then(function (response) {console.log(response);
 					$timeout(function () {
 						file.result = response.data;
 						var attach = {
 							doc_name: file.name,
-							link: file.result.path,
+							link: file.dest,
 						};
 						vm.myEvent.attachments.push(attach);
 					});
@@ -1814,10 +1977,8 @@
 						file: file
 					}
 				});
-				file.upload.then(function (response) {
-					$timeout(function () {
-						vm.myEvent.event_image = response.data.path;
-					});
+				file.upload.then(function (response) {reponse.log(response);
+					vm.myEvent.event_image = response.data.path;
 				}, function (response) {
 					if (response.status > 0) {
 						//console.log(reponse);
@@ -1827,63 +1988,135 @@
 				});
 			});
 		}
+
+		function uploadIconImage(files, errFiles) {
+			angular.forEach(files, function (file) {
+				file.upload = Upload.upload({
+					url: '/api/members/uploadIconImage',
+					data: {
+						file: file
+					}
+				});
+				file.upload.then(function (response) {reponse.log(response);
+					vm.myEvent.event_icon_image = response.data.path;
+				}, function (response) {
+					if (response.status > 0) {
+						//console.log(reponse);
+					}
+				}, function (evt) {
+					file.progress = Math.min(100, parseInt(100.0 * evt.loaded / evt.total));
+				});
+			});
+		}//dfdf//sdf=
 	}
 })();
 
-(function () {
-	'use strict';
+(function() {
+    'use strict';
 
-	angular
-		.module('fct.core')
-		.controller('DashboardController', DashboardController);
+    angular
+        .module('fct.core')
+        .controller('DashboardController', DashboardController);
 
-	DashboardController.$inject = ['$rootScope', 'memberService'];
+    DashboardController.$inject = ['$rootScope', 'memberService', '$window'];
 
-	function DashboardController($rootScope, memberService) {
-		var vm = this;
+    function DashboardController($rootScope, memberService, $window) {
+        var vm = this;
 
-		angular.extend(vm, {
-			getVFS: getVFS,
-			getUVF: getUVF
-		});
+        angular.extend(vm, {
+            getVFS: getVFS,
+            getUVF: getUVF
+        });
 
-		activate();
+        activate();
 
-		function activate() {
-			return memberService.getVerifyFacultyStudent()
-				.then(function (response) {
-					vm.VFSPath = response.data.path;
-					// $window.open(response.data.path);
-					//console.log(response);
-				})
-				.catch(function (error) {
-					//console.log(error);
-				});
-		}
+        function activate() {
+            getVFS();
+            getUVF();
+            // getUnconfirmedRegistration();
+        }
 
-		function getUVF() {
-			return memberService.getUnverifiedFaculty()
-				.then(function (response) {
-					vm.UVFPath = response.data.path;
-					// $window.open(response.data.path);
-					//console.log(response);
-				})
-				.catch(function (error) {
-					//console.log(error);
-				});
-		}
+        function getVFS() {
+            return memberService.getVerifyFacultyStudent()
+                .then(function(response) {
+                    vm.VFSPath = response.data.path;
+                    // $window.open(response.data.path);
+                    //console.log(response);
+                })
+                .catch(function(error) {
+                    //console.log(error);
+                });
+        }
 
-		function getUnconfirmedRegistration() {
-			return memberService.getUnconfirmedRegistration()
-				.then(function (response) {
-					console.log(reponse);
-				})
-				.catch(function (error) {
-					//console.log(error);
-				});
-		}
-	}
+        function getUVF() {
+            return memberService.getUnverifiedFaculty()
+                .then(function(response) {
+                    vm.UVFPath = response.data.path;
+                    // $window.open(response.data.path);
+                    //console.log(response);
+                })
+                .catch(function(error) {
+                    //console.log(error);
+                });
+        }
+
+        // function getUnconfirmedRegistration() {
+        //     return memberService.getUnconfirmedRegistration()
+        //
+        //         .then(function(response) {
+        //             console.log(reponse);
+        //         })
+        //         .catch(function(error) { //console.log(error);
+        //         });
+        // }
+    }
 })();
+// return memberService.getUnverifiedFaculty()
+//     .then(function(response) {
+//         vm.UVFPath = response.data.path;
+//         // $window.open(response.data.path);
+//         //console.log(response);
+//     })
+//     .catch(function(error) {
+//         //console.log(error);
+//     });
+// }
+//
+// function getUnconfirmedRegistration() {
+//     return memberService.getUnconfirmedRegistration()
+//         .then(function(response) {
+//             console.log(reponse);
+//         })
+//         .catch(function(error) {
+//             //console.log(error);
+//         });
+// }
+// }
+// })();
+// // $window.open(response.data.path);
+// //console.log(response);
+// })
+// .catch(function(error) {
+//         .catch(function(error) {
+//             //console.log(error);
+//         });
+//     }
+//
+//     function getUnconfirmedRegistration() {
+//         return memberService.getUnconfirmedRegistration()
+//
+//             .then(function(response) {
+//                 console.log(reponse);
+//             })
+//             .catch(function(error) {
+//                     .then(function(response) {
+//                             console.log(reponse);
+//                         })
+//                         .catch(function(error) { //console.log(error);
+//                         });
+//                 }
+//             }
+//     })();
 
 (function () {
     'use strict';
@@ -2002,11 +2235,31 @@
 		activate();
 
 		function activate() {
-			console.log(JSON.stringify(getRegistration()));
+			getRegistration();
+			// var input = {
+			// 	event_name: "somethon",
+			// 	do_payment: true,
+			// };
+			// var x = JSON.stringify(input);
+			// return memberService.getEventRegistrationExcel(x).then(function (response) {
+			// 	console.log(response);
+			// })
+			// .catch(function (error) {
+			//
+			// });
 		}
 
 		function getRegistration() {
-			return memberService.getTotalRegistrations();
+			return memberService.getRegistrationsByEvent().then(success).catch(failure);
+		}
+
+		function success(response) {
+			vm.eventDetails = response.data;
+			console.log(response);
+		}
+
+		function failure(error) {
+			console.log(error);
 		}
 	}
 })();
@@ -2220,6 +2473,7 @@
 			feeTypeChanged: feeTypeChanged,
 			doneLoading: doneLoading,
 			uploadImage: uploadImage,
+			uploadIconImage: uploadIconImage,
 		});
 
 		activate();
@@ -2291,9 +2545,7 @@
 		}
 
 		function save() {
-			vm.myEvent.rules = CKEDITOR.instances['editorRules'].getData();
-			vm.myEvent.specification = CKEDITOR.instances['editorSpecification'].getData();
-			vm.myEvent.judging_criteria = CKEDITOR.instances['editorJudgingCriteria'].getData();
+			vm.myEvent.attachments = vm.files;
 			console.log(JSON.stringify(vm.myEvent));
 			return eventService.updateEvent(vm.eventId, vm.myEvent)
 				.then(onUpdateSuccess)
@@ -2320,15 +2572,11 @@
 						file: file
 					}
 				});
-				file.upload.then(function (response) {
-					$timeout(function () {
-						file.result = response.data;
-						var attach = {
-							doc_name: file.name,
-							link: file.result.path,
-						};
-						vm.myEvent.attachments.push(attach);
-					});
+				file.upload.then(function (response) {console.log(response);
+					var attach = {
+						doc_name: file.name,
+						link: response.data.path,
+					};console.log(attach);
 				}, function (response) {
 					if (response.status > 0)
 						vm.errorMsg = response.status + ': ' + response.data;
@@ -2346,10 +2594,30 @@
 						file: file
 					}
 				});
-				file.upload.then(function (response) {
+				file.upload.then(function (response) {console.log(response);
 					$timeout(function () {
 						vm.myEvent.event_image = response.data.path;
 					});
+				}, function (response) {
+					if (response.status > 0) {
+						//console.log(reponse);
+					}
+				}, function (evt) {
+					file.progress = Math.min(100, parseInt(100.0 * evt.loaded / evt.total));
+				});
+			});
+		}
+
+		function uploadIconImage(files, errFiles) {
+			angular.forEach(files, function (file) {
+				file.upload = Upload.upload({
+					url: '/api/members/uploadIconImage',
+					data: {
+						file: file
+					}
+				});
+				file.upload.then(function (response) {reponse.log(response);
+					vm.myEvent.event_icon_image = response.data.path;
 				}, function (response) {
 					if (response.status > 0) {
 						//console.log(reponse);
@@ -2426,7 +2694,7 @@
 
 (function () {
 	'use strict';
-
+//df
 	angular
 		.module('fct.core')
 		.controller('FacultyForgotPasswordSetController', FacultyForgotPasswordSetController);
@@ -2914,137 +3182,6 @@
 			$scope.registerForm.$setUntouched();
 		}
 	}
-})();
-
-(function () {
-	'use strict';
-
-	angular
-		.module('fct.core')
-		.controller('FacultyLayoutController', FacultyLayoutController)
-		.controller('ContactDialogController', ContactDialogController);
-
-	FacultyLayoutController.$inject = ['facultyAuthService', '$mdSidenav', '$rootScope', 'fctToast', '$state', '$mdDialog', '$mdMedia', '$scope'];
-
-	function FacultyLayoutController(facultyAuthService, $mdSidenav, $rootScope, fctToast, $state, $mdDialog, $mdMedia, $scope) {
-		var vm = this;
-
-		$scope.$watch(function () {
-			return $mdMedia('xs') || $mdMedia('sm');
-		});
-
-		angular.extend(vm, {
-			logout: logout,
-			openLeftSidenav: openLeftSidenav,
-			isOpenLeftSidenav: isOpenLeftSidenav,
-			closeLeftSidenav: closeLeftSidenav,
-			contact: contact
-		});
-
-		activate();
-
-		function activate() {
-
-		}
-
-		function logout() {
-			facultyAuthService.logout();
-		}
-
-		$rootScope.$on('logoutSuccessful', logoutSuccessful);
-
-		function logoutSuccessful(event) {
-			fctToast.showToast("Succesfully Logged out", true);
-			$state.go('out.login');
-		}
-
-		function openLeftSidenav() {
-			$mdSidenav('left').open();
-		}
-
-		function isOpenLeftSidenav() {
-			return $mdSidenav('left').isOpen();
-		}
-
-		function closeLeftSidenav() {
-			$mdSidenav('left').close();
-		}
-
-		function contact(ev) {
-			var useFullScreen = $mdMedia('sm') || $mdMedia('xs');
-			$mdDialog.show({
-				controller: 'ContactDialogController',
-				templateUrl: '/templates/components/dialogs/contact.html',
-				parent: angular.element(document.body),
-				targetEvent: ev,
-				clickOutsideToClose: true,
-				fullscreen: useFullScreen // Only for -xs, -sm breakpoints.
-			});
-		}
-	}
-
-	ContactDialogController.$inject = ['$scope', '$mdDialog'];
-
-	function ContactDialogController($scope, $mdDialog) {
-		$scope.cancel = function () {
-			$mdDialog.cancel();
-		};
-
-		$scope.hide = function () {
-			$mdDialog.hide();
-		};
-	}
-})();
-
-(function () {
-	'use strict';
-
-	angular
-		.module('fct.core')
-		.controller('MemberLayoutController', MemberLayoutController);
-
-	MemberLayoutController.$inject = ['memberAuthService', '$mdSidenav', '$rootScope', 'fctToast', '$state', '$scope'];
-
-	function MemberLayoutController(memberAuthService, $mdSidenav, $rootScope, fctToast, $state, $scope) {
-		var vm = this;
-
-		angular.extend(vm, {
-			logout: logout,
-			openLeftSidenav: openLeftSidenav,
-			isOpenLeftSidenav: isOpenLeftSidenav,
-			closeLeftSidenav: closeLeftSidenav,
-		});
-
-		activate();
-
-		function activate() {
-
-		}
-
-		function logout() {
-			memberAuthService.logout();
-		}
-
-		$rootScope.$on('logoutSuccessful', logoutSuccessful);
-
-		function logoutSuccessful(event) {
-			fctToast.showToast("Succesfully Logged out", true);
-			$state.go('out.member_login');
-		}
-
-		function openLeftSidenav() {
-			$mdSidenav('left').open();
-		}
-
-		function isOpenLeftSidenav() {
-			return $mdSidenav('left').isOpen();
-		}
-
-		function closeLeftSidenav() {
-			$mdSidenav('left').close();
-		}
-	}
-
 })();
 
 (function() {

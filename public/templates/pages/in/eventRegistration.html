@@ -13,15 +13,15 @@
           	<th>Event_Name</th>
           	<th>Verified</th>
           	<th>Non-Verified</th>
-          	<th>Export_xls</th>
+          	<th><a ng-if="erc.VFSPath" href="{{erc.VFSPath}}" target="_self">Export_xls</a></th>
   		   </tr>
   		<tr>
   			<th class="th1">Event Section</th>
           </tr>
-  		<tr ng-repeat="event in Details | filter: searchbox">
-          <td>{{event.name}}</td>
-  		    <td>{{event.verified}}</td>
-  		    <td>{{event.unverified}}</td>
+  		<tr ng-repeat="event in erc.eventDetails | filter: searchbox">
+          <td>{{event._id.eventName}}</td>
+  		    <td>{{event.confirmed_registrations}}</td>
+  		    <td>{{event.unconfirmed_registrations}}</td>
   		    <td>{{event.export}}</td>
   		</tr>
     </table>

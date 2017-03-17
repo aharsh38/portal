@@ -25,6 +25,7 @@
 			uploadFiles: uploadFiles,
 			feeTypeChanged: feeTypeChanged,
 			uploadImage: uploadImage,
+			uploadIconImage: uploadIconImage,
 			doneLoading: doneLoading,
 		});
 
@@ -95,12 +96,12 @@
 						file: file
 					}
 				});
-				file.upload.then(function (response) {
+				file.upload.then(function (response) {console.log(response);
 					$timeout(function () {
 						file.result = response.data;
 						var attach = {
 							doc_name: file.name,
-							link: file.result.path,
+							link: file.dest,
 						};
 						vm.myEvent.attachments.push(attach);
 					});
@@ -121,10 +122,8 @@
 						file: file
 					}
 				});
-				file.upload.then(function (response) {
-					$timeout(function () {
-						vm.myEvent.event_image = response.data.path;
-					});
+				file.upload.then(function (response) {reponse.log(response);
+					vm.myEvent.event_image = response.data.path;
 				}, function (response) {
 					if (response.status > 0) {
 						//console.log(reponse);
@@ -134,5 +133,25 @@
 				});
 			});
 		}
+
+		function uploadIconImage(files, errFiles) {
+			angular.forEach(files, function (file) {
+				file.upload = Upload.upload({
+					url: '/api/members/uploadIconImage',
+					data: {
+						file: file
+					}
+				});
+				file.upload.then(function (response) {reponse.log(response);
+					vm.myEvent.event_icon_image = response.data.path;
+				}, function (response) {
+					if (response.status > 0) {
+						//console.log(reponse);
+					}
+				}, function (evt) {
+					file.progress = Math.min(100, parseInt(100.0 * evt.loaded / evt.total));
+				});
+			});
+		}//dfdf//sdf=
 	}
 })();

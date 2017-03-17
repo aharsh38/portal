@@ -120,7 +120,9 @@
 					})
 					.state('in_tc.dashboard', {
 						url: '/dashboard',
-						templateUrl: '/templates/pages/in/dashboard.html'
+						templateUrl: '/templates/pages/in/dashboard.html',
+						controller: 'DashboardController',
+						controllerAs: 'dc'
 					})
 					.state('in_tc.eventRegistrations', {
 						url: '/eventRegistration',
