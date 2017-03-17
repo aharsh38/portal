@@ -1,4 +1,4 @@
-var _und = require('underscore');
+var _ = require('underscore');
 // var eventSections = require('../config/eventList').event_sections;
 var fs = require('fs');
 
@@ -82,7 +82,7 @@ var eventController = function (Event) {
 					throwError(response, "Finding all events according to section", error);
 				} else {
 
-					event_classification = _und.indexBy(data, '_id');
+					event_classification = _.indexBy(data, '_id');
 
 					for (var j in event_classification) {
 						event_classification_final.push({
@@ -185,42 +185,26 @@ var eventController = function (Event) {
 	}
 
 	function getEventsBySectionM(request, response) {
-		var event_classification = [];
-		var event_classification_final = [];
-
-		Events.find({
-			main_section: 'Technical Events'
-		}).aggregate(
-			[{
-				$group: {
-					_id: "$section",
-					events: {
-						$push: {
-							event_name: "$name",
-							fixed_payment: "$fixed_payment",
-							fees: "$fees",
-							fees_type: "$fees_type",
-							no_of_participants: "$no_of_participants",
-							shortcode: "$shortcode",
-							id: "$_id"
-						}
-					}
-				}
-			}],
-			function (error, data) {
+		var eventsection = request.params.eventsection;
+		Event.find({
+				section: request.params.eventsection
+			})
+			.exec(function (error, events) {
 				if (error) {
-					throwError(response, "Finding all events according to section", error);
+					throwError(response, error, 500, 'Internal Server Error', 'Events Fetch Failed');
+					return;
+				}
+				if (!events) {
+					throwError(response, error, 404, 'Not Found', 'Events Not Found');
 				} else {
+					var ev = [];
+					var eventsToSend = events;
+					_.each(eventsToSend, function (element, index, list) {
+						ev.push(_.pick(element, '_id', 'event_image', 'event_icon'));
+					});
 
-					event_classification = _und.indexBy(data, '_id');
-
-					for (var j in event_classification) {
-						event_classification_final.push({
-							section_name: event_classification[j]['_id'],
-							events: event_classification[j]['events']
-						});
-					}
-					res.json(event_classification_final);
+					response.status(200);
+					response.json(ev);
 				}
 			});
 	}
@@ -235,8 +219,10 @@ var eventController = function (Event) {
 		updateEvent: updateEvent,
 		deleteEvent: deleteEvent,
 		uploadDocs: uploadDocs,
+		uploadIcons: uploadIcons,
 		uploadImage: uploadImage
 	};
 
 };
-module.exports = eventController;;
+
+module.exports = eventController;
