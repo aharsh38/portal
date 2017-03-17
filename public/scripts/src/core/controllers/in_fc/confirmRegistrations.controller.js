@@ -5,9 +5,9 @@
 		.module('fct.core')
 		.controller('ConfirmRegistrationsController', ConfirmRegistrationsController);
 
-	ConfirmRegistrationsController.$inject = ['memberService', '$mdDialog', 'fctToast', '$scope'];
+	ConfirmRegistrationsController.$inject = ['facultyService', '$mdDialog', 'fctToast', '$scope'];
 
-	function ConfirmRegistrationsController(memberService, $mdDialog, fctToast, $scope) {
+	function ConfirmRegistrationsController(facultyService, $mdDialog, fctToast, $scope) {
 		var vm = this;
 		vm.registration = {};
 		vm.registrationButtonClicked = false;
@@ -45,7 +45,7 @@
 
 			$mdDialog.show(confirm).then(function (result) {
 				vm.registration.serialId = result;
-				return memberService.confirmRegistration(vm.registration)
+				return facultyService.confirmRegistration(vm.registration)
 					.then(confirmRegistrationSuccess)
 					.catch(confirmRegistrationFailure);
 			}, function () {
@@ -54,11 +54,23 @@
 		}
 
 		function confirmRegistrationSuccess(response) {
+			console.log(response);
 			vm.registrationButtonClicked = false;
 			vm.registration = {};
 			$scope.confirmRegistrationForm.$setPristine();
 			$scope.confirmRegistrationForm.$setUntouched();
-			fctToast.showToast('Registration Successful', true);
+
+			var msg;
+
+			if (response.status == 400) {
+				msg = response.data.error.for;
+				fctToast.showToast(msg);
+			}
+
+			if (msg) {
+				msg = response.data.message;
+				fctToast.showToast(msg, true);
+			}
 		}
 
 		function confirmRegistrationFailure(error) {

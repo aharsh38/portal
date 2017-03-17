@@ -152,6 +152,6 @@
 					file.progress = Math.min(100, parseInt(100.0 * evt.loaded / evt.total));
 				});
 			});
-		}
+		}//dfdf//sdf=
 	}
 })();

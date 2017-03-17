@@ -8,15 +8,22 @@ var passport = require('passport');
 var config = require('./api/config/config');
 require('./api/config/passport');
 
-// var dbURI = config.mongoURI;
+var dbURI = config.mongoURI;
 
 //var dbURI = "mongodb://localhost/gtutechfest1";
 
+// var dbURI = "mongodb://localhost/gtutestingFinal";
+//var dbURI = "mongodb://localhost/gtutesting";
+
+// var dbURI = 'mongodb://hraw1699:fdtdcdr6m@ds161039.mlab.com:61039/gtutechfesttest';
 //var dbURI = "mongodb://localhost/gtutestingFinal";
 //var dbURI = "mongodb://localhost/gtutesting";
-var dbURI = 'mongodb://hraw:fdtdcdr6m@ds131480.mlab.com:31480/gtutechfesttest1';
+
+//var dbURI = 'mongodb://hraw:fdtdcdr6m@ds131480.mlab.com:31480/gtutechfesttest1';
 //var dbURI = 'mongodb://gtutest1:fdtdcdr6m@ds161039.mlab.com:61039/gtutechfesttest';
+
 //var dbURI = 'mongodb://hraw1699:fdtdcdr6m@ds161039.mlab.com:61039/gtutechfesttest';
+
 
 // var dbURI = config.testMongo;
 

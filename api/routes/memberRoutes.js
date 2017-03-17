@@ -37,7 +37,12 @@ var memberRoutes = function(Faculty, Member, Registration, College, Events) {
     memberRouter.patch('/faculty/verify/:facultyId', memberController.verifyFaculty);
     memberRouter.patch('/faculty/reject/:facultyId', memberController.rejectFaculty);
 
-  	memberRouter.get('/registration/eventRegistrationData', registrationController.getAllEventsRegistrationData);
+
+    memberRouter.get('/registration/eventRegistrationData', registrationController.getAllEventsRegistrationData);
+    memberRouter.get('/registration/exportUnconfirmedRegistration', registrationController.exportUnconfirmedRegistration);
+    memberRouter.get('/faculty', facultyController.getAllFacultyCoordinators);
+
+
     memberRouter.get('/registration/exportUnconfirmedRegistration', registrationController.exportUnconfirmedRegistration);
     memberRouter.get('/faculty', facultyController.getAllFacultyCoordinators);
 
