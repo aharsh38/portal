@@ -150,17 +150,17 @@
                 </div>
               </md-input-container>
             </div>
-            <div flex>
-          <div flex layout="row">
+            <div flex layout="row">
+		  <div flex="50">
+          <div flex>
             <md-button ngf-select="ec.uploadFiles($files, $invalidFiles)" multiple
-                class="md-raised md-primary" flex="20"
+                class="md-raised md-primary"
                 accept="application/pdf,application/msword,
                   application/vnd.openxmlformats-officedocument.wordprocessingml.document"
                 ngf-max-size="10MB">
                 Upload Files
             </md-button>
           </div>
-          <div class="margin-1">
           <ul>
             <li ng-repeat="f in ec.files" style="font:smaller">
               <span>{{f.name}} {{f.$errorParam}}</span>
@@ -175,34 +175,59 @@
                 <div style="width:{{f.progress}}%;" flex="100" ng-bind="f.progress + '%'"></div>
               </span>
             </li>
-            <li ng-repeat="f in ec.errFiles" style="font:smaller">{{f.name}} {{f.$error}} {{f.$errorParam}}
+            <li ng-repeat="f in ec.errFiles" style="font:smaller"><p>{{f.name}} {{f.$error}} {{f.$errorParam}}</p>
             </li>
           </ul>
-        <div flex layout="row">
+		  </div>
+		<div flex="50">
+        <div flex>
           <md-button ngf-select="ec.uploadImage($files, $invalidFiles)"
-              class="md-raised md-primary" flex="20" accept="image/*" ngf-max-size="10MB">
+              class="md-raised md-primary" flex accept="image/*" ngf-max-size="10MB">
               Upload Image
           </md-button>
         </div>
-        <div class="margin-1">
         <ul ng-show="ec.myEvent.event_image != null">
           <li style="font:smaller">
             <span>Event Image {{ec.myEvent.event_image.$errorParam}}</span>
             <span ng-show="ec.isUpdate">{{ec.myEvent.event_image.doc_name}} {{ec.myEvent.event_image.$errorParam}}</span>
             <md-button class="md-icon-button md-raised md-primary" ng-click="ec.myEvent.event_image = null"
               md-no-ink="true">
-                <ng-md-icon icon="delete" size="20">
-                </ng-md-icon>
+				<ng-md-icon icon="delete" size="20">
+				</ng-md-icon>
             </md-button>
             <br/>
             <span class="progress margin-1" ng-show="ec.myEvent.event_image.progress >= 0">
               <div style="width:{{ec.myEvent.event_image.progress}}%;" flex="100" ng-bind="ec.myEvent.event_image.progress + '%'"></div>
             </span>
           </li>
+			<img src="{{ec.myEvent.event_image}}" style="height: 100px; width: 100px;"/>
         </ul>
-      </div>
         </div>
+		</div>
+		<div flex>
+		<div flex>
+          <md-button ngf-select="ec.uploadImage($files, $invalidFiles)"
+              class="md-raised md-primary" flex accept="image/*" ngf-max-size="10MB">
+              Upload Image Icon
+          </md-button>
         </div>
+        <ul ng-show="ec.myEvent.event_icon_image != null">
+          <li style="font:smaller">
+            <span>Event Image</span>
+            <span ng-show="ec.isUpdate">{{ec.myEvent.event_icon_image.doc_name}}</span>
+            <md-button class="md-icon-button md-raised md-primary" ng-click="ec.myEvent.event_image = null"
+              md-no-ink="true">
+				<ng-md-icon icon="delete" size="20">
+				</ng-md-icon>
+            </md-button>
+            <br/>
+            <span class="progress margin-1" ng-show="ec.myEvent.event_icon_image.progress >= 0">
+              <div style="width:{{ec.myEvent.event_image.progress}}%;" flex="100" ng-bind="ec.myEvent.event_icon_image.progress + '%'"></div>
+            </span>
+          </li>
+			<img src="{{ec.myEvent.event_icon_image}}" style="height: 20px; width: 20px;"/>
+        </ul>
+		</div>
       </div>
         <div layout="column" flex="100" class="margin-2">
           <h3>Rules</h3>
@@ -219,7 +244,7 @@
           <div id="editorJudgingCriteria" ckeditor="options" ng-model="ec.myEvent.judging_criteria" ready="ec.doneLoading()">
       		</div>
         </div>
-        <md-button class="md-primary md-raised" type="submit" ng-click="ec.save()">
+        <md-button class="md-primary md-raised" ng-click="ec.save()">
           {{ ec.myEvent.event }}
         </md-button>
     </form>

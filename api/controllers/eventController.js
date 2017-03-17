@@ -147,7 +147,7 @@ var eventController = function(Event) {
         request.event.no_of_participants = request.body.no_of_participants;
         request.event.fees = request.body.fees;
         request.event.fees_type = request.body.fees_type;
-        request.event.event_image = request.body.event_image;console.log(request.event.event_image);console.log(request.body);
+        request.event.event_image = request.body.event_image;
         request.event.shortcode = request.body.shortcode;
         request.event.save(function(error) {
             if (error) {

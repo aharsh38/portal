@@ -18,17 +18,17 @@
 
 		function activate() {
 			getRegistration();
-			var input = {
-				event_name: "somethon",
-				do_payment: true,
-			};
-			var x = JSON.stringify(input);
-			return memberService.getEventRegistrationExcel(x).then(function (response) {
-				console.log(response);
-			})
-			.catch(function (error) {
-
-			});
+			// var input = {
+			// 	event_name: "somethon",
+			// 	do_payment: true,
+			// };
+			// var x = JSON.stringify(input);
+			// return memberService.getEventRegistrationExcel(x).then(function (response) {
+			// 	console.log(response);
+			// })
+			// .catch(function (error) {
+			//
+			// });
 		}
 
 		function getRegistration() {

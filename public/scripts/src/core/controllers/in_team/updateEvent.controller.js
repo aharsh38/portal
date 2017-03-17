@@ -28,6 +28,7 @@
 			feeTypeChanged: feeTypeChanged,
 			doneLoading: doneLoading,
 			uploadImage: uploadImage,
+			uploadIconImage: uploadIconImage,
 		});
 
 		activate();
@@ -99,9 +100,7 @@
 		}
 
 		function save() {
-			vm.myEvent.rules = CKEDITOR.instances['editorRules'].getData();
-			vm.myEvent.specification = CKEDITOR.instances['editorSpecification'].getData();
-			vm.myEvent.judging_criteria = CKEDITOR.instances['editorJudgingCriteria'].getData();
+			vm.myEvent.attachments = vm.files;
 			console.log(JSON.stringify(vm.myEvent));
 			return eventService.updateEvent(vm.eventId, vm.myEvent)
 				.then(onUpdateSuccess)
@@ -128,15 +127,11 @@
 						file: file
 					}
 				});
-				file.upload.then(function (response) {
-					$timeout(function () {
-						file.result = response.data;
-						var attach = {
-							doc_name: file.name,
-							link: file.result.path,
-						};
-						vm.myEvent.attachments.push(attach);
-					});
+				file.upload.then(function (response) {console.log(response);
+					var attach = {
+						doc_name: file.name,
+						link: response.data.path,
+					};console.log(attach);
 				}, function (response) {
 					if (response.status > 0)
 						vm.errorMsg = response.status + ': ' + response.data;
@@ -154,10 +149,30 @@
 						file: file
 					}
 				});
-				file.upload.then(function (response) {
+				file.upload.then(function (response) {console.log(response);
 					$timeout(function () {
 						vm.myEvent.event_image = response.data.path;
 					});
+				}, function (response) {
+					if (response.status > 0) {
+						//console.log(reponse);
+					}
+				}, function (evt) {
+					file.progress = Math.min(100, parseInt(100.0 * evt.loaded / evt.total));
+				});
+			});
+		}
+
+		function uploadIconImage(files, errFiles) {
+			angular.forEach(files, function (file) {
+				file.upload = Upload.upload({
+					url: '/api/members/uploadIconImage',
+					data: {
+						file: file
+					}
+				});
+				file.upload.then(function (response) {reponse.log(response);
+					vm.myEvent.event_icon_image = response.data.path;
 				}, function (response) {
 					if (response.status > 0) {
 						//console.log(reponse);
