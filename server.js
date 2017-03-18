@@ -111,9 +111,17 @@ app.get('*', function (request, response) {
 	response.sendFile(path.join(__dirname, 'public', 'index.html'));
 });
 
-app.listen(port, function () {
-	console.log("Now Running on port" + port);
-});
+// app.listen(port, function () {
+// 	console.log("Now Running on port" + port);
+// });
+
+require('greenlock-express').create({
+	server: 'staging',
+	email: 'gtutechfest@gtu.edu.in',
+	agreeTos: true,
+	approveDomains: ['gtu.ac.in'],
+	app: app
+}).listen(80, 443);
 
 module.exports = app;
 // app.get('/download', function(request, response){
