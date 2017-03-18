@@ -15,25 +15,11 @@ var memberRoutes = function (Faculty, Member, Registration, College, Events) {
 	var eventController = require('../controllers/eventController')(Events);
 	var collegeController = require('../controllers/collegeController')(College);
 
-<<<<<<< HEAD
+
 	var registrationMiddleware = require('../middlewares/getParamRegistration')(Registration);
 	var facultyMiddleware = require('../middlewares/getParamFaculty')(Faculty);
 	var eventMiddleware = require('../middlewares/getParamEvent')(Events);
 	var memberMiddleware = require('../middlewares/getParamMember')(Member);
-=======
-    memberRouter.use('/upload', multipartMiddleware, function(request, response, next) {
-        console.log("Mulipart");
-        next();
-    });
-    memberRouter.use('/uploadImage', multipartMiddleware, function(request, response, next) {
-        console.log("Mulipart");
-        next();
-    });
-    memberRouter.use('/uploadIcons', multipartMiddleware, function(request, response, next) {
-        console.log("Mulipart");
-        next();
-    });
->>>>>>> master
 
 	memberRouter.use('/upload', multipartMiddleware, function (request, response, next) {
 		console.log("Mulipart");
@@ -43,12 +29,15 @@ var memberRoutes = function (Faculty, Member, Registration, College, Events) {
 		console.log("Mulipart");
 		next();
 	});
+	memberRouter.use('/uploadIcons', multipartMiddleware, function (request, response, next) {
+		console.log("Mulipart");
+		next();
+	});
 
 	memberRouter.param('teamId', registrationMiddleware);
 	memberRouter.param('facultyId', facultyMiddleware);
 	memberRouter.param('eventId', eventMiddleware);
 	memberRouter.param('memberId', memberMiddleware);
-
 
 	memberRouter.patch('/faculty/verify/:facultyId', memberController.verifyFaculty);
 	memberRouter.patch('/faculty/reject/:facultyId', memberController.rejectFaculty);
@@ -62,17 +51,11 @@ var memberRoutes = function (Faculty, Member, Registration, College, Events) {
 	memberRouter.get('/registration/exportUnconfirmedRegistration', registrationController.exportUnconfirmedRegistration);
 	memberRouter.get('/faculty', facultyController.getAllFacultyCoordinators);
 
-<<<<<<< HEAD
 	// memberRouter.get('/registrations/', registrationController.getAllEventsRegistrationData);
 	memberRouter.get('/importCollege', collegeController.importCollege);
-=======
-    memberRouter.post('/upload', eventController.uploadDocs);
-    memberRouter.post('/uploadImage', eventController.uploadImage);
-    memberRouter.post('/uploadIcons', eventController.uploadIcons);
->>>>>>> master
-
 	memberRouter.post('/upload', eventController.uploadDocs);
 	memberRouter.post('/uploadImage', eventController.uploadImage);
+	memberRouter.post('/uploadIcons', eventController.uploadIcons);
 
 	memberRouter.get('/exportVFSList', facultyController.exportVFSList);
 	memberRouter.get('/exportUVFList', facultyController.exportUVFList);
