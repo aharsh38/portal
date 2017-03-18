@@ -97,9 +97,7 @@ var collegeController = function (College) {
 		College.find({
 			faculty_assigned: false
 		}).select({
-			name: 1,
-			code: 1,
-			city: 1
+			name: 1
 		}).exec(function (error, colleges) {
 			response.json(colleges);
 		});

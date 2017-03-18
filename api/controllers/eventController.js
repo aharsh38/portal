@@ -655,8 +655,8 @@ var eventController = function (Events) {
 		updateEvent: updateEvent,
 		deleteEvent: deleteEvent,
 		uploadDocs: uploadDocs,
-		uploadImage: uploadImage
+		uploadImage: uploadImage,
+		uploadIcons: uploadIcons
 	};
 };
 module.exports = eventController;
-tController;
