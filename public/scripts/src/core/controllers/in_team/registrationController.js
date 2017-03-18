@@ -35,53 +35,6 @@ var registrationController = function (Registration) {
 			});
 	}
 
-	function generateSlip2(type, teamid, data) {
-		if (type) {
-			fs.readFile('./api/slips/templates/' + type + '.hbs', function (error, file) {
-				if (!error) {
-					var source = file.toString();
-					var template = Handlebars.compile(source);
-					var result = template(data);
-					fs.writeFile("./api/slips/" + type + "/html/" + teamid + ".html", result, function (error) {
-						if (error) {
-							return {
-								"message": "error",
-								"error": error
-							};
-						} else {
-							var html = fs.readFileSync('./api/slips/' + type + '/html/' + teamid + '.html', 'utf8');
-
-							var options = {
-								format: 'Letter',
-								zoom: 0.5
-							};
-
-							pdf.create(html, options).toFile('./api/slips/' + type + '/' + teamid + '.pdf', function (error, res) {
-								console.log("PDF GENERATE ERROR", error);
-								if (error) {
-									return {
-										"message": "error",
-										"error": error
-									};
-								} else {
-									return {
-										"message": "Done"
-									};
-								}
-							});
-						}
-					});
-				} else {
-					return {
-						"message": "error",
-						"error": error
-					};
-				}
-			});
-		}
-	}
-
-
 	function generateSlip(type, teamid, data, request, response, registration) {
 		if (type) {console.log('donwload skip');
 			fs.readFile('./api/slips/templates/' + type + '.hbs', function (error, file) {
@@ -99,8 +52,7 @@ var registrationController = function (Registration) {
 							var html = fs.readFileSync('./api/slips/' + type + '/html/' + teamid + '.html', 'utf8');
 
 							var options = {
-								format: 'Letter',
-								zoom: 0.5
+								format: 'Letter'
 							};
 							pdf.create(html, options).toFile('./api/slips/' + type + '/' + teamid + '.pdf', function (error, res) {
 								console.log("PDF GENERATE ERROR", error);
@@ -115,7 +67,7 @@ var registrationController = function (Registration) {
 											throwError(response, error, 500, 'Internal Server error', 'Event Register');
 										} else {
 
-											var dnlink = 'http://portal.gtu.ac.in/api/registration/downloadSlip/' + registration.teamId + '?type=';
+											var dnlink = 'http://localhost:9000/api/registration/downloadSlip/' + registration.teamId + '?type=';
 											if (request.body.do_payment) {
 												dnlink += 'forPayment';
 											} else if (request.body.late_payment) {
@@ -201,44 +153,27 @@ var registrationController = function (Registration) {
 				eventObject: registration.eventObject
 			};
 			slip = generateSlip('forPayment', registration.teamId, dataToGeneratePDF, request, response, registration);
-		} else if (request.body.late_payment) {
+		} else if (request.body.latePayment) {
 			dataToGeneratePDF = {
 				teamId: registration.teamId,
 				team_leader: registration.team_leader,
-				date: nd,
-				amount: registration.total_amount,
-				other_participants: registration.other_participants,
-				eventObject: registration.eventObject
+				other_participants: registration.other_participants
 			};
-			slip = generateSlip('latePayment', registration.teamId, dataToGeneratePDF, request, response, registration);
+			slip = generateSlip('latePayment', registration.teamId, dataToGeneratePDF);
 		}
 	}
 
-
-	function downloadConfirmSlip(request, response) {
-		var type = 'confirmPayment';
-		var teamId = request.params.teamId;
-
-		response.download('./api/slips/' + type + '/' + teamId + '.pdf', function (error, data) {
-			if (error) {
-				throwError(response, error, null, 'Slip Download', 'Download Failed');
-			} else {
-				response.status(200);
-				response.send(data);
-			}
-		});
-	}
 
 
 	function downloadSlip(request, response) {
 		var type = request.query.type;
 		var teamId = request.params.teamId;
-
+		response.status(200);
 		response.download('./api/slips/' + type + '/' + teamId + '.pdf', function (error, data) {
+			console.log("Error", error);
 			if (error) {
 				throwError(response, error, null, 'Slip Download', 'Download Failed');
 			} else {
-				response.status(200);
 				response.send(data);
 			}
 		});
@@ -260,11 +195,7 @@ var registrationController = function (Registration) {
 					throwError(response, error, 404, 'Not Found', 'Registrations not found');
 				} else {
 					response.status(200);
-					response.json({
-						"totalRegistrations": request.faculty.registrations_count,
-						"totalCollectedAmount": request.faculty.collected_amount,
-						"registrations": registrations
-					});
+					response.json(registrations);
 				}
 			});
 	}
@@ -380,29 +311,59 @@ var registrationController = function (Registration) {
 						_id: {eventName: "$eventObject.event_name"},
 						confirmed_registrations: {$sum: { $cond: [ { $eq: [ "$confirmation", true] } , 1, 0 ] }},
 						unconfirmed_registrations: {$sum: { $cond: [ { $eq: [ "$confirmation", false] } , 1, 0 ] }},
-            event_section: { $first: "$eventObject.event_section"},
+						confirmed_team_leader: {"$push": {"$cond": [
+													{ "$eq": ["$confirmation", true] },
+													"$team_leader",
+													false
+												]},
+											},
+						confirmed_other_participants: {"$push": {"$cond": [
+													{ "$eq": ["$confirmation", true] },
+													"$other_participants",
+													false
+												]},
+											},
+						confirmed_team_id: {"$push": {"$cond": [
+												{ "$eq": ["$confirmation", true] },
+												"$team_id",
+												false
+											]},
+										},
+						unconfirmed_team_leader: {"$push": {"$cond": [
+													{ "$eq": ["$confirmation", false] },
+													"$team_leader",
+													false
+												]},
+											},
+						unconfirmed_other_participants: {"$push": {"$cond": [
+													{ "$eq": ["$confirmation", false] },
+													"$other_participants",
+													false
+												]},
+											},
+						unconfirmed_team_id: {"$push": {"$cond": [
+												{ "$eq": ["$confirmation", false] },
+												"$team_id",
+												false
+											]},
+										},
 					},
 				},
-				{
-					$sort: {
-						"eventObject.event_section": 1
-					}
-				}
 				],
-				function(error, data) {console.log(error);
+				function(error, data) {console.log("dfd'");console.log(data);console.log(error);
 						if (error) {
 								throwError(response, "Finding all registrations according to event", error);
 						} else {
-							// _.each(data, function (element, index, list) {
-							// 	var eventName = element._id.eventName;
-							// 			var arrayOfParticipants = _.union([element.confirmed_team_leader], element.confirmed_other_participants);
-							// 			console.log(arrayOfParticipants);
+							_.each(data, function (element, index, list) {
+								var eventName = element._id.eventName;
+										var arrayOfParticipants = _.union([element.confirmed_team_leader], element.confirmed_other_participants);
+										console.log(arrayOfParticipants);
 										// arrayOfParticipants = _.map(arrayOfParticipants, function (e, i, l) {
 										// 	var newElem = e;
 										// 	newElem.teamId = e.conteamId;
 										// 	return newElem;
 										// });
-							// });
+							});
 						// 	var newData = [];
 						// 	var found = false;
 						// 	var confirmedData = [];
@@ -468,9 +429,9 @@ var registrationController = function (Registration) {
 						// 	}
 							// newData.confirmed_xlsx = cpath;
 							// newData.unconfirmed_xlsx = ucpath;
-							console.log(data);
+							// console.log(newData);
 							response.status(200);
-							response.json(data);
+							response.json("newData");
 						}
 				});
 	}
@@ -529,7 +490,6 @@ var registrationController = function (Registration) {
 	ac.register = register;
 	ac.getRegistration = getRegistration;
 	ac.downloadSlip = downloadSlip;
-	ac.downloadConfirmSlip = downloadConfirmSlip;
 	ac.getFacultyRegistrations = getFacultyRegistrations;
 	ac.exportRegistration = exportRegistration;
 	ac.getAllEventsRegistrationData = getAllEventsRegistrationData;
