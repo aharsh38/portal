@@ -267,10 +267,14 @@ var eventController = function(Events) {
     }
 
     function uploadIcons(request, response) {
+        // console.log("FILE",request.file);
+        // console.log("FILES", request.files);
+
         var temp_path = request.files.file.path;
         var target_path = './public/media/icons/' + request.files.file.originalFilename;
         fs.rename(temp_path, target_path, function(error) {
             if (error) {
+                console.log("ERROR",error);
                 response.json(error);
             } else {
                 var returnObject = {};
@@ -385,6 +389,8 @@ var eventController = function(Events) {
         request.event.fees_type = request.body.fees_type;
         request.event.event_image = request.body.event_image;
         request.event.shortcode = request.body.shortcode;
+        request.event.event_icon = request.body.event_icon_image;
+        request.event.attachments = request.body.attachments;
         request.event.save(function(error) {
             if (error) {
                 throwError(response, "Updating Event", error);
@@ -496,7 +502,8 @@ var eventController = function(Events) {
         updateEvent: updateEvent,
         deleteEvent: deleteEvent,
         uploadDocs: uploadDocs,
-        uploadImage: uploadImage
+        uploadImage: uploadImage,
+        uploadIcons: uploadIcons,
     };
     // >>>>>>> staging_main
 

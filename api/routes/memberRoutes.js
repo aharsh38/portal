@@ -27,6 +27,10 @@ var memberRoutes = function(Faculty, Member, Registration, College, Events) {
         console.log("Mulipart");
         next();
     });
+    memberRouter.use('/uploadIcons', multipartMiddleware, function(request, response, next) {
+        console.log("Mulipart");
+        next();
+    });
 
     memberRouter.param('teamId', registrationMiddleware);
     memberRouter.param('facultyId', facultyMiddleware);
@@ -51,6 +55,7 @@ var memberRoutes = function(Faculty, Member, Registration, College, Events) {
 
     memberRouter.post('/upload', eventController.uploadDocs);
     memberRouter.post('/uploadImage', eventController.uploadImage);
+    memberRouter.post('/uploadIcons', eventController.uploadIcons);
 
     memberRouter.get('/exportVFSList', facultyController.exportVFSList);
     memberRouter.get('/exportUVFList', facultyController.exportUVFList);

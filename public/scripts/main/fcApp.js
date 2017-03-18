@@ -2415,7 +2415,7 @@
 
 		function save() {
 			vm.myEvent.attachments = vm.files;
-			console.log(JSON.stringify(vm.myEvent));
+			console.log(vm.myEvent);
 			return eventService.updateEvent(vm.eventId, vm.myEvent)
 				.then(onUpdateSuccess)
 				.catch(onUpdateFailure);
@@ -2480,13 +2480,14 @@
 		function uploadIconImage(files, errFiles) {
 			angular.forEach(files, function (file) {
 				file.upload = Upload.upload({
-					url: '/api/members/uploadIconImage',
+					url: '/api/members/uploadIcons',
+
 					data: {
 						file: file
 					}
 				});
-				file.upload.then(function (response) {reponse.log(response);
-					vm.myEvent.event_icon_image = response.data.path;
+				file.upload.then(function (response) {console.log(response);
+					vm.myEvent.event_icon = response.data.path;
 				}, function (response) {
 					if (response.status > 0) {
 						//console.log(reponse);

@@ -199,33 +199,33 @@
             <span class="progress margin-1" ng-show="ec.myEvent.event_image.progress >= 0">
               <div style="width:{{ec.myEvent.event_image.progress}}%;" flex="100" ng-bind="ec.myEvent.event_image.progress + '%'"></div>
             </span>
+		       <img src="{{ec.myEvent.event_image}}" style="height: 100px; width: 100px;"/>
           </li>
-			<img src="{{ec.myEvent.event_image}}" style="height: 100px; width: 100px;"/>
         </ul>
         </div>
 		</div>
 		<div flex>
 		<div flex>
-          <md-button ngf-select="ec.uploadImage($files, $invalidFiles)"
+          <md-button ngf-select="ec.uploadIconImage($files, $invalidFiles)"
               class="md-raised md-primary" flex accept="image/*" ngf-max-size="10MB">
               Upload Image Icon
           </md-button>
         </div>
-        <ul ng-show="ec.myEvent.event_icon_image != null">
+        <ul ng-show="ec.myEvent.event_icon != null">
           <li style="font:smaller">
-            <span>Event Image</span>
-            <span ng-show="ec.isUpdate">{{ec.myEvent.event_icon_image.doc_name}}</span>
-            <md-button class="md-icon-button md-raised md-primary" ng-click="ec.myEvent.event_image = null"
+            <span>Event Icon Image</span>
+            <span ng-show="ec.isUpdate">{{ec.myEvent.event_icon.doc_name}}</span>
+            <md-button class="md-icon-button md-raised md-primary" ng-click="ec.myEvent.event_icon = null"
               md-no-ink="true">
 				<ng-md-icon icon="delete" size="20">
 				</ng-md-icon>
             </md-button>
             <br/>
-            <span class="progress margin-1" ng-show="ec.myEvent.event_icon_image.progress >= 0">
-              <div style="width:{{ec.myEvent.event_image.progress}}%;" flex="100" ng-bind="ec.myEvent.event_icon_image.progress + '%'"></div>
+            <span class="progress margin-1" ng-show="ec.myEvent.event_icon.progress >= 0">
+              <div style="width:{{ec.myEvent.event_icon.progress}}%;" flex="100" ng-bind="ec.myEvent.event_icon.progress + '%'"></div>
             </span>
+	         <img src="{{ec.myEvent.event_icon}}" style="height: 20px; width: 20px;"/>
           </li>
-			<img src="{{ec.myEvent.event_icon_image}}" style="height: 20px; width: 20px;"/>
         </ul>
 		</div>
       </div>

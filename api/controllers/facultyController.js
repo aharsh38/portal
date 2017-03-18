@@ -200,7 +200,8 @@ var facultyController = function(Faculty, Registration) {
                 collected_amount: 1
             })
             .sort({
-                createdAt: -1
+                verified: 1,
+                createdAt: -1,
             })
             .populate({
                 path: 'collegeId',
