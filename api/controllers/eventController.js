@@ -499,7 +499,6 @@ var eventController = function (Events) {
 
 	function createEvent(request, response) {
 		var event_obj = new Events();
-		// event_obj = request.body;
 		event_obj.name = request.body.name;
 		event_obj.tagline = request.body.tagline;
 		event_obj.description = request.body.description;
@@ -517,7 +516,7 @@ var eventController = function (Events) {
 		event_obj.fees_type = request.body.fees_type;
 		event_obj.shortcode = request.body.shortcode;
 		event_obj.event_image = request.body.event_image;
-
+		event_obj.event_icon = request.body.event_icon_image;
 		event_obj.save(function (error) {
 			if (error) {
 				throwError(response, "Creating Event", error);
@@ -534,6 +533,19 @@ var eventController = function (Events) {
 			response.status(200);
 			response.json(request.event);
 		}
+	}
+
+
+	function deleteEvent(request, response) {
+		request.event.remove(function (error) {
+			if (error) {
+				throwError(response, "Deleting Event", error);
+			} else {
+				response.status(202).send({
+					"message": "Event Removed"
+				});
+			}
+		});
 	}
 
 	function updateEvent(request, response) {
@@ -554,6 +566,8 @@ var eventController = function (Events) {
 		request.event.fees_type = request.body.fees_type;
 		request.event.event_image = request.body.event_image;
 		request.event.shortcode = request.body.shortcode;
+		request.event.event_icon = request.body.event_icon_image;
+		request.event.attachments = request.body.attachments;
 		request.event.save(function (error) {
 			if (error) {
 				throwError(response, "Updating Event", error);
@@ -562,95 +576,6 @@ var eventController = function (Events) {
 			}
 		});
 	}
-
-	function deleteEvent(request, response) {
-		request.event.remove(function (error) {
-			if (error) {
-				throwError(response, "Deleting Event", error);
-			} else {
-				response.status(202).send({
-					"message": "Event Removed"
-				});
-			}
-		});
-	}
-
-	<<
-	<<
-	<< < HEAD
-		// function getEventsBySectionM(request, response) {
-		//     var event_classification = [];
-		//     var event_classification_final = [];
-		//
-		//     Events.find({
-		//         main_section: 'Technical Events'
-		//     }).aggregate(
-		//         [{
-		//             $group: {
-		//                 _id: "$section",
-		//                 events: {
-		//                     $push: {
-		//                         event_name: "$name",
-		//                         fixed_payment: "$fixed_payment",
-		//                         fees: "$fees",
-		//                         fees_type: "$fees_type",
-		//                         no_of_participants: "$no_of_participants",
-		//                         shortcode: "$shortcode",
-		//                         id: "$_id"
-		//                     }
-		//                 }
-		//             }
-		//         }],
-		//         function(error, data) {
-		//             if (error) {
-		//                 throwError(response, "Finding all events according to section", error);
-		//             } else {
-		//
-		//                 event_classification = _und.indexBy(data, '_id');
-		//
-		//                 for (var j in event_classification) {
-		//                     event_classification_final.push({
-		//                         section_name: event_classification[j]['_id'],
-		//                         events: event_classification[j]['events']
-		//                     });
-		//                 }
-		//                 res.json(event_classification_final);
-		//             }
-		//         });
-		// }
-		===
-		===
-		=
-		function updateEvent(request, response) {
-			request.event.name = request.body.name;
-			request.event.tagline = request.body.tagline;
-			request.event.description = request.body.description;
-			request.event.rules = request.body.rules;
-			request.event.specification = request.body.specification;
-			request.event.problem_statement = request.body.problem_statement;
-			request.event.judging_criteria = request.body.judging_criteria;
-			request.event.managers = request.body.managers;
-			request.event.section = request.body.section;
-			request.event.main_section = request.body.main_section;
-			request.event.fixed_payment = request.body.fixed_payment;
-			request.event.keywords = request.body.keywords;
-			request.event.no_of_participants = request.body.no_of_participants;
-			request.event.fees = request.body.fees;
-			request.event.fees_type = request.body.fees_type;
-			request.event.event_image = request.body.event_image;
-			request.event.shortcode = request.body.shortcode;
-			request.event.event_icon = request.body.event_icon_image;
-			request.event.attachments = request.body.attachments;
-			request.event.save(function (error) {
-				if (error) {
-					throwError(response, "Updating Event", error);
-				} else {
-					response.status(200).json(request.Event);
-				}
-			});
-		} >>>
-		>>>
-		> master
 
 	function getEventsBySectionM(request, response) {
 		var eventsection = request.params.eventsection;
@@ -720,9 +645,7 @@ var eventController = function (Events) {
 	// }
 
 
-	<<
-	<<
-	<< < HEAD
+
 	return {
 		getAllEvents: getAllEvents,
 		// getEventsBySection: getEventsBySection,
@@ -734,26 +657,6 @@ var eventController = function (Events) {
 		uploadDocs: uploadDocs,
 		uploadImage: uploadImage
 	};
-	// >>>>>>> staging_main
-	===
-	===
-	=
-	return {
-		getAllEvents: getAllEvents,
-		getEventsBySection: getEventsBySection,
-		getEventsBySectionM: getEventsBySectionM,
-		createEvent: createEvent,
-		getSingleEvent: getSingleEvent,
-		updateEvent: updateEvent,
-		deleteEvent: deleteEvent,
-		uploadDocs: uploadDocs,
-		uploadImage: uploadImage,
-		uploadIcons: uploadIcons,
-	};
-	// >>>>>>> staging_main
-	>>>
-	>>>
-	> master
-
 };
 module.exports = eventController;
+tController;
