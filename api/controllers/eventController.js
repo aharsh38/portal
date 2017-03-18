@@ -615,7 +615,7 @@ var eventController = function (Events) {
 
 	function getEventsBySectionM(request, response) {
 		var eventsection = request.params.eventsection;
-		Event.find({
+		Events.find({
 				section: request.params.eventsection
 			})
 			.exec(function (error, events) {
