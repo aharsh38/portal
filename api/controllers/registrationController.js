@@ -338,7 +338,8 @@ var registrationController = function (Registration) {
 					}
 				}
 				],
-				function(error, registrations) {
+		function(error, registrations) {
+				var excelPrefix = (request.body.confirmation) ? "Confirmed-" : "Unconfirmed-";
 				var en = request.body.event_name;
 				if (error) {
 					throwError(response, error, 500, 'Internal Server Error', 'Registration Fetch Failed');
@@ -363,12 +364,12 @@ var registrationController = function (Registration) {
 					// console.log(participantsData);
 					if (participantsData) {
 						var xls = json2xls(participantsData);
-						fs.writeFileSync('./public/documents/' + en + '.xlsx', xls, 'binary');
+						fs.writeFileSync('./public/documents/' + excelPrefix + en + '.xlsx', xls, 'binary');
 					}
-					if (fs.existsSync('./public/documents/' + en + '.xlsx')) {
+					if (fs.existsSync('./public/documents/' + excelPrefix + en + '.xlsx')) {
 						response.status(200);
 						response.json({
-							path:'/documents/'+en+'.xlsx'
+							path:'/documents/'+excelPrefix+en+'.xlsx'
 						});
 						// response.download('./documents/' + en + '.xlsx', function (error) {
 						// 	if (error) {
