@@ -104,6 +104,7 @@ var authController = function (Faculty, Member) {
 	}
 
 	function facultyForgotPasswordSet(request, response) {
+		console.log("FORGOT FACULTY", request.faculty);
 		if ((request.faculty.forgot_password_token == request.body.token) && request.faculty.forgot_password) {
 			request.faculty.setPassword(request.body.password);
 			request.faculty.forgot_password = false;
