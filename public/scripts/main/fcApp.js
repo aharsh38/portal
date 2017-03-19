@@ -2092,30 +2092,19 @@
 		.module('fct.core')
 		.controller('EventRegistrationController', EventRegistrationController);
 
-	EventRegistrationController.$inject = ['memberService'];
+	EventRegistrationController.$inject = ['memberService', '$window'];
 
-	function EventRegistrationController(memberService) {
+	function EventRegistrationController(memberService, $window) {
 		var vm = this;
 
-		// angular.extend(vm, {
-		// 	func: func
-		// });
+		angular.extend(vm, {
+			getExcel: getExcel
+		});
 
 		activate();
 
 		function activate() {
 			getRegistration();
-			// var input = {
-			// 	event_name: "somethon",
-			// 	do_payment: true,
-			// };
-			// var x = JSON.stringify(input);
-			// return memberService.getEventRegistrationExcel(x).then(function (response) {
-			// 	console.log(response);
-			// })
-			// .catch(function (error) {
-			//
-			// });
 		}
 
 		function getRegistration() {
@@ -2129,6 +2118,20 @@
 
 		function failure(error) {
 			console.log(error);
+		}
+
+		function getExcel(event_name, confirmed) {
+			var input = {
+				event_name: event_name,
+				confirmation: confirmed,
+			};
+			var json = JSON.stringify(input);
+			memberService.getEventRegistrationExcel(json).then(function (response) {
+				$window.open(response.data.path);
+			})
+			.catch(function (error) {
+
+			});
 		}
 	}
 })();

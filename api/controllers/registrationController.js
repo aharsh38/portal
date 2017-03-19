@@ -322,9 +322,26 @@ var registrationController = function (Registration) {
 	}
 
 	function exportRegistration(request, response) {
+		// Registration.aggregate(
+		// 		[{
+		// 			$match: {
+		// 				"event_name": request.body.event_name,
+		// 				"confirmation": request.body.confirmation
+		// 			}
+		// 		},
+		// 		{
+		// 			$group: {
+		// 				_id: {eventName: "event_name"}
+		// 			},
+		// 		}
+		// 		],
+		// 		function(error, registrations) {console.log(error);console.log(registrations);
 		Registration.find({
-				"eventObject.event_name": request.body.event_name
+				"eventObject.event_name": request.body.event_name,
+				"confirmation": request.body.confirmation,
 			})
+			// .distinct("team_leader.email")
+			// .select()
 			.exec(function (error, registrations) {console.log(registrations);
 				var en = request.body.event_name;
 				if (error) {
@@ -385,7 +402,7 @@ var registrationController = function (Registration) {
 				},
 				{
 					$sort: {
-						"eventObject.event_section": 1
+						"event_section": 1,
 					}
 				}
 				],

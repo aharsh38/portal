@@ -389,7 +389,7 @@ var eventController = function(Events) {
         request.event.fees_type = request.body.fees_type;
         request.event.event_image = request.body.event_image;
         request.event.shortcode = request.body.shortcode;
-        request.event.event_icon = request.body.event_icon_image;
+        request.event.event_icon = request.body.event_icon;
         request.event.attachments = request.body.attachments;
         request.event.save(function(error) {
             if (error) {
