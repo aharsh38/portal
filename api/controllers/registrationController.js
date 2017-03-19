@@ -413,7 +413,8 @@ var registrationController = function (Registration) {
 						_id: {eventName: "$_id"},
 						event_section: {$first: "$event_section"},
 						confirmed_registrations: {$first: "$confirmed_registrations"},
-						unconfirmed_registrations: {$sum: 1},
+						unconfirmed_registrations: {$sum: { $cond: [ { $eq: [ "$unconfirmed_registrations", false] } , 0, 1 ] }},
+						unc: {$first: "$unconfirmed_registrations"}
 					}
 				},
 				{
@@ -422,7 +423,7 @@ var registrationController = function (Registration) {
 					}
 				}
 				],
-				function(error, data) {
+				function(error, data) {console.log(data);
 						if (error) {
 								throwError(response, "Finding all registrations according to event", error);
 						} else {

@@ -33,8 +33,6 @@
 				.catch(errorFunc);
 		}
 
-
-
 		function get(students) {
 			var link = baseLink + '/studentCoordinator';
 			return $http.put(link, students)
@@ -51,6 +49,13 @@
 
 		function getStudentCoordinator() {
 			var link = baseLink + '/studentCoordinator';
+			return $http.get(link)
+				.then(resolveFunc)
+				.catch(errorFunc);
+		}
+
+		function updateFaculty(id) {
+			var link = baseLink + '/updateFaculty/' + id;
 			return $http.get(link)
 				.then(resolveFunc)
 				.catch(errorFunc);

@@ -61,9 +61,7 @@ var authController = function(Faculty, Member) {
             }
         });
     }
-
-
-
+    
     function facultyForgotPasswordApply(request, response) {
         Faculty.findOne({
                 email: request.body.email

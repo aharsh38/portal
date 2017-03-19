@@ -9,7 +9,7 @@ var facultyRoutes = function(Faculty, Registration) {
 
     facultyRouter.param('facultyId', facultyMiddleware);
 
-
+    facultyRouter.post('/updateFaculty/:facultyId', facultyController.updateFaculty);
     facultyRouter.patch('/settings/changePassword', facultyController.facultyChangePassword);
     facultyRouter.post('/:facultyId/registrations/confirm', facultyController.confirmRegistration);
     facultyRouter.get('/:facultyId/registrations', registrationController.getFacultyRegistrations);

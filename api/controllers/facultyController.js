@@ -433,6 +433,19 @@ var facultyController = function(Faculty, Registration) {
         });
     }
 
+    function updateFaculty(request, response) {
+        request.faculty.name = request.body.name;
+        request.faculty.email = request.body.email;
+        request.faculty.mobileno = request.body.mobileno;
+        request.faculty.save(function(error) {
+            if (error) {
+                throwError(response, error, 500, 'Internal Server error', 'Faculty Register');
+            } else {
+                response.status(200);
+            }
+        });
+    }
+
     var ac = {};
     ac.seeRegistration = seeRegistration;
     ac.confirmRegistration = confirmRegistration;
@@ -444,6 +457,7 @@ var facultyController = function(Faculty, Registration) {
     ac.exportVFSList = exportVFSList;
     ac.exportUVFList = exportUVFList;
     ac.checkFacultyVerified = checkFacultyVerified;
+    ac.updateFaculty = updateFaculty;
     return ac;
 };
 
