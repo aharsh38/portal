@@ -22,8 +22,8 @@
           <td>{{event._id.eventName}}</td>
   		    <td>{{event.confirmed_registrations}}</td>
   		    <td>{{event.unconfirmed_registrations}}</td>
-          <td><md-button class="md-raised md-primary" ng-click="erc.getExcel(event._id.eventName, true)">Generate Confirmed Registration</md-button>
-            <md-button class="md-raised md-primary" ng-click="erc.getExcel(event._id.eventName, false)">Generate Unregistration</md-button></td>
+          <td><md-button class="md-raised md-primary" ng-click="erc.getExcel(event._id.eventName, true)">Export Confirmed Registration</md-button>
+            <md-button class="md-raised md-primary" ng-click="erc.getExcel(event._id.eventName, false)">Export Unconfirmed Registration</md-button></td>
   		</tr>
     </table>
   </md-content>

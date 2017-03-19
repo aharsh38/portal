@@ -322,27 +322,23 @@ var registrationController = function (Registration) {
 	}
 
 	function exportRegistration(request, response) {
-		// Registration.aggregate(
-		// 		[{
-		// 			$match: {
-		// 				"event_name": request.body.event_name,
-		// 				"confirmation": request.body.confirmation
-		// 			}
-		// 		},
-		// 		{
-		// 			$group: {
-		// 				_id: {eventName: "event_name"}
-		// 			},
-		// 		}
-		// 		],
-		// 		function(error, registrations) {console.log(error);console.log(registrations);
-		Registration.find({
-				"eventObject.event_name": request.body.event_name,
-				"confirmation": request.body.confirmation,
-			})
-			// .distinct("team_leader.email")
-			// .select()
-			.exec(function (error, registrations) {console.log(registrations);
+		Registration.aggregate(
+				[{
+					$match: {
+						"eventObject.event_name": request.body.event_name,
+						"confirmation": request.body.confirmation,
+					}
+				},
+				{
+					$group: {
+						_id: {team_id: "$teamId"},
+						team_leader: {$first: "$team_leader"},
+						other_participants: {$first: "$other_participants"},
+						teamId: {$first: "$teamId"}
+					}
+				}
+				],
+				function(error, registrations) {
 				var en = request.body.event_name;
 				if (error) {
 					throwError(response, error, 500, 'Internal Server Error', 'Registration Fetch Failed');
@@ -356,7 +352,7 @@ var registrationController = function (Registration) {
 						// var newe = element.toJSON();
 						var arrayOfParticipants = _.union([element.team_leader], element.other_participants);
 						arrayOfParticipants = _.map(arrayOfParticipants, function (e, i, l) {
-							var newElem = e.toJSON();
+							var newElem = e;
 							newElem.teamId = element.teamId;
 							// console.log(newElem);
 							return newElem;
