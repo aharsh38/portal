@@ -331,14 +331,14 @@ var registrationController = function (Registration) {
 				},
 				{
 					$group: {
-						_id: {team_id: "$teamId"},
+						_id: {condition: (request.body.confirmation) ? "$teamId" : "$team_leader.email"},
 						team_leader: {$first: "$team_leader"},
 						other_participants: {$first: "$other_participants"},
 						teamId: {$first: "$teamId"}
 					}
 				}
 				],
-		function(error, registrations) {
+		function(error, registrations) {console.log(registrations);
 				var excelPrefix = (request.body.confirmation) ? "Confirmed-" : "Unconfirmed-";
 				var en = request.body.event_name;
 				if (error) {
@@ -393,9 +393,28 @@ var registrationController = function (Registration) {
 					$group: {
 						_id: {eventName: "$eventObject.event_name"},
 						confirmed_registrations: {$sum: { $cond: [ { $eq: [ "$confirmation", true] } , 1, 0 ] }},
-						unconfirmed_registrations: {$sum: { $cond: [ { $eq: [ "$confirmation", false] } , 1, 0 ] }},
+						unconfirmed_registrations: {$addToSet: { $cond: [ { $eq: [ "$confirmation", false] } , "$team_leader.email", false ] }},
             event_section: { $first: "$eventObject.event_section"},
 					},
+				},
+				// {
+				// 	$group: {
+				// 		_id: {eventName: "$eventObject.event_name"},
+				// 		confirmed_registrations: {$sum: { $cond: [ { $eq: [ "$confirmation", true] } , 1, 0 ] }},
+				// 		unconfirmed_registrations: {$addToSet: { $cond: [ { $eq: [ "$confirmation", false] } , "$team_leader.email", false ] }},
+        //     event_section: { $first: "$eventObject.event_section"},
+				// 	},
+				// },
+				{
+					$unwind: "$unconfirmed_registrations",
+				},
+				{
+					$group: {
+						_id: {eventName: "$_id"},
+						event_section: {$first: "$event_section"},
+						confirmed_registrations: {$first: "$confirmed_registrations"},
+						unconfirmed_registrations: {$sum: 1},
+					}
 				},
 				{
 					$sort: {
@@ -403,7 +422,7 @@ var registrationController = function (Registration) {
 					}
 				}
 				],
-				function(error, data) {console.log(error);
+				function(error, data) {
 						if (error) {
 								throwError(response, "Finding all registrations according to event", error);
 						} else {
@@ -482,7 +501,7 @@ var registrationController = function (Registration) {
 						// 	}
 							// newData.confirmed_xlsx = cpath;
 							// newData.unconfirmed_xlsx = ucpath;
-							console.log(data);
+							// console.log(data);
 							response.status(200);
 							response.json(data);
 						}

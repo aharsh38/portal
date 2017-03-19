@@ -19,11 +19,11 @@
   			<th class="th1">Event Section</th>
           </tr>
   		<tr ng-repeat="event in erc.eventDetails | filter: searchbox">
-          <td>{{event._id.eventName}}</td>
+          <td>{{event._id.eventName.eventName}}</td>
   		    <td>{{event.confirmed_registrations}}</td>
   		    <td>{{event.unconfirmed_registrations}}</td>
-          <td><md-button class="md-raised md-primary" ng-click="erc.getExcel(event._id.eventName, true)">Export Confirmed Registration</md-button>
-            <md-button class="md-raised md-primary" ng-click="erc.getExcel(event._id.eventName, false)">Export Unconfirmed Registration</md-button></td>
+          <td><md-button class="md-raised md-primary" ng-click="erc.getExcel(event._id.eventName.eventName, true)">Export Confirmed Registration</md-button>
+            <md-button class="md-raised md-primary" ng-click="erc.getExcel(event._id.eventName.eventName, false)">Export Unconfirmed Registration</md-button></td>
   		</tr>
     </table>
   </md-content>
