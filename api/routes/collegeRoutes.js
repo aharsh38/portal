@@ -7,7 +7,7 @@ var collegeRoutes = function (College) {
 
 	collegeRouter.get('/getAllCollege', collegeController.getAllCollege);
 	collegeRouter.get('/searchFacultyByCity', collegeController.searchFacultyByCity);
-	collegeRouter.get('/unverifiedCollege', collegeController.searchNocoordinatorCollege);
+	// collegeRouter.get('/unverifiedCollege', collegeController.searchNocoordinatorCollege);
 	return collegeRouter;
 };
 

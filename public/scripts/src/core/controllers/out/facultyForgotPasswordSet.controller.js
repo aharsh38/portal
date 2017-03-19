@@ -1,15 +1,15 @@
 (function () {
 	'use strict';
-//df
+	//df
 	angular
 		.module('fct.core')
 		.controller('FacultyForgotPasswordSetController', FacultyForgotPasswordSetController);
 
-	FacultyForgotPasswordSetController.$inject = ['$scope', 'fctToast', 'facultyAuthService', '$state', '$rootScope', '$stateParams'];
+	FacultyForgotPasswordSetController.$inject = ['$scope', 'fctToast', 'facultyAuthService', '$state', '$rootScope', '$stateParams', '$location'];
 
-	function FacultyForgotPasswordSetController($scope, fctToast, facultyAuthService, $state, $rootScope, $stateParams) {
+	function FacultyForgotPasswordSetController($scope, fctToast, facultyAuthService, $state, $rootScope, $stateParams, $location) {
 		var vm = this;
-
+		console.log("URL", $location.url());
 
 		vm.token = Boolean($stateParams.token);
 		// console.log("token", vm.token);
