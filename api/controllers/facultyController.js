@@ -434,16 +434,24 @@ var facultyController = function(Faculty, Registration) {
     }
 
     function updateFaculty(request, response) {
-        request.faculty.name = request.body.name;
-        request.faculty.email = request.body.email;
-        request.faculty.mobileno = request.body.mobileno;
-        request.faculty.save(function(error) {
-            if (error) {
-                throwError(response, error, 500, 'Internal Server error', 'Faculty Register');
-            } else {
-                response.status(200);
-            }
-        });
+      request.faculty.name = request.body.name;
+      request.faculty.email = request.body.email;
+      request.faculty.mobileno = request.body.mobileno;
+      request.faculty.save(function(error) {
+        if (error) {
+            throwError(response, error, 500, 'Internal Server error', 'Faculty Register');
+        } else {
+            response.status(200).json(request.faculty);
+        }
+      });
+    }
+
+    function getEachFaculty(request, response) {
+      if(!request.faculty) {
+        throwError(response, request, 404, 'Faculty Not Found', 'Faculty');
+      } else {
+        response.status(200).json(request.faculty);
+      }
     }
 
     var ac = {};
@@ -458,6 +466,7 @@ var facultyController = function(Faculty, Registration) {
     ac.exportUVFList = exportUVFList;
     ac.checkFacultyVerified = checkFacultyVerified;
     ac.updateFaculty = updateFaculty;
+    ac.getEachFaculty = getEachFaculty;
     return ac;
 };
 

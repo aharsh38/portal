@@ -519,10 +519,19 @@
 			confirmRegistration: confirmRegistration,
 			getFacultyRegistrations: getFacultyRegistrations,
 			getStudentCoordinator: getStudentCoordinator,
-			editStudentCoordinator: editStudentCoordinator
+			editStudentCoordinator: editStudentCoordinator,
+			getEachFaculty: getEachFaculty,
+			updateFaculty: updateFaculty,
 		};
 
 		return service;
+
+		function getEachFaculty() {
+			var link = baseLink + '/getEachFaculty';
+			return $http.get(link)
+				.then(resolveFunc)
+				.catch(errorFunc);
+		}
 
 		function confirmRegistration(registration) {
 			var link = baseLink + '/registrations/confirm';
@@ -537,8 +546,6 @@
 				.then(resolveFunc)
 				.catch(errorFunc);
 		}
-
-
 
 		function get(students) {
 			var link = baseLink + '/studentCoordinator';
@@ -557,6 +564,13 @@
 		function getStudentCoordinator() {
 			var link = baseLink + '/studentCoordinator';
 			return $http.get(link)
+				.then(resolveFunc)
+				.catch(errorFunc);
+		}
+
+		function updateFaculty(data) {
+			var link = baseLink + '/updateFaculty/';
+			return $http.post(link, data)
 				.then(resolveFunc)
 				.catch(errorFunc);
 		}
@@ -807,7 +821,7 @@
 			getUnverifiedFaculty: getUnverifiedFaculty,
 			getUnconfirmedRegistration: getUnconfirmedRegistration,
 			getRegistrationsByEvent: getRegistrationsByEvent,
-			getEventRegistrationExcel: getEventRegistrationExcel
+			getEventRegistrationExcel: getEventRegistrationExcel,
 		};
 
 		return service;
@@ -1520,22 +1534,61 @@
 		.module('fct.core')
 		.controller('FacultySettingsController', FacultySettingsController);
 
-	FacultySettingsController.$inject = ['facultyAuthService', 'fctToast', '$scope', '$rootScope', '$timeout'];
+	FacultySettingsController.$inject = ['facultyAuthService', 'fctToast', '$scope', '$rootScope', '$timeout', 'facultyService'];
 
-	function FacultySettingsController(facultyAuthService, fctToast, $scope, $rootScope, $timeout) {
+	function FacultySettingsController(facultyAuthService, fctToast, $scope, $rootScope, $timeout, facultyService) {
 		var vm = this;
 		vm.updateInfo = false;
 		$scope.changePasswordForm = {};
 		vm.user = {};
+		vm.userDetail = {};
+		vm.updateButtonClicked = false;
 
 		angular.extend(vm, {
-			changePassword: changePassword
+			changePassword: changePassword,
+			updateFaculty: updateFaculty,
 		});
 
 		activate();
 
 		function activate() {
+			getEachFaculty();
+		}
 
+		function getEachFaculty() {
+			return facultyService.getEachFaculty()
+			.then(function (response) {
+				console.log(response);
+				vm.userDetail.email = response.data.email;
+				vm.userDetail.mobileno = parseInt(response.data.mobileno);
+				vm.userDetail.name = response.data.name;
+				vm.preInfo = true;
+			}).catch(function (error) {
+				console.log(error);
+			});
+		}
+
+		function updateFaculty() {
+			if (vm.updating) {
+				event.preventDefault();
+			} else {
+				vm.updating = true;
+				vm.updateButtonClicked = true;
+				return facultyService.updateFaculty(vm.userDetail)
+				.then(function (response) {
+					vm.userDetail = response.data;
+					vm.updateButtonClicked = false;
+					vm.updating = false;
+					vm.editInfo = false;
+					getEachFaculty();
+					console.log(response);
+				})
+				.catch(function (error) {
+					vm.updateButtonClicked = false;
+					vm.updating = false;
+					console.log(error);
+				});
+			}
 		}
 
 		function changePassword(event) {
@@ -1568,7 +1621,6 @@
 		function resetForm() {
 			vm.user = {};
 			vm.updateInfo = false;
-			$scope.changePasswordForm.$setPristine();
 			$scope.changePasswordForm.$setUntouched();
 		}
 	}
@@ -2508,6 +2560,137 @@
 
 	angular
 		.module('fct.core')
+		.controller('FacultyLayoutController', FacultyLayoutController)
+		.controller('ContactDialogController', ContactDialogController);
+
+	FacultyLayoutController.$inject = ['facultyAuthService', '$mdSidenav', '$rootScope', 'fctToast', '$state', '$mdDialog', '$mdMedia', '$scope'];
+
+	function FacultyLayoutController(facultyAuthService, $mdSidenav, $rootScope, fctToast, $state, $mdDialog, $mdMedia, $scope) {
+		var vm = this;
+
+		$scope.$watch(function () {
+			return $mdMedia('xs') || $mdMedia('sm');
+		});
+
+		angular.extend(vm, {
+			logout: logout,
+			openLeftSidenav: openLeftSidenav,
+			isOpenLeftSidenav: isOpenLeftSidenav,
+			closeLeftSidenav: closeLeftSidenav,
+			contact: contact
+		});
+
+		activate();
+
+		function activate() {
+
+		}
+
+		function logout() {
+			facultyAuthService.logout();
+		}
+
+		$rootScope.$on('logoutSuccessful', logoutSuccessful);
+
+		function logoutSuccessful(event) {
+			fctToast.showToast("Succesfully Logged out", true);
+			$state.go('out.login');
+		}
+
+		function openLeftSidenav() {
+			$mdSidenav('left').open();
+		}
+
+		function isOpenLeftSidenav() {
+			return $mdSidenav('left').isOpen();
+		}
+
+		function closeLeftSidenav() {
+			$mdSidenav('left').close();
+		}
+
+		function contact(ev) {
+			var useFullScreen = $mdMedia('sm') || $mdMedia('xs');
+			$mdDialog.show({
+				controller: 'ContactDialogController',
+				templateUrl: '/templates/components/dialogs/contact.html',
+				parent: angular.element(document.body),
+				targetEvent: ev,
+				clickOutsideToClose: true,
+				fullscreen: useFullScreen // Only for -xs, -sm breakpoints.
+			});
+		}
+	}
+
+	ContactDialogController.$inject = ['$scope', '$mdDialog'];
+
+	function ContactDialogController($scope, $mdDialog) {
+		$scope.cancel = function () {
+			$mdDialog.cancel();
+		};
+
+		$scope.hide = function () {
+			$mdDialog.hide();
+		};
+	}
+})();
+
+(function () {
+	'use strict';
+
+	angular
+		.module('fct.core')
+		.controller('MemberLayoutController', MemberLayoutController);
+
+	MemberLayoutController.$inject = ['memberAuthService', '$mdSidenav', '$rootScope', 'fctToast', '$state', '$scope'];
+
+	function MemberLayoutController(memberAuthService, $mdSidenav, $rootScope, fctToast, $state, $scope) {
+		var vm = this;
+
+		angular.extend(vm, {
+			logout: logout,
+			openLeftSidenav: openLeftSidenav,
+			isOpenLeftSidenav: isOpenLeftSidenav,
+			closeLeftSidenav: closeLeftSidenav,
+		});
+
+		activate();
+
+		function activate() {
+
+		}
+
+		function logout() {
+			memberAuthService.logout();
+		}
+
+		$rootScope.$on('logoutSuccessful', logoutSuccessful);
+
+		function logoutSuccessful(event) {
+			fctToast.showToast("Succesfully Logged out", true);
+			$state.go('out.member_login');
+		}
+
+		function openLeftSidenav() {
+			$mdSidenav('left').open();
+		}
+
+		function isOpenLeftSidenav() {
+			return $mdSidenav('left').isOpen();
+		}
+
+		function closeLeftSidenav() {
+			$mdSidenav('left').close();
+		}
+	}
+
+})();
+
+(function () {
+	'use strict';
+
+	angular
+		.module('fct.core')
 		.controller('FacultyForgotPasswordApplyController', FacultyForgotPasswordApplyController);
 
 	FacultyForgotPasswordApplyController.$inject = ['$scope', 'fctToast', 'facultyAuthService', '$state', '$rootScope'];
@@ -3055,137 +3238,6 @@
 			$scope.registerForm.$setUntouched();
 		}
 	}
-})();
-
-(function () {
-	'use strict';
-
-	angular
-		.module('fct.core')
-		.controller('FacultyLayoutController', FacultyLayoutController)
-		.controller('ContactDialogController', ContactDialogController);
-
-	FacultyLayoutController.$inject = ['facultyAuthService', '$mdSidenav', '$rootScope', 'fctToast', '$state', '$mdDialog', '$mdMedia', '$scope'];
-
-	function FacultyLayoutController(facultyAuthService, $mdSidenav, $rootScope, fctToast, $state, $mdDialog, $mdMedia, $scope) {
-		var vm = this;
-
-		$scope.$watch(function () {
-			return $mdMedia('xs') || $mdMedia('sm');
-		});
-
-		angular.extend(vm, {
-			logout: logout,
-			openLeftSidenav: openLeftSidenav,
-			isOpenLeftSidenav: isOpenLeftSidenav,
-			closeLeftSidenav: closeLeftSidenav,
-			contact: contact
-		});
-
-		activate();
-
-		function activate() {
-
-		}
-
-		function logout() {
-			facultyAuthService.logout();
-		}
-
-		$rootScope.$on('logoutSuccessful', logoutSuccessful);
-
-		function logoutSuccessful(event) {
-			fctToast.showToast("Succesfully Logged out", true);
-			$state.go('out.login');
-		}
-
-		function openLeftSidenav() {
-			$mdSidenav('left').open();
-		}
-
-		function isOpenLeftSidenav() {
-			return $mdSidenav('left').isOpen();
-		}
-
-		function closeLeftSidenav() {
-			$mdSidenav('left').close();
-		}
-
-		function contact(ev) {
-			var useFullScreen = $mdMedia('sm') || $mdMedia('xs');
-			$mdDialog.show({
-				controller: 'ContactDialogController',
-				templateUrl: '/templates/components/dialogs/contact.html',
-				parent: angular.element(document.body),
-				targetEvent: ev,
-				clickOutsideToClose: true,
-				fullscreen: useFullScreen // Only for -xs, -sm breakpoints.
-			});
-		}
-	}
-
-	ContactDialogController.$inject = ['$scope', '$mdDialog'];
-
-	function ContactDialogController($scope, $mdDialog) {
-		$scope.cancel = function () {
-			$mdDialog.cancel();
-		};
-
-		$scope.hide = function () {
-			$mdDialog.hide();
-		};
-	}
-})();
-
-(function () {
-	'use strict';
-
-	angular
-		.module('fct.core')
-		.controller('MemberLayoutController', MemberLayoutController);
-
-	MemberLayoutController.$inject = ['memberAuthService', '$mdSidenav', '$rootScope', 'fctToast', '$state', '$scope'];
-
-	function MemberLayoutController(memberAuthService, $mdSidenav, $rootScope, fctToast, $state, $scope) {
-		var vm = this;
-
-		angular.extend(vm, {
-			logout: logout,
-			openLeftSidenav: openLeftSidenav,
-			isOpenLeftSidenav: isOpenLeftSidenav,
-			closeLeftSidenav: closeLeftSidenav,
-		});
-
-		activate();
-
-		function activate() {
-
-		}
-
-		function logout() {
-			memberAuthService.logout();
-		}
-
-		$rootScope.$on('logoutSuccessful', logoutSuccessful);
-
-		function logoutSuccessful(event) {
-			fctToast.showToast("Succesfully Logged out", true);
-			$state.go('out.member_login');
-		}
-
-		function openLeftSidenav() {
-			$mdSidenav('left').open();
-		}
-
-		function isOpenLeftSidenav() {
-			return $mdSidenav('left').isOpen();
-		}
-
-		function closeLeftSidenav() {
-			$mdSidenav('left').close();
-		}
-	}
-
 })();
 
 (function() {

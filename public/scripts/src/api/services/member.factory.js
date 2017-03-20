@@ -18,7 +18,7 @@
 			getUnverifiedFaculty: getUnverifiedFaculty,
 			getUnconfirmedRegistration: getUnconfirmedRegistration,
 			getRegistrationsByEvent: getRegistrationsByEvent,
-			getEventRegistrationExcel: getEventRegistrationExcel
+			getEventRegistrationExcel: getEventRegistrationExcel,
 		};
 
 		return service;
