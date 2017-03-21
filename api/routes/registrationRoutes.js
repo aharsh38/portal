@@ -17,7 +17,6 @@ var registrationRoutes = function (Registration) {
 	//registrationAuthRouter.patch('/oneTimeEdit/:teamId', registrationController.oneTimeEdit);
 	//export Registration
 	return registrationRouter;
-
 };
 
 module.exports = registrationRoutes;

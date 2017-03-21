@@ -40,7 +40,7 @@
 
 		function doneLoading() {
 			vm.loadIndex++;
-			if(vm.loadIndex == vm.loadCompleted) {
+			if (vm.loadIndex == vm.loadCompleted) {
 				checkEventId();
 			}
 		}
@@ -100,21 +100,17 @@
 		}
 
 		function save() {
-			vm.myEvent.attachments = vm.files;
-			console.log(vm.myEvent);
 			return eventService.updateEvent(vm.eventId, vm.myEvent)
 				.then(onUpdateSuccess)
 				.catch(onUpdateFailure);
 		}
 
 		function onUpdateSuccess(response) {
-			console.log(response);
 			fctToast.showToast("Update Success.", true);
 			state.go('in_tc.showEvent');
 		}
 
 		function onUpdateFailure(error) {
-			console.log(error);
 			fctToast.showToast("Please try again later.");
 		}
 
@@ -127,11 +123,13 @@
 						file: file
 					}
 				});
-				file.upload.then(function (response) {console.log(response);
+				file.upload.then(function (response) {
+					// console.log(response);
 					var attach = {
 						doc_name: file.name,
 						link: response.data.path,
-					};console.log(attach);
+					};
+					vm.myEvent.attachments.push(attach);
 				}, function (response) {
 					if (response.status > 0)
 						vm.errorMsg = response.status + ': ' + response.data;
@@ -149,7 +147,8 @@
 						file: file
 					}
 				});
-				file.upload.then(function (response) {console.log(response);
+				file.upload.then(function (response) {
+					// console.log(response);
 					$timeout(function () {
 						vm.myEvent.event_image = response.data.path;
 					});
@@ -172,7 +171,8 @@
 						file: file
 					}
 				});
-				file.upload.then(function (response) {console.log(response);
+				file.upload.then(function (response) {
+					// console.log(response);
 					vm.myEvent.event_icon = response.data.path;
 				}, function (response) {
 					if (response.status > 0) {

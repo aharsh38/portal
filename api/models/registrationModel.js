@@ -112,12 +112,24 @@ var registrationModel = new Schema({
 		type: Boolean,
 		default: false
 	},
+	no_payment: {
+		type: Boolean,
+		default: false
+	},
 	confirmed_mail_send: {
 		type: Boolean,
 		default: false
 	},
 	confirmation_date: {
 		type: Date
+	},
+	project_url: {
+		type: String,
+		default: null
+	},
+	project_summary: {
+		type: String,
+		default: null
 	}
 }, {
 	minimize: false,

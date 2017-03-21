@@ -10,7 +10,7 @@ require('./api/config/passport');
 
 var dbURI = config.mongoURI;
 
-//var dbURI = "mongodb://localhost/gtutechfest1";
+// var dbURI = "mongodb://localhost/gtutechfest1";
 
 // var dbURI = "mongodb://localhost/gtutestingFinal";
 //var dbURI = "mongodb://localhost/gtutesting";
@@ -116,12 +116,3 @@ app.listen(port, function () {
 });
 
 module.exports = app;
-// app.get('/download', function(request, response){
-// 		response.download('./api/slips/SM019423.pdf', function(error, data){
-// 			if (error) {
-// 					response.send("error");
-// 			} else {
-// 					response.status(404).send(data);
-// 			}
-// 		});
-// });

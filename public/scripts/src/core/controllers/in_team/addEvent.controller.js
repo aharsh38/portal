@@ -96,7 +96,8 @@
 						file: file
 					}
 				});
-				file.upload.then(function (response) {console.log(response);
+				file.upload.then(function (response) {
+					console.log(response);
 					$timeout(function () {
 						file.result = response.data;
 						var attach = {
@@ -104,6 +105,7 @@
 							link: file.dest,
 						};
 						vm.myEvent.attachments.push(attach);
+						console.log(attach);
 					});
 				}, function (response) {
 					if (response.status > 0)
@@ -112,6 +114,8 @@
 					file.progress = Math.min(100, parseInt(100.0 * evt.loaded / evt.total));
 				});
 			});
+
+
 		}
 
 		function uploadImage(files, errFiles) {
@@ -122,7 +126,8 @@
 						file: file
 					}
 				});
-				file.upload.then(function (response) {reponse.log(response);
+				file.upload.then(function (response) {
+					reponse.log(response);
 					vm.myEvent.event_image = response.data.path;
 				}, function (response) {
 					if (response.status > 0) {
@@ -142,7 +147,8 @@
 						file: file
 					}
 				});
-				file.upload.then(function (response) {reponse.log(response);
+				file.upload.then(function (response) {
+					reponse.log(response);
 					vm.myEvent.event_icon_image = response.data.path;
 				}, function (response) {
 					if (response.status > 0) {
@@ -152,6 +158,6 @@
 					file.progress = Math.min(100, parseInt(100.0 * evt.loaded / evt.total));
 				});
 			});
-		}//dfdf//sdf=
+		} //dfdf//sdf=
 	}
 })();
