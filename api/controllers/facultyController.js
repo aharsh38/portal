@@ -197,7 +197,8 @@ var facultyController = function(Faculty, Registration) {
                 verified: 1,
                 collegeId: 1,
                 registrations_count: 1,
-                collected_amount: 1
+                collected_amount: 1,
+                updatedAt: 1,
             })
             .sort({
                 verified: 1,
@@ -285,7 +286,8 @@ var facultyController = function(Faculty, Registration) {
                 mobileno: 1,
                 verified: 1,
                 student_coordinator: 1,
-                collegeId: 1
+                collegeId: 1,
+                updatedAt: 1
             })
             .populate({
                 path: 'collegeId',
@@ -319,7 +321,8 @@ var facultyController = function(Faculty, Registration) {
                             college_name: element.collegeId.name,
                             college_city: element.collegeId.city,
                             college_code: element.collegeId.code,
-                            State: element.collegeId.state
+                            State: element.collegeId.state,
+                            updated_at: element.updatedAt,
                         };
                         data.push(arrayOfFaculty);
                     });
@@ -348,7 +351,8 @@ var facultyController = function(Faculty, Registration) {
                 email: 1,
                 mobileno: 1,
                 verified: 1,
-                collegeId: 1
+                collegeId: 1,
+                updatedAt: 1
             })
             .populate({
                 path: 'collegeId',
@@ -377,7 +381,8 @@ var facultyController = function(Faculty, Registration) {
                             college_name: element.collegeId.name,
                             college_city: element.collegeId.city,
                             college_code: element.collegeId.code,
-                            State: element.collegeId.state
+                            State: element.collegeId.state,
+                            updated_at: element.updatedAt,
                         };
                         // console.log(arrayOfFaculty);
                         data.push(arrayOfFaculty);
@@ -433,6 +438,27 @@ var facultyController = function(Faculty, Registration) {
         });
     }
 
+    function updateFaculty(request, response) {
+      request.faculty.name = request.body.name;
+      request.faculty.email = request.body.email;
+      request.faculty.mobileno = request.body.mobileno;
+      request.faculty.save(function(error) {
+        if (error) {
+            throwError(response, error, 500, 'Internal Server error', 'Faculty Register');
+        } else {
+            response.status(200).json(request.faculty);
+        }
+      });
+    }
+
+    function getEachFaculty(request, response) {
+      if(!request.faculty) {
+        throwError(response, request, 404, 'Faculty Not Found', 'Faculty');
+      } else {
+        response.status(200).json(request.faculty);
+      }
+    }
+
     var ac = {};
     ac.seeRegistration = seeRegistration;
     ac.confirmRegistration = confirmRegistration;
@@ -444,6 +470,8 @@ var facultyController = function(Faculty, Registration) {
     ac.exportVFSList = exportVFSList;
     ac.exportUVFList = exportUVFList;
     ac.checkFacultyVerified = checkFacultyVerified;
+    ac.updateFaculty = updateFaculty;
+    ac.getEachFaculty = getEachFaculty;
     return ac;
 };
 

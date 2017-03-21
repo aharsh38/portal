@@ -1,8 +1,52 @@
+<!DOCTYPE html>
 <div class="margin-tb-gt-xs-4 margin-lr-gt-xs-2 bg-white margin-xs-1 padding-tb-3 padding-lr-2 page" md-whiteframe="5">
     <h2>Settings</h2>
-
     <hr>
+    <h3 class="margin-top-3">Change Details</h3>
+    <form name="changeDetailsForm" ng-model="changeDetailsForm" layout-gt-xs="row" class="margin-top-3" layout-wrap>
+        <div flex-gt-xs="50" layout="column">
+            <md-input-container>
+                <label>Name</label>
+                <input type="text" required minlength="6" name="name" ng-model="fsc.userDetail.name" ng-disabled="!fsc.editInfo"
+                  ng-pattern="/^$|^[a-zA-Z]+ [a-zA-Z]+([a-zA-Z]+)?$/" />
+                <div ng-messages="changeDetailsForm.oldPassword.$error">
+                    <div ng-message="required">This is required.</div>
+                    <div ng-message="pattern">Name should be of only 2 to 3 words and should be valid.</div>
+                </div>
+            </md-input-container>
+            <md-input-container>
+                <label>Mobile</label>
+                <input required name="mobile"  type="number" ng-model="fsc.userDetail.mobileno" minlength="10" ng-disabled="!fsc.editInfo"
+                  maxlength="10" ng-pattern="/^[0-9]{10}$/"/>
+                <div ng-messages="changeDetailsForm.mobile.$error">
+                    <div ng-message="required">This is required.</div>
+                    <div ng-message="maxlength">Invalid Mobile No.</div>
+                    <div ng-message="pattern">Invalid Mobile No.</div>
+                </div>
+            </md-input-container>
 
+            <md-input-container>
+                <label>Email</label>
+                <input required name="email" type="text" ng-disabled="!fsc.editInfo"
+                  ng-model="fsc.userDetail.email" ng-pattern="/^.+@.+\..+$/" />
+                <div ng-messages="changeDetailsForm.confirmPassword.$error">
+                    <div ng-message="required">This is required.</div>
+                    <div ng-message="email">Invalid e-mail address.</div>
+                    <div ng-message="pattern">Invalid e-mail address.</div>
+                </div>
+            </md-input-container>
+        </div>
+        <div flex-offset-gt-xs="5" layout="column" class="padding-lr-2">
+            <md-button ng-click="fsc.updateFaculty()" ng-show="fsc.editInfo && fsc.preInfo"  class="md-raised md-primary md-hue-1 md-big" ng-disabled="changeDetailsForm.$invalid" aria-label="edit" layout="column" layout-align="center center">
+                <b ng-show="!fsc.updateButtonClicked">Update</b>
+                <md-progress-circular ng-show="fsc.updateButtonClicked" ng-disabled="!fsc.updateButtonClicked" class="md-white" md-diameter="20px"></md-progress-circular>
+            </md-button>
+            <md-button ng-click="fsc.editInfo = true" ng-show="!fsc.editInfo && fsc.preInfo"  class="md-raised md-primary md-hue-1 md-big" ng-disabled="changeDetailsForm.$invalid" aria-label="edit" layout="column" layout-align="center center">
+                <b ng-show="!ascc.updateButtonClicked">Edit</b>
+                <md-progress-circular ng-show="fsc.updateButtonClicked" ng-disabled="!fsc.updateButtonClicked" class="md-white" md-diameter="20px"></md-progress-circular>
+            </md-button>
+        </div>
+    </form>
     <h3 class="margin-top-3">Change Password</h3>
     <form name="changePasswordForm" ng-model="changePasswordForm" layout-gt-xs="row" class="margin-top-3" layout-wrap>
         <div flex-gt-xs="50" layout="column">

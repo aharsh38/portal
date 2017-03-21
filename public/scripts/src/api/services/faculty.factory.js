@@ -14,10 +14,19 @@
 			confirmRegistration: confirmRegistration,
 			getFacultyRegistrations: getFacultyRegistrations,
 			getStudentCoordinator: getStudentCoordinator,
-			editStudentCoordinator: editStudentCoordinator
+			editStudentCoordinator: editStudentCoordinator,
+			getEachFaculty: getEachFaculty,
+			updateFaculty: updateFaculty,
 		};
 
 		return service;
+
+		function getEachFaculty() {
+			var link = baseLink + '/getEachFaculty';
+			return $http.get(link)
+				.then(resolveFunc)
+				.catch(errorFunc);
+		}
 
 		function confirmRegistration(registration) {
 			var link = baseLink + '/registrations/confirm';
@@ -32,8 +41,6 @@
 				.then(resolveFunc)
 				.catch(errorFunc);
 		}
-
-
 
 		function get(students) {
 			var link = baseLink + '/studentCoordinator';
@@ -52,6 +59,13 @@
 		function getStudentCoordinator() {
 			var link = baseLink + '/studentCoordinator';
 			return $http.get(link)
+				.then(resolveFunc)
+				.catch(errorFunc);
+		}
+
+		function updateFaculty(data) {
+			var link = baseLink + '/updateFaculty/';
+			return $http.post(link, data)
 				.then(resolveFunc)
 				.catch(errorFunc);
 		}

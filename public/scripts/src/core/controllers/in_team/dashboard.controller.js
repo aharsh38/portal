@@ -9,6 +9,10 @@
 
     function DashboardController($rootScope, memberService, $window) {
         var vm = this;
+        vm.confirmedCount = 0;
+        vm.unConfirmedCount = 0;
+        vm.totalConfirmedParticipants = 0;
+        vm.totalAmountCollected = 0;
 
         angular.extend(vm, {
             getVFS: getVFS,
@@ -20,7 +24,8 @@
         function activate() {
             getVFS();
             getUVF();
-            // getUnconfirmedRegistration();
+            getConfirmedRegistrationCount();
+            // exportParticipantList();
         }
 
         function getVFS() {
@@ -47,15 +52,29 @@
                 });
         }
 
-        // function getUnconfirmedRegistration() {
-        //     return memberService.getUnconfirmedRegistration()
-        //
-        //         .then(function(response) {
-        //             console.log(reponse);
-        //         })
-        //         .catch(function(error) { //console.log(error);
-        //         });
-        // }
+        function getConfirmedRegistrationCount() {
+          return memberService.getConfirmedRegistrationCount()
+            .then(function(response) {
+              vm.confirmedCount = response.data.confirmedCount;
+              vm.unConfirmedCount = response.data.unConfirmedCount;
+              vm.totalConfirmedParticipants = response.data.totalConfirmedParticipants;
+              vm.totalAmountCollected = response.data.totalAmountCollected;
+              console.log(response);
+            })
+            .catch(function(error) {
+              console.log(error);
+            });
+        }
+
+        function exportParticipantList() {
+          return memberService.exportParticipantList()
+            .then(function(response) {
+                console.log(response);
+            })
+            .catch(function(error) {
+                console.log(error);
+            });
+          }
     }
 })();
 // return memberService.getUnverifiedFaculty()

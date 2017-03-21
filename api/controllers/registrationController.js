@@ -334,11 +334,34 @@ var registrationController = function (Registration) {
 	}
 
 	function exportRegistration(request, response) {
-		Registration.find({
-				"eventObject.event_name": request.body.event_name
-			})
-			.exec(function (error, registrations) {
-				console.log(registrations);
+
+		Registration.aggregate(
+			[{
+					$match: {
+						"eventObject.event_name": request.body.event_name,
+						"confirmation": request.body.confirmation,
+					}
+				},
+				{
+					$group: {
+						_id: {
+							condition: (request.body.confirmation) ? "$teamId" : "$team_leader.email"
+						},
+						team_leader: {
+							$first: "$team_leader"
+						},
+						other_participants: {
+							$first: "$other_participants"
+						},
+						teamId: {
+							$first: "$teamId"
+						}
+					}
+				}
+			],
+			function (error, registrations) {
+				var excelPrefix = (request.body.confirmation) ? "Confirmed-" : "Unconfirmed-";
+
 				var en = request.body.event_name;
 				if (error) {
 					throwError(response, error, 500, 'Internal Server Error', 'Registration Fetch Failed');
@@ -352,7 +375,7 @@ var registrationController = function (Registration) {
 						// var newe = element.toJSON();
 						var arrayOfParticipants = _.union([element.team_leader], element.other_participants);
 						arrayOfParticipants = _.map(arrayOfParticipants, function (e, i, l) {
-							var newElem = e.toJSON();
+							var newElem = e;
 							newElem.teamId = element.teamId;
 							// console.log(newElem);
 							return newElem;
@@ -363,12 +386,16 @@ var registrationController = function (Registration) {
 					// console.log(participantsData);
 					if (participantsData) {
 						var xls = json2xls(participantsData);
-						fs.writeFileSync('./public/documents/' + en + '.xlsx', xls, 'binary');
+						fs.writeFileSync('./public/documents/' + excelPrefix + en + '.xlsx', xls, 'binary');
 					}
-					if (fs.existsSync('./public/documents/' + en + '.xlsx')) {
+					if (fs.existsSync('./public/documents/' + excelPrefix + en + '.xlsx')) {
 						response.status(200);
 						response.json({
-							path: '/documents/' + en + '.xlsx'
+							// <<<<<<< HEAD
+							// 							path: '/documents/' + en + '.xlsx'
+							// =======
+							path: '/documents/' + excelPrefix + en + '.xlsx'
+							// >>>>>>> master
 						});
 						// response.download('./documents/' + en + '.xlsx', function (error) {
 						// 	if (error) {
@@ -390,6 +417,28 @@ var registrationController = function (Registration) {
 		Registration.aggregate(
 			[{
 					$group: {
+						// <<<<<<< HEAD
+						// 						_id: {
+						// 							eventName: "$eventObject.event_name"
+						// 						},
+						// 						confirmed_registrations: {
+						// 							$sum: {
+						// 								$cond: [{
+						// 									$eq: ["$confirmation", true]
+						// 								}, 1, 0]
+						// 							}
+						// 						},
+						// 						unconfirmed_registrations: {
+						// 							$sum: {
+						// 								$cond: [{
+						// 									$eq: ["$confirmation", false]
+						// 								}, 1, 0]
+						// 							}
+						// 						},
+						// 						event_section: {
+						// 							$first: "$eventObject.event_section"
+						// 						},
+						// =======
 						_id: {
 							eventName: "$eventObject.event_name"
 						},
@@ -401,25 +450,218 @@ var registrationController = function (Registration) {
 							}
 						},
 						unconfirmed_registrations: {
-							$sum: {
+							$addToSet: {
 								$cond: [{
 									$eq: ["$confirmation", false]
-								}, 1, 0]
+								}, "$team_leader.email", false]
 							}
 						},
 						event_section: {
 							$first: "$eventObject.event_section"
 						},
+						// >>>>>>> master
 					},
 				},
 				{
+					$unwind: "$unconfirmed_registrations",
+				},
+				{
+					$group: {
+						_id: {
+							eventName: "$_id"
+						},
+						event_section: {
+							$first: "$event_section"
+						},
+						confirmed_registrations: {
+							$first: "$confirmed_registrations"
+						},
+						unconfirmed_registrations: {
+							$sum: {
+								$cond: [{
+									$eq: ["$unconfirmed_registrations", false]
+								}, 0, 1]
+							}
+						},
+						unc: {
+							$first: "$unconfirmed_registrations"
+						}
+					}
+				},
+				{
 					$sort: {
-						"eventObject.event_section": 1
+						"event_section": 1,
 					}
 				}
 			],
 			function (error, data) {
 				console.log(error);
+			},
+			function (error, data) {
+				console.log(data);
+				if (error) {
+					throwError(response, "Finding all registrations according to event", error);
+				} else {
+					// _.each(data, function (element, index, list) {
+					// 	var eventName = element._id.eventName;
+					// 			var arrayOfParticipants = _.union([element.confirmed_team_leader], element.confirmed_other_participants);
+					// 			console.log(arrayOfParticipants);
+					// arrayOfParticipants = _.map(arrayOfParticipants, function (e, i, l) {
+					// 	var newElem = e;
+					// 	newElem.teamId = e.conteamId;
+					// 	return newElem;
+					// });
+					// });
+					// 	var newData = [];
+					// 	var found = false;
+					// 	var confirmedData = [];
+					// 	var unConfirmedData = [];
+					// 	var cpath = "", ucpath = "";
+					// 	_.each(data, function (element, index, list) {
+					// 		var eventName = element._id.eventName;
+					// 		var arrayOfParticipants = _.union([element.team_leader], element.other_participants);
+					// 		arrayOfParticipants = _.map(arrayOfParticipants, function (e, i, l) {
+					// 			var newElem = e;
+					// 			// newElem.teamId = e.teamId;
+					// 			return newElem;
+					// 		});
+					// 		_(newData).filter(function (obj) {
+					// 	    if(obj.event_name == eventName) {
+					// 				found = true;
+					// 				if(element._id.confirmation) {
+					// 					obj.confirmed_registrations++;
+					// 					confirmedData = _.union(confirmedData, arrayOfParticipants);
+					// 				} else {
+					// 					obj.not_confirmed_registrations++;
+					// 					console.log('before');console.log(unConfirmedData);
+					// 					unConfirmedData[eventName] = _.union(unConfirmedData[eventName], arrayOfParticipants);
+					// 					console.log('after');console.log(unConfirmedData);
+					// 				}
+					// 			}
+					// 		});
+					// 		if(!found) {
+					// 			var cindex = 0;
+					// 			var ucindex = 0;
+					// 			if(element._id.confirmation) {
+					// 				cindex = 1;
+					// 				confirmedData = _.union(confirmedData, arrayOfParticipants);
+					// 			} else {
+					// 				ucindex = 1;
+					// 				unConfirmedData[eventName] = _.union(unConfirmedData[eventName], arrayOfParticipants);
+					// 			}
+					// 			var each = {event_name: eventName,
+					// 				confirmed_registrations: (element._id.confirmation) ? 1 : 0,
+					// 				not_confirmed_registrations: (element._id.confirmation) ? 0 : 1};
+					// 			newData.push(each);
+					// 		}
+					// 	});
+					// 	console.log(confirmedData);
+					// 	console.log(unConfirmedData);
+					// 	if (confirmedData) {
+					// 		var cxls = json2xls(confirmedData);
+					// 		fs.writeFileSync('./public/documents/confirmedData.xlsx', cxls, 'binary');
+					// 	}
+					// 	if (fs.existsSync('./public/documents/confirmedData.xlsx')) {
+					// 		cpath = '/documents/confirmedData.xlsx';
+					// 	} else {
+					// 		console.log('File doesn\'t exist');
+					// 	}
+					// 	if (unConfirmedData) {
+					// 		var ucxls = json2xls(unConfirmedData);
+					// 		fs.writeFileSync('./public/documents/unConfirmedData.xlsx', ucxls, 'binary');
+					// 	}
+					// 	if (fs.existsSync('./public/documents/unConfirmedData.xlsx')) {
+					// 		ucpath = '/documents/unConfirmedData.xlsx';
+					// 	} else {
+					// 		console.log('File doesn\'t exist');
+					// 	}
+					// newData.confirmed_xlsx = cpath;
+					// newData.unconfirmed_xlsx = ucpath;
+					// console.log(data);
+					response.status(200);
+					response.json(data);
+				}
+			});
+	}
+
+	function getConfirmRegistrationCount(request, response) {
+		Registration.aggregate(
+			[{
+				$group: {
+					_id: {
+						confirmation: "$confirmation"
+					},
+					count: {
+						$sum: 1
+					},
+					teamId: {
+						$push: "$teamId"
+					},
+					paymentMethod: {
+						$push: {
+							$cond: [{
+								$eq: ["$do_payment", true]
+							}, "forPayment", "latePayment"]
+						}
+					},
+					numberOfParticipant: {
+						$push: "$no_of_participants"
+					},
+					total_amount: {
+						$push: "$total_amount"
+					}
+				},
+			}, ],
+			function (error, data) {
+				if (error) {
+					throwError(response, "Finding all registrations according to event", error);
+				} else {
+					var newData = {
+						confirmedCount: data[0].count,
+						confirmedParticipants: data[0].numberOfParticipant,
+						unConfirmedCount: data[1].count,
+						unConfirmedParticipants: data[1].numberOfParticipant,
+						totalConfirmedParticipants: 0,
+						totalUnconfirmedParticipants: 0,
+						totalAmountCollected: 0,
+						totalAmountToBeCollected: 0,
+					};
+					console.log(data);
+					_.each(data[0].numberOfParticipant, function (element, index, list) {
+						newData.totalConfirmedParticipants += (element === null) ? 0 : parseInt(element);
+					});
+					_.each(data[0].total_amount, function (element, index, list) {
+						newData.totalAmountCollected += (element === null) ? 0 : parseInt(element);
+					});
+					_.each(data[1].numberOfParticipant, function (element, index, list) {
+						if (fs.existsSync('./api/slips/' + data[1].paymentMethod[index] + '/' + data[1].teamId[index] + '.pdf')) {
+							newData.totalUnconfirmedParticipants += (element === null) ? 0 : parseInt(element);
+						}
+					});
+					_.each(data[1].numberOfParticipant, function (element, index, list) {
+						if (!fs.existsSync('./api/slips/' + data[1].paymentMethod[index] + '/' + data[1].teamId[index] + '.pdf')) {
+							newData.unConfirmedCount--;
+						}
+					});
+					_.each(data[1].total_amount, function (element, index, list) {
+						newData.totalAmountToBeCollected += (element === null) ? 0 : parseInt(element);
+					});
+					response.status(200).json(newData);
+				}
+			});
+	}
+
+	function oneTimeEditAllow(request, response) {
+		Registration.findOne({
+				teamId: request.body.teamId,
+				"team_leader.email": request.body.email,
+				"team_leader.mobileno": request.body.mobileno
+			})
+			.exec(function (error, registration) {
+				console.log(registration);
+				// >>>
+				// >>>
+				// > master
 				if (error) {
 					throwError(response, "Finding all registrations according to event", error);
 				} else {
@@ -506,6 +748,46 @@ var registrationController = function (Registration) {
 	}
 
 
+	function exportParticipantList(request, response) {
+		Registration.find()
+			.select('teamId facultyId no_of_participants team_leader eventObject.event_name total_amount confirmation other_participants')
+			.exec(function (error, data) {
+				if (error) {
+					throwError(response, error, 500, 'Internal Server Error', 'Registration Fetch Failed');
+					return;
+				}
+				if (!data) {
+					throwError(response, error, 404, 'Not Found', 'Registration not found');
+				} else {
+					var participantsData = [];
+					_.each(data, function (element, index, list) {
+						var arrayOfParticipants = _.union([element.team_leader], element.other_participants);
+						arrayOfParticipants = _.map(arrayOfParticipants, function (e, i, l) {
+							var newElem = e.toJSON();
+							newElem.event_name = element.eventObject.event_name;
+							newElem.teamId = element.teamId;
+							newElem.confirmation = element.confirmation;
+							return newElem;
+						});
+						participantsData = _.union(participantsData, arrayOfParticipants);
+					});
+					if (participantsData) {
+						var xls = json2xls(participantsData);
+						fs.writeFileSync('./public/documents/badme.xlsx', xls, 'binary');
+					}
+					if (fs.existsSync('./public/documents/badme.xlsx')) {
+						response.status(200);
+						response.json({
+							path: '/documents/bame.xlsx'
+						});
+					} else {
+						console.log('File doesn\'t exist');
+						throwError(response, "file does not exist", 404, 'File Not Found', 'file not found');
+					}
+				}
+			});
+	}
+
 	var ac = {};
 	ac.register = register;
 	ac.getRegistration = getRegistration;
@@ -517,6 +799,8 @@ var registrationController = function (Registration) {
 	ac.generateSlip = generateSlip;
 	ac.generatePDFTest = generatePDFTest;
 	ac.exportUnconfirmedRegistration = exportUnconfirmedRegistration;
+	ac.getConfirmRegistrationCount = getConfirmRegistrationCount;
+	ac.exportParticipantList = exportParticipantList;
 	return ac;
 };
 

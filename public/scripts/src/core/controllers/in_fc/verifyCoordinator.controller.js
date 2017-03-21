@@ -11,6 +11,8 @@
 		var vm = this;
 		vm.limitFaculty = 5;
 		vm.nomoreFaculty = true;
+		vm.orderField = 'registrations_count';
+		vm.reverseSort = true;
 
 		angular.extend(vm, {
 			verifyFaculty: verifyFaculty,
@@ -27,7 +29,7 @@
 		}
 
 
-		function getAllFacultyCoordinatorsSuccess(response) {
+		function getAllFacultyCoordinatorsSuccess(response) {console.log(response);
 			vm.faculties = response.data;
 			// console.log(vm.faculties);
 			if (vm.limitFaculty <= vm.faculties.length) {

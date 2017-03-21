@@ -18,7 +18,9 @@
 			getUnverifiedFaculty: getUnverifiedFaculty,
 			getUnconfirmedRegistration: getUnconfirmedRegistration,
 			getRegistrationsByEvent: getRegistrationsByEvent,
-			getEventRegistrationExcel: getEventRegistrationExcel
+			getEventRegistrationExcel: getEventRegistrationExcel,
+			getConfirmedRegistrationCount: getConfirmedRegistrationCount,
+			exportParticipantList: exportParticipantList,
 		};
 
 		return service;
@@ -77,36 +79,17 @@
 				.catch(errorFunc);
 		}
 
-		// function initializeCKEditor() {
-		// 	if ( CKEDITOR.env.ie && CKEDITOR.env.version < 9 )
-		// 		CKEDITOR.tools.enableHtml5Elements( document );
-		// 		CKEDITOR.config.height = 150;
-		// 		CKEDITOR.config.width = 'auto';
-		// 		var initSample = ( function() {
-		// 			var wysiwygareaAvailable = isWysiwygareaAvailable();
-		// 			return function() {
-		// 				var editorElement = CKEDITOR.document.getById( 'editor' );
-		// 				if ( wysiwygareaAvailable ) {
-		// 					CKEDITOR.replace( 'editorRules' );
-		// 					CKEDITOR.replace( 'editorSpecification' );
-		// 					CKEDITOR.replace( 'editorJudgingCriteria' );
-		// 				} else {
-		// 					editorElement.setAttribute( 'contenteditable', 'true' );
-		// 					CKEDITOR.inline( 'editorRules' );
-		// 					CKEDITOR.inline( 'editorSpecification' );
-		// 					CKEDITOR.inline( 'editorJudgingCriteria' );
-		// 				}
-		// 			};
-		//
-		// 		function isWysiwygareaAvailable() {
-		// 			if ( CKEDITOR.revision == ( '%RE' + 'V%' ) ) {
-		// 				return true;
-		// 			}
-		// 			return !!CKEDITOR.plugins.get( 'wysiwygarea' );
-		// 		}
-		// 	} )();
-		// 	initSample();
-		// }
+		function getConfirmedRegistrationCount() {
+			return $http.get('/api/members/registration/confirmRegistrationCount')
+				.then(responseFunc)
+				.catch(errorFunc);
+		}
+
+		function exportParticipantList() {
+			return $http.get('/api/members/registration/exportParticipantList')
+				.then(responseFunc)
+				.catch(errorFunc);
+		}
 
 		function getDeleteModal() {
 			var confirm = $mdDialog.confirm()

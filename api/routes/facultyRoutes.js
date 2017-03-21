@@ -9,7 +9,7 @@ var facultyRoutes = function(Faculty, Registration) {
 
     facultyRouter.param('facultyId', facultyMiddleware);
 
-
+    facultyRouter.post('/:facultyId/updateFaculty', facultyController.updateFaculty);
     facultyRouter.patch('/settings/changePassword', facultyController.facultyChangePassword);
     facultyRouter.post('/:facultyId/registrations/confirm', facultyController.confirmRegistration);
     facultyRouter.get('/:facultyId/registrations', registrationController.getFacultyRegistrations);
@@ -17,6 +17,7 @@ var facultyRoutes = function(Faculty, Registration) {
     facultyRouter.get('/:facultyId/studentCoordinator', facultyController.getStudentCoordinator);
     //facultyRouter.get('/check', facultyController.checkFacultyVerified);
     facultyRouter.get('/getFaculty', facultyController.getFaculty);
+    facultyRouter.get('/:facultyId/getEachFaculty', facultyController.getEachFaculty);
     // facultyRouter.put('/:facultyId/studentCoordinator/edit', facultyController.editStudentController);
 
 

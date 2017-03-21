@@ -5,22 +5,61 @@
 		.module('fct.core')
 		.controller('FacultySettingsController', FacultySettingsController);
 
-	FacultySettingsController.$inject = ['facultyAuthService', 'fctToast', '$scope', '$rootScope', '$timeout'];
+	FacultySettingsController.$inject = ['facultyAuthService', 'fctToast', '$scope', '$rootScope', '$timeout', 'facultyService'];
 
-	function FacultySettingsController(facultyAuthService, fctToast, $scope, $rootScope, $timeout) {
+	function FacultySettingsController(facultyAuthService, fctToast, $scope, $rootScope, $timeout, facultyService) {
 		var vm = this;
 		vm.updateInfo = false;
 		$scope.changePasswordForm = {};
 		vm.user = {};
+		vm.userDetail = {};
+		vm.updateButtonClicked = false;
 
 		angular.extend(vm, {
-			changePassword: changePassword
+			changePassword: changePassword,
+			updateFaculty: updateFaculty,
 		});
 
 		activate();
 
 		function activate() {
+			getEachFaculty();
+		}
 
+		function getEachFaculty() {
+			return facultyService.getEachFaculty()
+			.then(function (response) {
+				console.log(response);
+				vm.userDetail.email = response.data.email;
+				vm.userDetail.mobileno = parseInt(response.data.mobileno);
+				vm.userDetail.name = response.data.name;
+				vm.preInfo = true;
+			}).catch(function (error) {
+				console.log(error);
+			});
+		}
+
+		function updateFaculty() {
+			if (vm.updating) {
+				event.preventDefault();
+			} else {
+				vm.updating = true;
+				vm.updateButtonClicked = true;
+				return facultyService.updateFaculty(vm.userDetail)
+				.then(function (response) {
+					vm.userDetail = response.data;
+					vm.updateButtonClicked = false;
+					vm.updating = false;
+					vm.editInfo = false;
+					getEachFaculty();
+					console.log(response);
+				})
+				.catch(function (error) {
+					vm.updateButtonClicked = false;
+					vm.updating = false;
+					console.log(error);
+				});
+			}
 		}
 
 		function changePassword(event) {
@@ -53,7 +92,6 @@
 		function resetForm() {
 			vm.user = {};
 			vm.updateInfo = false;
-			$scope.changePasswordForm.$setPristine();
 			$scope.changePasswordForm.$setUntouched();
 		}
 	}

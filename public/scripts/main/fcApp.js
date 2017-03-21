@@ -519,10 +519,19 @@
 			confirmRegistration: confirmRegistration,
 			getFacultyRegistrations: getFacultyRegistrations,
 			getStudentCoordinator: getStudentCoordinator,
-			editStudentCoordinator: editStudentCoordinator
+			editStudentCoordinator: editStudentCoordinator,
+			getEachFaculty: getEachFaculty,
+			updateFaculty: updateFaculty,
 		};
 
 		return service;
+
+		function getEachFaculty() {
+			var link = baseLink + '/getEachFaculty';
+			return $http.get(link)
+				.then(resolveFunc)
+				.catch(errorFunc);
+		}
 
 		function confirmRegistration(registration) {
 			var link = baseLink + '/registrations/confirm';
@@ -537,8 +546,6 @@
 				.then(resolveFunc)
 				.catch(errorFunc);
 		}
-
-
 
 		function get(students) {
 			var link = baseLink + '/studentCoordinator';
@@ -557,6 +564,13 @@
 		function getStudentCoordinator() {
 			var link = baseLink + '/studentCoordinator';
 			return $http.get(link)
+				.then(resolveFunc)
+				.catch(errorFunc);
+		}
+
+		function updateFaculty(data) {
+			var link = baseLink + '/updateFaculty/';
+			return $http.post(link, data)
 				.then(resolveFunc)
 				.catch(errorFunc);
 		}
@@ -808,7 +822,9 @@
 			getUnverifiedFaculty: getUnverifiedFaculty,
 			getUnconfirmedRegistration: getUnconfirmedRegistration,
 			getRegistrationsByEvent: getRegistrationsByEvent,
-			getEventRegistrationExcel: getEventRegistrationExcel
+			getEventRegistrationExcel: getEventRegistrationExcel,
+			getConfirmedRegistrationCount: getConfirmedRegistrationCount,
+			exportParticipantList: exportParticipantList,
 		};
 
 		return service;
@@ -863,6 +879,18 @@
 
 		function getEventRegistrationExcel(request) {
 			return $http.post('/api/members/registrations/export', request)
+				.then(responseFunc)
+				.catch(errorFunc);
+		}
+
+		function getConfirmedRegistrationCount() {
+			return $http.get('/api/members/registration/confirmRegistrationCount')
+				.then(responseFunc)
+				.catch(errorFunc);
+		}
+
+		function exportParticipantList() {
+			return $http.get('/api/members/registration/exportParticipantList')
 				.then(responseFunc)
 				.catch(errorFunc);
 		}
@@ -1710,6 +1738,7 @@
 		.module('fct.core')
 		.controller('EventRegistrationController', EventRegistrationController);
 
+<<<<<<< HEAD
 	EventRegistrationController.$inject = ['memberService'];
 
 	function EventRegistrationController(memberService) {
@@ -1718,10 +1747,27 @@
 		// angular.extend(vm, {
 		// 	func: func
 		// });
+=======
+	FacultySettingsController.$inject = ['facultyAuthService', 'fctToast', '$scope', '$rootScope', '$timeout', 'facultyService'];
+
+	function FacultySettingsController(facultyAuthService, fctToast, $scope, $rootScope, $timeout, facultyService) {
+		var vm = this;
+		vm.updateInfo = false;
+		$scope.changePasswordForm = {};
+		vm.user = {};
+		vm.userDetail = {};
+		vm.updateButtonClicked = false;
+
+		angular.extend(vm, {
+			changePassword: changePassword,
+			updateFaculty: updateFaculty,
+		});
+>>>>>>> master
 
 		activate();
 
 		function activate() {
+<<<<<<< HEAD
 			getRegistration();
 			// var input = {
 			// 	event_name: "somethon",
@@ -1734,6 +1780,54 @@
 			// .catch(function (error) {
 			//
 			// });
+=======
+			getEachFaculty();
+		}
+
+		function getEachFaculty() {
+			return facultyService.getEachFaculty()
+			.then(function (response) {
+				console.log(response);
+				vm.userDetail.email = response.data.email;
+				vm.userDetail.mobileno = parseInt(response.data.mobileno);
+				vm.userDetail.name = response.data.name;
+				vm.preInfo = true;
+			}).catch(function (error) {
+				console.log(error);
+			});
+		}
+
+		function updateFaculty() {
+			if (vm.updating) {
+				event.preventDefault();
+			} else {
+				vm.updating = true;
+				vm.updateButtonClicked = true;
+				return facultyService.updateFaculty(vm.userDetail)
+				.then(function (response) {
+					vm.userDetail = response.data;
+					vm.updateButtonClicked = false;
+					vm.updating = false;
+					vm.editInfo = false;
+					getEachFaculty();
+					console.log(response);
+				})
+				.catch(function (error) {
+					vm.updateButtonClicked = false;
+					vm.updating = false;
+					console.log(error);
+				});
+			}
+		}
+
+		function changePassword(event) {
+			if (vm.updateInfo) {
+				event.preventDefault();
+			} else {
+				vm.updateInfo = true;
+				facultyAuthService.changeFacultyPassword(vm.user);
+			}
+>>>>>>> master
 		}
 
 		function getRegistration() {
@@ -1745,8 +1839,15 @@
 			console.log(response);
 		}
 
+<<<<<<< HEAD
 		function failure(error) {
 			console.log(error);
+=======
+		function resetForm() {
+			vm.user = {};
+			vm.updateInfo = false;
+			$scope.changePasswordForm.$setUntouched();
+>>>>>>> master
 		}
 	}
 })();
@@ -1823,6 +1924,7 @@
 
 	function ParticipantRegistrationController($http) {
 		var vm = this;
+<<<<<<< HEAD
 		vm.myParticipant = {
 			eventObject: {
 				event_id: 123123,
@@ -1836,6 +1938,12 @@
     vm.eventPrice = 50;
     vm.esflag = false;
     vm.nopflag = false;
+=======
+		vm.limitFaculty = 5;
+		vm.nomoreFaculty = true;
+		vm.orderField = 'registrations_count';
+		vm.reverseSort = true;
+>>>>>>> master
 
 		angular.extend(vm, {
       getParticipantLength : getParticipantLength,
@@ -1865,9 +1973,19 @@
       }
     }
 
+<<<<<<< HEAD
     function getParticipantLength() {
       return vm.myParticipant.other_participants.length;
     }
+=======
+		function getAllFacultyCoordinatorsSuccess(response) {console.log(response);
+			vm.faculties = response.data;
+			// console.log(vm.faculties);
+			if (vm.limitFaculty <= vm.faculties.length) {
+				vm.nomoreFaculty = false;
+			}
+		}
+>>>>>>> master
 
 		function save() {
 			vm.myParticipant.do_payment = true;
@@ -2118,6 +2236,135 @@
 	}
 })();
 
+<<<<<<< HEAD
+=======
+(function() {
+    'use strict';
+
+    angular
+        .module('fct.core')
+        .controller('DashboardController', DashboardController);
+
+    DashboardController.$inject = ['$rootScope', 'memberService', '$window'];
+
+    function DashboardController($rootScope, memberService, $window) {
+        var vm = this;
+        vm.confirmedCount = 0;
+        vm.unConfirmedCount = 0;
+        vm.totalConfirmedParticipants = 0;
+        vm.totalAmountCollected = 0;
+
+        angular.extend(vm, {
+            getVFS: getVFS,
+            getUVF: getUVF
+        });
+
+        activate();
+
+        function activate() {
+            getVFS();
+            getUVF();
+            getConfirmedRegistrationCount();
+            // exportParticipantList();
+        }
+
+        function getVFS() {
+            return memberService.getVerifyFacultyStudent()
+                .then(function(response) {
+                    vm.VFSPath = response.data.path;
+                    // $window.open(response.data.path);
+                    //console.log(response);
+                })
+                .catch(function(error) {
+                    //console.log(error);
+                });
+        }
+
+        function getUVF() {
+            return memberService.getUnverifiedFaculty()
+                .then(function(response) {
+                    vm.UVFPath = response.data.path;
+                    // $window.open(response.data.path);
+                    //console.log(response);
+                })
+                .catch(function(error) {
+                    //console.log(error);
+                });
+        }
+
+        function getConfirmedRegistrationCount() {
+          return memberService.getConfirmedRegistrationCount()
+            .then(function(response) {
+              vm.confirmedCount = response.data.confirmedCount;
+              vm.unConfirmedCount = response.data.unConfirmedCount;
+              vm.totalConfirmedParticipants = response.data.totalConfirmedParticipants;
+              vm.totalAmountCollected = response.data.totalAmountCollected;
+              console.log(response);
+            })
+            .catch(function(error) {
+              console.log(error);
+            });
+        }
+
+        function exportParticipantList() {
+          return memberService.exportParticipantList()
+            .then(function(response) {
+                console.log(response);
+            })
+            .catch(function(error) {
+                console.log(error);
+            });
+          }
+    }
+})();
+// return memberService.getUnverifiedFaculty()
+//     .then(function(response) {
+//         vm.UVFPath = response.data.path;
+//         // $window.open(response.data.path);
+//         //console.log(response);
+//     })
+//     .catch(function(error) {
+//         //console.log(error);
+//     });
+// }
+//
+// function getUnconfirmedRegistration() {
+//     return memberService.getUnconfirmedRegistration()
+//         .then(function(response) {
+//             console.log(reponse);
+//         })
+//         .catch(function(error) {
+//             //console.log(error);
+//         });
+// }
+// }
+// })();
+// // $window.open(response.data.path);
+// //console.log(response);
+// })
+// .catch(function(error) {
+//         .catch(function(error) {
+//             //console.log(error);
+//         });
+//     }
+//
+//     function getUnconfirmedRegistration() {
+//         return memberService.getUnconfirmedRegistration()
+//
+//             .then(function(response) {
+//                 console.log(reponse);
+//             })
+//             .catch(function(error) {
+//                     .then(function(response) {
+//                             console.log(reponse);
+//                         })
+//                         .catch(function(error) { //console.log(error);
+//                         });
+//                 }
+//             }
+//     })();
+
+>>>>>>> master
 (function () {
 	'use strict';
 
@@ -2214,6 +2461,7 @@
 		.module('fct.core')
 		.controller('ConfirmRegistrationsController', ConfirmRegistrationsController);
 
+<<<<<<< HEAD
 	ConfirmRegistrationsController.$inject = ['facultyService', '$mdDialog', 'fctToast', '$scope'];
 
 	function ConfirmRegistrationsController(facultyService, $mdDialog, fctToast, $scope) {
@@ -2222,12 +2470,25 @@
 		vm.registrationButtonClicked = false;
 		angular.extend(vm, {
 			confirmRegistration: confirmRegistration
+=======
+	EventRegistrationController.$inject = ['memberService', '$window'];
+
+	function EventRegistrationController(memberService, $window) {
+		var vm = this;
+
+		angular.extend(vm, {
+			getExcel: getExcel
+>>>>>>> master
 		});
 
 		activate();
 
 		function activate() {
+<<<<<<< HEAD
 
+=======
+			getRegistration();
+>>>>>>> master
 		}
 
 		function getFacultyRegistrationData() {
@@ -2295,6 +2556,22 @@
 			fctToast.showToast(msg);
 		}
 
+<<<<<<< HEAD
+=======
+		function getExcel(event_name, confirmed) {
+			var input = {
+				event_name: event_name,
+				confirmation: confirmed,
+			};
+			var json = JSON.stringify(input);
+			memberService.getEventRegistrationExcel(json).then(function (response) {
+				$window.open(response.data.path);
+			})
+			.catch(function (error) {
+
+			});
+		}
+>>>>>>> master
 	}
 })();
 
