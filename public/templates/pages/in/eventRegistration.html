@@ -18,7 +18,7 @@
   		<tr>
   			<th class="th1">Event Section</th>
           </tr>
-  		<tr ng-repeat="event in erc.eventDetails | filter: searchbox">
+  		<tr ng-repeat="event in erc.eventDetails | filter: search">
           <td>{{event._id.eventName.eventName}}</td>
   		    <td>{{event.confirmed_registrations}}</td>
   		    <td>{{event.unconfirmed_registrations}}</td>
