@@ -414,174 +414,175 @@ var registrationController = function (Registration) {
 	}
 
 	function getAllEventsRegistrationData(request, response) {
-		Registration.aggregate(
-			[{
-					$group: {
-						// <<<<<<< HEAD
-						// 						_id: {
-						// 							eventName: "$eventObject.event_name"
-						// 						},
-						// 						confirmed_registrations: {
-						// 							$sum: {
-						// 								$cond: [{
-						// 									$eq: ["$confirmation", true]
-						// 								}, 1, 0]
-						// 							}
-						// 						},
-						// 						unconfirmed_registrations: {
-						// 							$sum: {
-						// 								$cond: [{
-						// 									$eq: ["$confirmation", false]
-						// 								}, 1, 0]
-						// 							}
-						// 						},
-						// 						event_section: {
-						// 							$first: "$eventObject.event_section"
-						// 						},
-						// =======
-						_id: {
-							eventName: "$eventObject.event_name"
-						},
-						confirmed_registrations: {
-							$sum: {
-								$cond: [{
-									$eq: ["$confirmation", true]
-								}, 1, 0]
-							}
-						},
-						unconfirmed_registrations: {
-							$addToSet: {
-								$cond: [{
-									$eq: ["$confirmation", false]
-								}, "$team_leader.email", false]
-							}
-						},
-						event_section: {
-							$first: "$eventObject.event_section"
-						}
-						// >>>>>>> master
-					}
-				},
-				{
-					$unwind: "$unconfirmed_registrations",
-				},
-				{
-					$group: {
-						_id: {
-							eventName: "$_id"
-						},
-						event_section: {
-							$first: "$event_section"
-						},
-						confirmed_registrations: {
-							$first: "$confirmed_registrations"
-						},
-						unconfirmed_registrations: {
-							$sum: {
-								$cond: [{
-									$eq: ["$unconfirmed_registrations", false]
-								}, 0, 1]
-							}
-						},
-						unc: {
-							$first: "$unconfirmed_registrations"
-						}
-					}
-				},
-				{
-					$sort: {
-						"event_section": 1,
-					}
-				}
-			],
-			function (error, data) {
-				console.log(error);
-			},
-			function (error, data) {
-				console.log(data);
-				if (error) {
-					throwError(response, "Finding all registrations according to event", error);
-				} else {
-					// _.each(data, function (element, index, list) {
-					// 	var eventName = element._id.eventName;
-					// 			var arrayOfParticipants = _.union([element.confirmed_team_leader], element.confirmed_other_participants);
-					// 			console.log(arrayOfParticipants);
-					// arrayOfParticipants = _.map(arrayOfParticipants, function (e, i, l) {
-					// 	var newElem = e;
-					// 	newElem.teamId = e.conteamId;
-					// 	return newElem;
-					// });
-					// });
-					// 	var newData = [];
-					// 	var found = false;
-					// 	var confirmedData = [];
-					// 	var unConfirmedData = [];
-					// 	var cpath = "", ucpath = "";
-					// 	_.each(data, function (element, index, list) {
-					// 		var eventName = element._id.eventName;
-					// 		var arrayOfParticipants = _.union([element.team_leader], element.other_participants);
-					// 		arrayOfParticipants = _.map(arrayOfParticipants, function (e, i, l) {
-					// 			var newElem = e;
-					// 			// newElem.teamId = e.teamId;
-					// 			return newElem;
-					// 		});
-					// 		_(newData).filter(function (obj) {
-					// 	    if(obj.event_name == eventName) {
-					// 				found = true;
-					// 				if(element._id.confirmation) {
-					// 					obj.confirmed_registrations++;
-					// 					confirmedData = _.union(confirmedData, arrayOfParticipants);
-					// 				} else {
-					// 					obj.not_confirmed_registrations++;
-					// 					console.log('before');console.log(unConfirmedData);
-					// 					unConfirmedData[eventName] = _.union(unConfirmedData[eventName], arrayOfParticipants);
-					// 					console.log('after');console.log(unConfirmedData);
-					// 				}
-					// 			}
-					// 		});
-					// 		if(!found) {
-					// 			var cindex = 0;
-					// 			var ucindex = 0;
-					// 			if(element._id.confirmation) {
-					// 				cindex = 1;
-					// 				confirmedData = _.union(confirmedData, arrayOfParticipants);
-					// 			} else {
-					// 				ucindex = 1;
-					// 				unConfirmedData[eventName] = _.union(unConfirmedData[eventName], arrayOfParticipants);
-					// 			}
-					// 			var each = {event_name: eventName,
-					// 				confirmed_registrations: (element._id.confirmation) ? 1 : 0,
-					// 				not_confirmed_registrations: (element._id.confirmation) ? 0 : 1};
-					// 			newData.push(each);
-					// 		}
-					// 	});
-					// 	console.log(confirmedData);
-					// 	console.log(unConfirmedData);
-					// 	if (confirmedData) {
-					// 		var cxls = json2xls(confirmedData);
-					// 		fs.writeFileSync('./public/documents/confirmedData.xlsx', cxls, 'binary');
-					// 	}
-					// 	if (fs.existsSync('./public/documents/confirmedData.xlsx')) {
-					// 		cpath = '/documents/confirmedData.xlsx';
-					// 	} else {
-					// 		console.log('File doesn\'t exist');
-					// 	}
-					// 	if (unConfirmedData) {
-					// 		var ucxls = json2xls(unConfirmedData);
-					// 		fs.writeFileSync('./public/documents/unConfirmedData.xlsx', ucxls, 'binary');
-					// 	}
-					// 	if (fs.existsSync('./public/documents/unConfirmedData.xlsx')) {
-					// 		ucpath = '/documents/unConfirmedData.xlsx';
-					// 	} else {
-					// 		console.log('File doesn\'t exist');
-					// 	}
-					// newData.confirmed_xlsx = cpath;
-					// newData.unconfirmed_xlsx = ucpath;
-					// console.log(data);
-					response.status(200);
-					response.json(data);
-				}
-			});
+
+		// Registration.aggregate(
+		// 	[{
+		// 			$group: {
+		// 				// <<<<<<< HEAD
+		// 				// 						_id: {
+		// 				// 							eventName: "$eventObject.event_name"
+		// 				// 						},
+		// 				// 						confirmed_registrations: {
+		// 				// 							$sum: {
+		// 				// 								$cond: [{
+		// 				// 									$eq: ["$confirmation", true]
+		// 				// 								}, 1, 0]
+		// 				// 							}
+		// 				// 						},
+		// 				// 						unconfirmed_registrations: {
+		// 				// 							$sum: {
+		// 				// 								$cond: [{
+		// 				// 									$eq: ["$confirmation", false]
+		// 				// 								}, 1, 0]
+		// 				// 							}
+		// 				// 						},
+		// 				// 						event_section: {
+		// 				// 							$first: "$eventObject.event_section"
+		// 				// 						},
+		// 				// =======
+		// 				_id: {
+		// 					eventName: "$eventObject.event_name"
+		// 				},
+		// 				confirmed_registrations: {
+		// 					$sum: {
+		// 						$cond: [{
+		// 							$eq: ["$confirmation", true]
+		// 						}, 1, 0]
+		// 					}
+		// 				},
+		// 				unconfirmed_registrations: {
+		// 					$addToSet: {
+		// 						$cond: [{
+		// 							$eq: ["$confirmation", false]
+		// 						}, "$team_leader.email", false]
+		// 					}
+		// 				},
+		// 				event_section: {
+		// 					$first: "$eventObject.event_section"
+		// 				}
+		// 				// >>>>>>> master
+		// 			}
+		// 		},
+		// 		{
+		// 			$unwind: "$unconfirmed_registrations",
+		// 		},
+		// 		{
+		// 			$group: {
+		// 				_id: {
+		// 					eventName: "$_id"
+		// 				},
+		// 				event_section: {
+		// 					$first: "$event_section"
+		// 				},
+		// 				confirmed_registrations: {
+		// 					$first: "$confirmed_registrations"
+		// 				},
+		// 				unconfirmed_registrations: {
+		// 					$sum: {
+		// 						$cond: [{
+		// 							$eq: ["$unconfirmed_registrations", false]
+		// 						}, 0, 1]
+		// 					}
+		// 				},
+		// 				unc: {
+		// 					$first: "$unconfirmed_registrations"
+		// 				}
+		// 			}
+		// 		},
+		// 		{
+		// 			$sort: {
+		// 				"event_section": 1,
+		// 			}
+		// 		}
+		// 	],
+		// 	function (error, data) {
+		// 		console.log(error);
+		// 	},
+		// 	function (error, data) {
+		// 		console.log(data);
+		// 		if (error) {
+		// 			throwError(response, "Finding all registrations according to event", error);
+		// 		} else {
+		// 			// _.each(data, function (element, index, list) {
+		// 			// 	var eventName = element._id.eventName;
+		// 			// 			var arrayOfParticipants = _.union([element.confirmed_team_leader], element.confirmed_other_participants);
+		// 			// 			console.log(arrayOfParticipants);
+		// 			// arrayOfParticipants = _.map(arrayOfParticipants, function (e, i, l) {
+		// 			// 	var newElem = e;
+		// 			// 	newElem.teamId = e.conteamId;
+		// 			// 	return newElem;
+		// 			// });
+		// 			// });
+		// 			// 	var newData = [];
+		// 			// 	var found = false;
+		// 			// 	var confirmedData = [];
+		// 			// 	var unConfirmedData = [];
+		// 			// 	var cpath = "", ucpath = "";
+		// 			// 	_.each(data, function (element, index, list) {
+		// 			// 		var eventName = element._id.eventName;
+		// 			// 		var arrayOfParticipants = _.union([element.team_leader], element.other_participants);
+		// 			// 		arrayOfParticipants = _.map(arrayOfParticipants, function (e, i, l) {
+		// 			// 			var newElem = e;
+		// 			// 			// newElem.teamId = e.teamId;
+		// 			// 			return newElem;
+		// 			// 		});
+		// 			// 		_(newData).filter(function (obj) {
+		// 			// 	    if(obj.event_name == eventName) {
+		// 			// 				found = true;
+		// 			// 				if(element._id.confirmation) {
+		// 			// 					obj.confirmed_registrations++;
+		// 			// 					confirmedData = _.union(confirmedData, arrayOfParticipants);
+		// 			// 				} else {
+		// 			// 					obj.not_confirmed_registrations++;
+		// 			// 					console.log('before');console.log(unConfirmedData);
+		// 			// 					unConfirmedData[eventName] = _.union(unConfirmedData[eventName], arrayOfParticipants);
+		// 			// 					console.log('after');console.log(unConfirmedData);
+		// 			// 				}
+		// 			// 			}
+		// 			// 		});
+		// 			// 		if(!found) {
+		// 			// 			var cindex = 0;
+		// 			// 			var ucindex = 0;
+		// 			// 			if(element._id.confirmation) {
+		// 			// 				cindex = 1;
+		// 			// 				confirmedData = _.union(confirmedData, arrayOfParticipants);
+		// 			// 			} else {
+		// 			// 				ucindex = 1;
+		// 			// 				unConfirmedData[eventName] = _.union(unConfirmedData[eventName], arrayOfParticipants);
+		// 			// 			}
+		// 			// 			var each = {event_name: eventName,
+		// 			// 				confirmed_registrations: (element._id.confirmation) ? 1 : 0,
+		// 			// 				not_confirmed_registrations: (element._id.confirmation) ? 0 : 1};
+		// 			// 			newData.push(each);
+		// 			// 		}
+		// 			// 	});
+		// 			// 	console.log(confirmedData);
+		// 			// 	console.log(unConfirmedData);
+		// 			// 	if (confirmedData) {
+		// 			// 		var cxls = json2xls(confirmedData);
+		// 			// 		fs.writeFileSync('./public/documents/confirmedData.xlsx', cxls, 'binary');
+		// 			// 	}
+		// 			// 	if (fs.existsSync('./public/documents/confirmedData.xlsx')) {
+		// 			// 		cpath = '/documents/confirmedData.xlsx';
+		// 			// 	} else {
+		// 			// 		console.log('File doesn\'t exist');
+		// 			// 	}
+		// 			// 	if (unConfirmedData) {
+		// 			// 		var ucxls = json2xls(unConfirmedData);
+		// 			// 		fs.writeFileSync('./public/documents/unConfirmedData.xlsx', ucxls, 'binary');
+		// 			// 	}
+		// 			// 	if (fs.existsSync('./public/documents/unConfirmedData.xlsx')) {
+		// 			// 		ucpath = '/documents/unConfirmedData.xlsx';
+		// 			// 	} else {
+		// 			// 		console.log('File doesn\'t exist');
+		// 			// 	}
+		// 			// newData.confirmed_xlsx = cpath;
+		// 			// newData.unconfirmed_xlsx = ucpath;
+		// 			// console.log(data);
+		// 			response.status(200);
+		// 			response.json(data);
+		// 		}
+		// 	});
 	}
 
 	function getConfirmRegistrationCount(request, response) {
