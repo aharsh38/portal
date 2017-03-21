@@ -81,7 +81,6 @@ var registrationController = function (Registration) {
 		}
 	}
 
-
 	function generateSlip(type, teamid, data, request, response, registration) {
 		if (type) {
 			console.log('donwload skip');
@@ -415,6 +414,78 @@ var registrationController = function (Registration) {
 
 	function getAllEventsRegistrationData(request, response) {
 
+
+		Registration.aggregate(
+			[{
+					$group: {
+						_id: {
+							eventName: "$eventObject.event_name"
+						},
+						confirmed_registrations: {
+							$sum: {
+								$cond: [{
+									$eq: ["$confirmation", true]
+								}, 1, 0]
+							}
+						},
+						unconfirmed_registrations: {
+							$addToSet: {
+								$cond: [{
+									$eq: ["$confirmation", false]
+								}, "$team_leader.email", false]
+							}
+						},
+						event_section: {
+							$first: "$eventObject.event_section"
+						},
+					},
+				},
+				{
+					$unwind: "$unconfirmed_registrations",
+				},
+				{
+					$group: {
+						_id: {
+							eventName: "$_id"
+						},
+						event_section: {
+							$first: "$event_section"
+						},
+						confirmed_registrations: {
+							$first: "$confirmed_registrations"
+						},
+						unconfirmed_registrations: {
+							$sum: {
+								$cond: [{
+									$eq: ["$unconfirmed_registrations", false]
+								}, 0, 1]
+							}
+						},
+						unc: {
+							$first: "$unconfirmed_registrations"
+						}
+					}
+				},
+				{
+					$sort: {
+						"event_section": 1,
+					}
+				}
+			],
+			function (error, data) {
+				console.log(data);
+				if (error) {
+					throwError(response, "Finding all registrations according to event", error);
+				} else {
+
+					response.status(200);
+					response.json(data);
+				}
+			}
+		);
+
+
+
 		// Registration.aggregate(
 		// 	[{
 		// 			$group: {
@@ -597,6 +668,7 @@ var registrationController = function (Registration) {
 					},
 					teamId: {
 						$push: "$teamId"
+
 					},
 					paymentMethod: {
 						$push: {
@@ -608,6 +680,7 @@ var registrationController = function (Registration) {
 					numberOfParticipant: {
 						$push: "$no_of_participants"
 					},
+
 					total_amount: {
 						$push: "$total_amount"
 					}
