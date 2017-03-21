@@ -197,7 +197,8 @@ var facultyController = function(Faculty, Registration) {
                 verified: 1,
                 collegeId: 1,
                 registrations_count: 1,
-                collected_amount: 1
+                collected_amount: 1,
+                updatedAt: 1,
             })
             .sort({
                 verified: 1,

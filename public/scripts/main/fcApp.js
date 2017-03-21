@@ -1710,7 +1710,7 @@
 		}
 
 
-		function getAllFacultyCoordinatorsSuccess(response) {
+		function getAllFacultyCoordinatorsSuccess(response) {console.log(response);
 			vm.faculties = response.data;
 			// console.log(vm.faculties);
 			if (vm.limitFaculty <= vm.faculties.length) {
@@ -1975,7 +1975,7 @@
             getVFS();
             getUVF();
             getConfirmedRegistrationCount();
-            exportParticipantList();
+            // exportParticipantList();
         }
 
         function getVFS() {

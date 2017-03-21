@@ -21,6 +21,7 @@
             <p flex-gt-xs="40">City: <strong>{{detail.collegeId.city}}</strong></p>
             <p flex-gt-xs="35">Registrations: <strong>{{detail.registrations_count}}</strong></p>
             <p flex-gt-xs="20">Amount: <strong>{{detail.collected_amount}}</strong></p>
+            <p flex-gt-xs="40">Updated At: <strong>{{detail.updatedAt.split('T').join(' Time: ').split('.')[0]}}</strong></p>
             <div flex-gt-xs="100" layout="row" layout-align="center center" class="margin-top-2">
                 <md-button ng-show="!detail.verified" ng-click="vcc.verifyFaculty(detail._id, $index)" class="md-raised md-success margin-lr-1" md-no-ink="true">Verify</md-button>
                 <md-button ng-show="!detail.rejected" ng-click="vcc.rejectFaculty(detail._id, $index)" class="md-raised md-warn margin-lr-1" md-no-ink="true">Reject</md-button>
