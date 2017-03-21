@@ -895,37 +895,6 @@
 				.catch(errorFunc);
 		}
 
-		// function initializeCKEditor() {
-		// 	if ( CKEDITOR.env.ie && CKEDITOR.env.version < 9 )
-		// 		CKEDITOR.tools.enableHtml5Elements( document );
-		// 		CKEDITOR.config.height = 150;
-		// 		CKEDITOR.config.width = 'auto';
-		// 		var initSample = ( function() {
-		// 			var wysiwygareaAvailable = isWysiwygareaAvailable();
-		// 			return function() {
-		// 				var editorElement = CKEDITOR.document.getById( 'editor' );
-		// 				if ( wysiwygareaAvailable ) {
-		// 					CKEDITOR.replace( 'editorRules' );
-		// 					CKEDITOR.replace( 'editorSpecification' );
-		// 					CKEDITOR.replace( 'editorJudgingCriteria' );
-		// 				} else {
-		// 					editorElement.setAttribute( 'contenteditable', 'true' );
-		// 					CKEDITOR.inline( 'editorRules' );
-		// 					CKEDITOR.inline( 'editorSpecification' );
-		// 					CKEDITOR.inline( 'editorJudgingCriteria' );
-		// 				}
-		// 			};
-		//
-		// 		function isWysiwygareaAvailable() {
-		// 			if ( CKEDITOR.revision == ( '%RE' + 'V%' ) ) {
-		// 				return true;
-		// 			}
-		// 			return !!CKEDITOR.plugins.get( 'wysiwygarea' );
-		// 		}
-		// 	} )();
-		// 	initSample();
-		// }
-
 		function getDeleteModal() {
 			var confirm = $mdDialog.confirm()
 				.title('Delete')
@@ -1367,6 +1336,566 @@
 
 	angular
 		.module('fct.core')
+		.controller('AddStudentController', AddStudentController);
+
+	AddStudentController.$inject = ['$http', 'facultyService', '$rootScope', 'fctToast'];
+
+	function AddStudentController($http, facultyService, $rootScope, fctToast) {
+		var vm = this;
+		vm.coordinator = {};
+		vm.editInfo = false;
+		vm.preInfo = false;
+		vm.updateButtonClicked = false;
+		vm.addButtonClicked = false;
+
+		angular.extend(vm, {
+			update: update,
+			addStudentCoordinator: addStudentCoordinator,
+			edit: edit
+		});
+
+		activate();
+
+		function activate() {
+			return facultyService.getStudentCoordinator()
+				.then(getStudentCoordinatorSuccess)
+				.catch(getStudentCoordinatorFailure);
+
+		}
+
+		function getStudentCoordinatorSuccess(response) {
+			if (response.data.student_coordinator) {
+				vm.coordinator = response.data.student_coordinator;
+				vm.preInfo = true;
+			} else {
+				vm.editInfo = true;
+			}
+		}
+
+		function getStudentCoordinatorFailure(error) {
+			// console.log(error);
+		}
+
+		function update(event) {
+			vm.updateButtonClicked = true;
+			return facultyService.editStudentCoordinator({
+					student_coordinator: vm.coordinator
+				})
+				.then(editStudentCoordinatorSuccess)
+				.catch(editStudentCoordinatorFailure);
+		}
+
+		function edit() {
+			vm.editInfo = true;
+		}
+
+		function addStudentCoordinator(event) {
+			vm.addButtonClicked = true;
+			return facultyService.editStudentCoordinator({
+					student_coordinator: vm.coordinator
+				})
+				.then(addStudentCoordinatorSuccess)
+				.catch(editStudentCoordinatorFailure);
+		}
+
+		function addStudentCoordinatorSuccess(response) {
+			vm.preInfo = true;
+			vm.editInfo = false;
+			vm.addButtonClicked = false;
+			fctToast.showToast('Student Coordinator Details Added Successfuly', true);
+		}
+
+		function editStudentCoordinatorSuccess(response) {
+			vm.editInfo = false;
+			vm.updateButtonClicked = false;
+			fctToast.showToast('Student Coordinator Details Updated Successfuly', true);
+		}
+
+		function editStudentCoordinatorFailure(error) {
+			vm.editInfo = false;
+			vm.addButtonClicked = false;
+			vm.updateButtonClicked = false;
+			fctToast.showToast('Error!! Try Again');
+		}
+	}
+})();
+
+(function () {
+	'use strict';
+
+	angular
+		.module('fct.core')
+		.controller('ConfirmRegistrationsController', ConfirmRegistrationsController);
+
+	ConfirmRegistrationsController.$inject = ['facultyService', '$mdDialog', 'fctToast', '$scope'];
+
+	function ConfirmRegistrationsController(facultyService, $mdDialog, fctToast, $scope) {
+		var vm = this;
+		vm.registration = {};
+		vm.registrationButtonClicked = false;
+		angular.extend(vm, {
+			confirmRegistration: confirmRegistration
+		});
+
+		activate();
+
+		function activate() {
+
+		}
+
+		function getFacultyRegistrationData() {
+
+		}
+
+		function confirmRegistration(event) {
+			if (vm.registrationButtonClicked) {
+				event.preventDefault();
+			} else {
+				vm.registrationButtonClicked = true;
+			}
+
+			// return
+			var confirm = $mdDialog.prompt()
+				.title('Enter SERIAL ID')
+				.textContent('Enter the serial id provided in ther Registration Slip')
+				.placeholder('Serial Id')
+				.ariaLabel('Serial Id')
+				.targetEvent(event)
+				.theme('normal')
+				.ok('Submit')
+				.cancel('Cancel');
+
+			$mdDialog.show(confirm).then(function (result) {
+				vm.registration.serialId = result;
+				return facultyService.confirmRegistration(vm.registration)
+					.then(confirmRegistrationSuccess)
+					.catch(confirmRegistrationFailure);
+			}, function () {
+				vm.registrationButtonClicked = false;
+			});
+		}
+
+		function confirmRegistrationSuccess(response) {
+			console.log(response);
+			vm.registrationButtonClicked = false;
+			vm.registration = {};
+			$scope.confirmRegistrationForm.$setPristine();
+			$scope.confirmRegistrationForm.$setUntouched();
+
+			var msg;
+
+			if (response.status == 400) {
+				msg = response.data.error.for;
+				fctToast.showToast(msg);
+			}
+
+			if (msg) {
+				msg = response.data.message;
+				fctToast.showToast(msg, true);
+			}
+		}
+
+		function confirmRegistrationFailure(error) {
+			var msg;
+
+			if (error.status == 500) {
+				msg = 'Internal server error, try again !!';
+			} else {
+				msg = error.data.error.for;
+			}
+
+			vm.registrationButtonClicked = false;
+			fctToast.showToast(msg);
+		}
+
+	}
+})();
+
+(function () {
+	'use strict';
+
+	angular
+		.module('fct.core')
+		.controller('FacultySettingsController', FacultySettingsController);
+
+	FacultySettingsController.$inject = ['facultyAuthService', 'fctToast', '$scope', '$rootScope', '$timeout', 'facultyService'];
+
+	function FacultySettingsController(facultyAuthService, fctToast, $scope, $rootScope, $timeout, facultyService) {
+		var vm = this;
+		vm.updateInfo = false;
+		$scope.changePasswordForm = {};
+		vm.user = {};
+		vm.userDetail = {};
+		vm.updateButtonClicked = false;
+
+		angular.extend(vm, {
+			changePassword: changePassword,
+			updateFaculty: updateFaculty,
+		});
+
+		activate();
+
+		function activate() {
+			getEachFaculty();
+		}
+
+		function getEachFaculty() {
+			return facultyService.getEachFaculty()
+			.then(function (response) {
+				console.log(response);
+				vm.userDetail.email = response.data.email;
+				vm.userDetail.mobileno = parseInt(response.data.mobileno);
+				vm.userDetail.name = response.data.name;
+				vm.preInfo = true;
+			}).catch(function (error) {
+				console.log(error);
+			});
+		}
+
+		function updateFaculty() {
+			if (vm.updating) {
+				event.preventDefault();
+			} else {
+				vm.updating = true;
+				vm.updateButtonClicked = true;
+				return facultyService.updateFaculty(vm.userDetail)
+				.then(function (response) {
+					vm.userDetail = response.data;
+					vm.updateButtonClicked = false;
+					vm.updating = false;
+					vm.editInfo = false;
+					getEachFaculty();
+					console.log(response);
+				})
+				.catch(function (error) {
+					vm.updateButtonClicked = false;
+					vm.updating = false;
+					console.log(error);
+				});
+			}
+		}
+
+		function changePassword(event) {
+			if (vm.updateInfo) {
+				event.preventDefault();
+			} else {
+				vm.updateInfo = true;
+				facultyAuthService.changeFacultyPassword(vm.user);
+			}
+		}
+
+		$rootScope.$on('FacultyChangePasswordSuccess', FacultyChangePasswordSuccess);
+		$rootScope.$on('FacultyChangePasswordFailure', FacultyChangePasswordFailure);
+
+		function FacultyChangePasswordSuccess(event) {
+			fctToast.showToast("Password Changed Successfully", true);
+			$timeout(function () {
+				resetForm();
+			});
+
+		}
+
+		function FacultyChangePasswordFailure(event, error) {
+			fctToast.showToast(error.data.message);
+			$timeout(function () {
+				resetForm();
+			});
+		}
+
+		function resetForm() {
+			vm.user = {};
+			vm.updateInfo = false;
+			$scope.changePasswordForm.$setUntouched();
+		}
+	}
+})();
+
+
+(function () {
+	'use strict';
+
+	angular
+		.module('fct.core')
+		.controller('RegistrationDetailsController', RegistrationDetailsController);
+
+	RegistrationDetailsController.$inject = ['fctToast', '$rootScope', 'facultyService'];
+
+	function RegistrationDetailsController(fctToast, $rootScope, facultyService) {
+		var vm = this;
+		vm.noregistration = true;
+		activate();
+
+		function activate() {
+			return facultyService.getFacultyRegistrations()
+				.then(getRegistrationsSuccess)
+				.catch(getRegistrationsFailure);
+		}
+
+		function getRegistrationsSuccess(response) {
+
+			if (response.data.registrations.length !== 0) {
+				vm.registrations = response.data.registrations;
+				vm.registrations_count = response.data.totalRegistrations;
+				vm.collected_amount = response.data.totalCollectedAmount;
+				vm.noregistration = false;
+			} else {
+				vm.noregistration = true;
+			}
+		}
+
+		function getRegistrationsFailure(error) {
+			fctToast.showToast('Internal Server Error');
+		}
+	}
+})();
+
+(function () {
+	'use strict';
+
+	angular
+		.module('fct.core')
+		.controller('VerifyCoordinatorController', VerifyCoordinatorController);
+
+	VerifyCoordinatorController.$inject = ['$scope', 'memberService', '$mdDialog'];
+
+	function VerifyCoordinatorController($scope, memberService, $mdDialog) {
+		var vm = this;
+		vm.limitFaculty = 5;
+		vm.nomoreFaculty = true;
+		vm.orderField = 'registrations_count';
+		vm.reverseSort = true;
+
+		angular.extend(vm, {
+			verifyFaculty: verifyFaculty,
+			rejectFaculty: rejectFaculty,
+			loadmore: loadmore
+		});
+
+		activate();
+
+		function activate() {
+			return memberService.getAllFacultyCoordinators()
+				.then(getAllFacultyCoordinatorsSuccess)
+				.catch(getAllFacultyCoordinatorsFailure);
+		}
+
+
+		function getAllFacultyCoordinatorsSuccess(response) {console.log(response);
+			vm.faculties = response.data;
+			// console.log(vm.faculties);
+			if (vm.limitFaculty <= vm.faculties.length) {
+				vm.nomoreFaculty = false;
+			}
+		}
+
+		function getAllFacultyCoordinatorsFailure(error) {
+			//State go to Add Events
+			//Dashboard
+			// console.log(error);
+		}
+
+		function verifyFaculty(id, index, event) {
+			vm.verifyingIndex = index;
+			var confirm = $mdDialog.confirm()
+				.title('Are you sure?')
+				.textContent('You will be Verifying ' + vm.faculties[index].name + ' as a Faculty Coordinator')
+				.ariaLabel('FCVER')
+				.targetEvent(event)
+				.ok('Confirm Verification')
+				.theme('normal')
+				.cancel('No, not now !!!');
+			$mdDialog.show(confirm).then(function () {
+				return memberService.verifyFaculty(id)
+					.then(verifyFacultySuccess)
+					.catch(verifyFacultyFailure);
+			}, function () {
+				//failed
+			});
+		}
+
+		function verifyFacultySuccess(response) {
+			vm.faculties[vm.verifyingIndex].verified = true;
+		}
+
+		function verifyFacultyFailure(error) {
+			//fctToast.show('FAilure');
+		}
+
+		function rejectFaculty(id, index, event) {
+			vm.rejectionIndex = index;
+			var confirm = $mdDialog.confirm()
+				.title('Are you sure?')
+				.textContent('You will be Rejecting ' + vm.faculties[index].name + ' as a Faculty Coordinator')
+				.ariaLabel('FCVER')
+				.targetEvent(event)
+				.ok('Confirm Rejection')
+				.theme('normal')
+				.cancel('No, not now !!!');
+			$mdDialog.show(confirm).then(function () {
+				return memberService.rejectFaculty(id)
+					.then(rejectFacultySuccess)
+					.catch(rejectFacultyFailure);
+			}, function () {
+				//failed
+			});
+		}
+
+		function rejectFacultySuccess(response) {
+			vm.faculties[vm.rejectionIndex].rejected = true;
+			vm.faculties.splice(vm.rejectionIndex, 1);
+			console.log(response);
+		}
+
+		function rejectFacultyFailure(error) {
+			//fctToast.show('FAilure');
+			console.log(error);
+		}
+
+		function loadmore() {
+			vm.limitFaculty += 5;
+			if (vm.limitFaculty >= vm.faculties.length) {
+				vm.nomoreFaculty = true;
+			}
+		}
+	}
+})();
+
+(function () {
+	'use strict';
+
+	angular
+		.module('fct.core')
+		.controller('FacultyLayoutController', FacultyLayoutController)
+		.controller('ContactDialogController', ContactDialogController);
+
+	FacultyLayoutController.$inject = ['facultyAuthService', '$mdSidenav', '$rootScope', 'fctToast', '$state', '$mdDialog', '$mdMedia', '$scope'];
+
+	function FacultyLayoutController(facultyAuthService, $mdSidenav, $rootScope, fctToast, $state, $mdDialog, $mdMedia, $scope) {
+		var vm = this;
+
+		$scope.$watch(function () {
+			return $mdMedia('xs') || $mdMedia('sm');
+		});
+
+		angular.extend(vm, {
+			logout: logout,
+			openLeftSidenav: openLeftSidenav,
+			isOpenLeftSidenav: isOpenLeftSidenav,
+			closeLeftSidenav: closeLeftSidenav,
+			contact: contact
+		});
+
+		activate();
+
+		function activate() {
+
+		}
+
+		function logout() {
+			facultyAuthService.logout();
+		}
+
+		$rootScope.$on('logoutSuccessful', logoutSuccessful);
+
+		function logoutSuccessful(event) {
+			fctToast.showToast("Succesfully Logged out", true);
+			$state.go('out.login');
+		}
+
+		function openLeftSidenav() {
+			$mdSidenav('left').open();
+		}
+
+		function isOpenLeftSidenav() {
+			return $mdSidenav('left').isOpen();
+		}
+
+		function closeLeftSidenav() {
+			$mdSidenav('left').close();
+		}
+
+		function contact(ev) {
+			var useFullScreen = $mdMedia('sm') || $mdMedia('xs');
+			$mdDialog.show({
+				controller: 'ContactDialogController',
+				templateUrl: '/templates/components/dialogs/contact.html',
+				parent: angular.element(document.body),
+				targetEvent: ev,
+				clickOutsideToClose: true,
+				fullscreen: useFullScreen // Only for -xs, -sm breakpoints.
+			});
+		}
+	}
+
+	ContactDialogController.$inject = ['$scope', '$mdDialog'];
+
+	function ContactDialogController($scope, $mdDialog) {
+		$scope.cancel = function () {
+			$mdDialog.cancel();
+		};
+
+		$scope.hide = function () {
+			$mdDialog.hide();
+		};
+	}
+})();
+
+(function () {
+	'use strict';
+
+	angular
+		.module('fct.core')
+		.controller('MemberLayoutController', MemberLayoutController);
+
+	MemberLayoutController.$inject = ['memberAuthService', '$mdSidenav', '$rootScope', 'fctToast', '$state', '$scope'];
+
+	function MemberLayoutController(memberAuthService, $mdSidenav, $rootScope, fctToast, $state, $scope) {
+		var vm = this;
+
+		angular.extend(vm, {
+			logout: logout,
+			openLeftSidenav: openLeftSidenav,
+			isOpenLeftSidenav: isOpenLeftSidenav,
+			closeLeftSidenav: closeLeftSidenav,
+		});
+
+		activate();
+
+		function activate() {
+
+		}
+
+		function logout() {
+			memberAuthService.logout();
+		}
+
+		$rootScope.$on('logoutSuccessful', logoutSuccessful);
+
+		function logoutSuccessful(event) {
+			fctToast.showToast("Succesfully Logged out", true);
+			$state.go('out.member_login');
+		}
+
+		function openLeftSidenav() {
+			$mdSidenav('left').open();
+		}
+
+		function isOpenLeftSidenav() {
+			return $mdSidenav('left').isOpen();
+		}
+
+		function closeLeftSidenav() {
+			$mdSidenav('left').close();
+		}
+	}
+
+})();
+
+(function () {
+	'use strict';
+
+	angular
+		.module('fct.core')
 		.controller('AddEventController', AddEventController);
 
 	AddEventController.$inject = ['$stateParams', 'eventService', '$rootScope', '$timeout', 'Upload', '$state', 'fctToast', '$filter', 'memberService'];
@@ -1537,6 +2066,10 @@
 
     function DashboardController($rootScope, memberService, $window) {
         var vm = this;
+        vm.confirmedCount = 0;
+        vm.unConfirmedCount = 0;
+        vm.totalConfirmedParticipants = 0;
+        vm.totalAmountCollected = 0;
 
         angular.extend(vm, {
             getVFS: getVFS,
@@ -1548,7 +2081,8 @@
         function activate() {
             getVFS();
             getUVF();
-            // getUnconfirmedRegistration();
+            getConfirmedRegistrationCount();
+            // exportParticipantList();
         }
 
         function getVFS() {
@@ -1575,15 +2109,29 @@
                 });
         }
 
-        // function getUnconfirmedRegistration() {
-        //     return memberService.getUnconfirmedRegistration()
-        //
-        //         .then(function(response) {
-        //             console.log(reponse);
-        //         })
-        //         .catch(function(error) { //console.log(error);
-        //         });
-        // }
+        function getConfirmedRegistrationCount() {
+          return memberService.getConfirmedRegistrationCount()
+            .then(function(response) {
+              vm.confirmedCount = response.data.confirmedCount;
+              vm.unConfirmedCount = response.data.unConfirmedCount;
+              vm.totalConfirmedParticipants = response.data.totalConfirmedParticipants;
+              vm.totalAmountCollected = response.data.totalAmountCollected;
+              console.log(response);
+            })
+            .catch(function(error) {
+              console.log(error);
+            });
+        }
+
+        function exportParticipantList() {
+          return memberService.exportParticipantList()
+            .then(function(response) {
+                console.log(response);
+            })
+            .catch(function(error) {
+                console.log(error);
+            });
+          }
     }
 })();
 // return memberService.getUnverifiedFaculty()
@@ -1738,96 +2286,19 @@
 		.module('fct.core')
 		.controller('EventRegistrationController', EventRegistrationController);
 
-<<<<<<< HEAD
-	EventRegistrationController.$inject = ['memberService'];
+	EventRegistrationController.$inject = ['memberService', '$window'];
 
-	function EventRegistrationController(memberService) {
+	function EventRegistrationController(memberService, $window) {
 		var vm = this;
-
-		// angular.extend(vm, {
-		// 	func: func
-		// });
-=======
-	FacultySettingsController.$inject = ['facultyAuthService', 'fctToast', '$scope', '$rootScope', '$timeout', 'facultyService'];
-
-	function FacultySettingsController(facultyAuthService, fctToast, $scope, $rootScope, $timeout, facultyService) {
-		var vm = this;
-		vm.updateInfo = false;
-		$scope.changePasswordForm = {};
-		vm.user = {};
-		vm.userDetail = {};
-		vm.updateButtonClicked = false;
 
 		angular.extend(vm, {
-			changePassword: changePassword,
-			updateFaculty: updateFaculty,
+			getExcel: getExcel
 		});
->>>>>>> master
 
 		activate();
 
 		function activate() {
-<<<<<<< HEAD
 			getRegistration();
-			// var input = {
-			// 	event_name: "somethon",
-			// 	do_payment: true,
-			// };
-			// var x = JSON.stringify(input);
-			// return memberService.getEventRegistrationExcel(x).then(function (response) {
-			// 	console.log(response);
-			// })
-			// .catch(function (error) {
-			//
-			// });
-=======
-			getEachFaculty();
-		}
-
-		function getEachFaculty() {
-			return facultyService.getEachFaculty()
-			.then(function (response) {
-				console.log(response);
-				vm.userDetail.email = response.data.email;
-				vm.userDetail.mobileno = parseInt(response.data.mobileno);
-				vm.userDetail.name = response.data.name;
-				vm.preInfo = true;
-			}).catch(function (error) {
-				console.log(error);
-			});
-		}
-
-		function updateFaculty() {
-			if (vm.updating) {
-				event.preventDefault();
-			} else {
-				vm.updating = true;
-				vm.updateButtonClicked = true;
-				return facultyService.updateFaculty(vm.userDetail)
-				.then(function (response) {
-					vm.userDetail = response.data;
-					vm.updateButtonClicked = false;
-					vm.updating = false;
-					vm.editInfo = false;
-					getEachFaculty();
-					console.log(response);
-				})
-				.catch(function (error) {
-					vm.updateButtonClicked = false;
-					vm.updating = false;
-					console.log(error);
-				});
-			}
-		}
-
-		function changePassword(event) {
-			if (vm.updateInfo) {
-				event.preventDefault();
-			} else {
-				vm.updateInfo = true;
-				facultyAuthService.changeFacultyPassword(vm.user);
-			}
->>>>>>> master
 		}
 
 		function getRegistration() {
@@ -1839,15 +2310,22 @@
 			console.log(response);
 		}
 
-<<<<<<< HEAD
 		function failure(error) {
 			console.log(error);
-=======
-		function resetForm() {
-			vm.user = {};
-			vm.updateInfo = false;
-			$scope.changePasswordForm.$setUntouched();
->>>>>>> master
+		}
+
+		function getExcel(event_name, confirmed) {
+			var input = {
+				event_name: event_name,
+				confirmation: confirmed,
+			};
+			var json = JSON.stringify(input);
+			memberService.getEventRegistrationExcel(json).then(function (response) {
+				$window.open(response.data.path);
+			})
+			.catch(function (error) {
+
+			});
 		}
 	}
 })();
@@ -1924,7 +2402,6 @@
 
 	function ParticipantRegistrationController($http) {
 		var vm = this;
-<<<<<<< HEAD
 		vm.myParticipant = {
 			eventObject: {
 				event_id: 123123,
@@ -1938,12 +2415,6 @@
     vm.eventPrice = 50;
     vm.esflag = false;
     vm.nopflag = false;
-=======
-		vm.limitFaculty = 5;
-		vm.nomoreFaculty = true;
-		vm.orderField = 'registrations_count';
-		vm.reverseSort = true;
->>>>>>> master
 
 		angular.extend(vm, {
       getParticipantLength : getParticipantLength,
@@ -1973,19 +2444,9 @@
       }
     }
 
-<<<<<<< HEAD
     function getParticipantLength() {
       return vm.myParticipant.other_participants.length;
     }
-=======
-		function getAllFacultyCoordinatorsSuccess(response) {console.log(response);
-			vm.faculties = response.data;
-			// console.log(vm.faculties);
-			if (vm.limitFaculty <= vm.faculties.length) {
-				vm.nomoreFaculty = false;
-			}
-		}
->>>>>>> master
 
 		function save() {
 			vm.myParticipant.do_payment = true;
@@ -2234,685 +2695,6 @@
 			});
 		}
 	}
-})();
-
-<<<<<<< HEAD
-=======
-(function() {
-    'use strict';
-
-    angular
-        .module('fct.core')
-        .controller('DashboardController', DashboardController);
-
-    DashboardController.$inject = ['$rootScope', 'memberService', '$window'];
-
-    function DashboardController($rootScope, memberService, $window) {
-        var vm = this;
-        vm.confirmedCount = 0;
-        vm.unConfirmedCount = 0;
-        vm.totalConfirmedParticipants = 0;
-        vm.totalAmountCollected = 0;
-
-        angular.extend(vm, {
-            getVFS: getVFS,
-            getUVF: getUVF
-        });
-
-        activate();
-
-        function activate() {
-            getVFS();
-            getUVF();
-            getConfirmedRegistrationCount();
-            // exportParticipantList();
-        }
-
-        function getVFS() {
-            return memberService.getVerifyFacultyStudent()
-                .then(function(response) {
-                    vm.VFSPath = response.data.path;
-                    // $window.open(response.data.path);
-                    //console.log(response);
-                })
-                .catch(function(error) {
-                    //console.log(error);
-                });
-        }
-
-        function getUVF() {
-            return memberService.getUnverifiedFaculty()
-                .then(function(response) {
-                    vm.UVFPath = response.data.path;
-                    // $window.open(response.data.path);
-                    //console.log(response);
-                })
-                .catch(function(error) {
-                    //console.log(error);
-                });
-        }
-
-        function getConfirmedRegistrationCount() {
-          return memberService.getConfirmedRegistrationCount()
-            .then(function(response) {
-              vm.confirmedCount = response.data.confirmedCount;
-              vm.unConfirmedCount = response.data.unConfirmedCount;
-              vm.totalConfirmedParticipants = response.data.totalConfirmedParticipants;
-              vm.totalAmountCollected = response.data.totalAmountCollected;
-              console.log(response);
-            })
-            .catch(function(error) {
-              console.log(error);
-            });
-        }
-
-        function exportParticipantList() {
-          return memberService.exportParticipantList()
-            .then(function(response) {
-                console.log(response);
-            })
-            .catch(function(error) {
-                console.log(error);
-            });
-          }
-    }
-})();
-// return memberService.getUnverifiedFaculty()
-//     .then(function(response) {
-//         vm.UVFPath = response.data.path;
-//         // $window.open(response.data.path);
-//         //console.log(response);
-//     })
-//     .catch(function(error) {
-//         //console.log(error);
-//     });
-// }
-//
-// function getUnconfirmedRegistration() {
-//     return memberService.getUnconfirmedRegistration()
-//         .then(function(response) {
-//             console.log(reponse);
-//         })
-//         .catch(function(error) {
-//             //console.log(error);
-//         });
-// }
-// }
-// })();
-// // $window.open(response.data.path);
-// //console.log(response);
-// })
-// .catch(function(error) {
-//         .catch(function(error) {
-//             //console.log(error);
-//         });
-//     }
-//
-//     function getUnconfirmedRegistration() {
-//         return memberService.getUnconfirmedRegistration()
-//
-//             .then(function(response) {
-//                 console.log(reponse);
-//             })
-//             .catch(function(error) {
-//                     .then(function(response) {
-//                             console.log(reponse);
-//                         })
-//                         .catch(function(error) { //console.log(error);
-//                         });
-//                 }
-//             }
-//     })();
-
->>>>>>> master
-(function () {
-	'use strict';
-
-	angular
-		.module('fct.core')
-		.controller('AddStudentController', AddStudentController);
-
-	AddStudentController.$inject = ['$http', 'facultyService', '$rootScope', 'fctToast'];
-
-	function AddStudentController($http, facultyService, $rootScope, fctToast) {
-		var vm = this;
-		vm.coordinator = {};
-		vm.editInfo = false;
-		vm.preInfo = false;
-		vm.updateButtonClicked = false;
-		vm.addButtonClicked = false;
-
-		angular.extend(vm, {
-			update: update,
-			addStudentCoordinator: addStudentCoordinator,
-			edit: edit
-		});
-
-		activate();
-
-		function activate() {
-			return facultyService.getStudentCoordinator()
-				.then(getStudentCoordinatorSuccess)
-				.catch(getStudentCoordinatorFailure);
-
-		}
-
-		function getStudentCoordinatorSuccess(response) {
-			if (response.data.student_coordinator) {
-				vm.coordinator = response.data.student_coordinator;
-				vm.preInfo = true;
-			} else {
-				vm.editInfo = true;
-			}
-		}
-
-		function getStudentCoordinatorFailure(error) {
-			// console.log(error);
-		}
-
-		function update(event) {
-			vm.updateButtonClicked = true;
-			return facultyService.editStudentCoordinator({
-					student_coordinator: vm.coordinator
-				})
-				.then(editStudentCoordinatorSuccess)
-				.catch(editStudentCoordinatorFailure);
-		}
-
-		function edit() {
-			vm.editInfo = true;
-		}
-
-		function addStudentCoordinator(event) {
-			vm.addButtonClicked = true;
-			return facultyService.editStudentCoordinator({
-					student_coordinator: vm.coordinator
-				})
-				.then(addStudentCoordinatorSuccess)
-				.catch(editStudentCoordinatorFailure);
-		}
-
-		function addStudentCoordinatorSuccess(response) {
-			vm.preInfo = true;
-			vm.editInfo = false;
-			vm.addButtonClicked = false;
-			fctToast.showToast('Student Coordinator Details Added Successfuly', true);
-		}
-
-		function editStudentCoordinatorSuccess(response) {
-			vm.editInfo = false;
-			vm.updateButtonClicked = false;
-			fctToast.showToast('Student Coordinator Details Updated Successfuly', true);
-		}
-
-		function editStudentCoordinatorFailure(error) {
-			vm.editInfo = false;
-			vm.addButtonClicked = false;
-			vm.updateButtonClicked = false;
-			fctToast.showToast('Error!! Try Again');
-		}
-	}
-})();
-
-(function () {
-	'use strict';
-
-	angular
-		.module('fct.core')
-		.controller('ConfirmRegistrationsController', ConfirmRegistrationsController);
-
-<<<<<<< HEAD
-	ConfirmRegistrationsController.$inject = ['facultyService', '$mdDialog', 'fctToast', '$scope'];
-
-	function ConfirmRegistrationsController(facultyService, $mdDialog, fctToast, $scope) {
-		var vm = this;
-		vm.registration = {};
-		vm.registrationButtonClicked = false;
-		angular.extend(vm, {
-			confirmRegistration: confirmRegistration
-=======
-	EventRegistrationController.$inject = ['memberService', '$window'];
-
-	function EventRegistrationController(memberService, $window) {
-		var vm = this;
-
-		angular.extend(vm, {
-			getExcel: getExcel
->>>>>>> master
-		});
-
-		activate();
-
-		function activate() {
-<<<<<<< HEAD
-
-=======
-			getRegistration();
->>>>>>> master
-		}
-
-		function getFacultyRegistrationData() {
-
-		}
-
-		function confirmRegistration(event) {
-			if (vm.registrationButtonClicked) {
-				event.preventDefault();
-			} else {
-				vm.registrationButtonClicked = true;
-			}
-
-			// return
-			var confirm = $mdDialog.prompt()
-				.title('Enter SERIAL ID')
-				.textContent('Enter the serial id provided in ther Registration Slip')
-				.placeholder('Serial Id')
-				.ariaLabel('Serial Id')
-				.targetEvent(event)
-				.theme('normal')
-				.ok('Submit')
-				.cancel('Cancel');
-
-			$mdDialog.show(confirm).then(function (result) {
-				vm.registration.serialId = result;
-				return facultyService.confirmRegistration(vm.registration)
-					.then(confirmRegistrationSuccess)
-					.catch(confirmRegistrationFailure);
-			}, function () {
-				vm.registrationButtonClicked = false;
-			});
-		}
-
-		function confirmRegistrationSuccess(response) {
-			console.log(response);
-			vm.registrationButtonClicked = false;
-			vm.registration = {};
-			$scope.confirmRegistrationForm.$setPristine();
-			$scope.confirmRegistrationForm.$setUntouched();
-
-			var msg;
-
-			if (response.status == 400) {
-				msg = response.data.error.for;
-				fctToast.showToast(msg);
-			}
-
-			if (msg) {
-				msg = response.data.message;
-				fctToast.showToast(msg, true);
-			}
-		}
-
-		function confirmRegistrationFailure(error) {
-			var msg;
-
-			if (error.status == 500) {
-				msg = 'Internal server error, try again !!';
-			} else {
-				msg = error.data.error.for;
-			}
-
-			vm.registrationButtonClicked = false;
-			fctToast.showToast(msg);
-		}
-
-<<<<<<< HEAD
-=======
-		function getExcel(event_name, confirmed) {
-			var input = {
-				event_name: event_name,
-				confirmation: confirmed,
-			};
-			var json = JSON.stringify(input);
-			memberService.getEventRegistrationExcel(json).then(function (response) {
-				$window.open(response.data.path);
-			})
-			.catch(function (error) {
-
-			});
-		}
->>>>>>> master
-	}
-})();
-
-(function () {
-	'use strict';
-
-	angular
-		.module('fct.core')
-		.controller('FacultySettingsController', FacultySettingsController);
-
-	FacultySettingsController.$inject = ['facultyAuthService', 'fctToast', '$scope', '$rootScope', '$timeout'];
-
-	function FacultySettingsController(facultyAuthService, fctToast, $scope, $rootScope, $timeout) {
-		var vm = this;
-		vm.updateInfo = false;
-		$scope.changePasswordForm = {};
-		vm.user = {};
-
-		angular.extend(vm, {
-			changePassword: changePassword
-		});
-
-		activate();
-
-		function activate() {
-
-		}
-
-		function changePassword(event) {
-			if (vm.updateInfo) {
-				event.preventDefault();
-			} else {
-				vm.updateInfo = true;
-				facultyAuthService.changeFacultyPassword(vm.user);
-			}
-		}
-
-		$rootScope.$on('FacultyChangePasswordSuccess', FacultyChangePasswordSuccess);
-		$rootScope.$on('FacultyChangePasswordFailure', FacultyChangePasswordFailure);
-
-		function FacultyChangePasswordSuccess(event) {
-			fctToast.showToast("Password Changed Successfully", true);
-			$timeout(function () {
-				resetForm();
-			});
-
-		}
-
-		function FacultyChangePasswordFailure(event, error) {
-			fctToast.showToast(error.data.message);
-			$timeout(function () {
-				resetForm();
-			});
-		}
-
-		function resetForm() {
-			vm.user = {};
-			vm.updateInfo = false;
-			$scope.changePasswordForm.$setPristine();
-			$scope.changePasswordForm.$setUntouched();
-		}
-	}
-})();
-
-
-(function () {
-	'use strict';
-
-	angular
-		.module('fct.core')
-		.controller('RegistrationDetailsController', RegistrationDetailsController);
-
-	RegistrationDetailsController.$inject = ['fctToast', '$rootScope', 'facultyService'];
-
-	function RegistrationDetailsController(fctToast, $rootScope, facultyService) {
-		var vm = this;
-		vm.noregistration = true;
-		activate();
-
-		function activate() {
-			return facultyService.getFacultyRegistrations()
-				.then(getRegistrationsSuccess)
-				.catch(getRegistrationsFailure);
-		}
-
-		function getRegistrationsSuccess(response) {
-
-			if (response.data.registrations.length !== 0) {
-				vm.registrations = response.data.registrations;
-				vm.registrations_count = response.data.totalRegistrations;
-				vm.collected_amount = response.data.totalCollectedAmount;
-				vm.noregistration = false;
-			} else {
-				vm.noregistration = true;
-			}
-		}
-
-		function getRegistrationsFailure(error) {
-			fctToast.showToast('Internal Server Error');
-		}
-	}
-})();
-
-(function () {
-	'use strict';
-
-	angular
-		.module('fct.core')
-		.controller('VerifyCoordinatorController', VerifyCoordinatorController);
-
-	VerifyCoordinatorController.$inject = ['$scope', 'memberService', '$mdDialog'];
-
-	function VerifyCoordinatorController($scope, memberService, $mdDialog) {
-		var vm = this;
-		vm.limitFaculty = 5;
-		vm.nomoreFaculty = true;
-
-		angular.extend(vm, {
-			verifyFaculty: verifyFaculty,
-			rejectFaculty: rejectFaculty,
-			loadmore: loadmore
-		});
-
-		activate();
-
-		function activate() {
-			return memberService.getAllFacultyCoordinators()
-				.then(getAllFacultyCoordinatorsSuccess)
-				.catch(getAllFacultyCoordinatorsFailure);
-		}
-
-
-		function getAllFacultyCoordinatorsSuccess(response) {
-			vm.faculties = response.data;
-			// console.log(vm.faculties);
-			if (vm.limitFaculty <= vm.faculties.length) {
-				vm.nomoreFaculty = false;
-			}
-		}
-
-		function getAllFacultyCoordinatorsFailure(error) {
-			//State go to Add Events
-			//Dashboard
-			// console.log(error);
-		}
-
-		function verifyFaculty(id, index, event) {
-			vm.verifyingIndex = index;
-			var confirm = $mdDialog.confirm()
-				.title('Are you sure?')
-				.textContent('You will be Verifying ' + vm.faculties[index].name + ' as a Faculty Coordinator')
-				.ariaLabel('FCVER')
-				.targetEvent(event)
-				.ok('Confirm Verification')
-				.theme('normal')
-				.cancel('No, not now !!!');
-			$mdDialog.show(confirm).then(function () {
-				return memberService.verifyFaculty(id)
-					.then(verifyFacultySuccess)
-					.catch(verifyFacultyFailure);
-			}, function () {
-				//failed
-			});
-		}
-
-		function verifyFacultySuccess(response) {
-			vm.faculties[vm.verifyingIndex].verified = true;
-		}
-
-		function verifyFacultyFailure(error) {
-			//fctToast.show('FAilure');
-		}
-
-		function rejectFaculty(id, index, event) {
-			vm.rejectionIndex = index;
-			var confirm = $mdDialog.confirm()
-				.title('Are you sure?')
-				.textContent('You will be Rejecting ' + vm.faculties[index].name + ' as a Faculty Coordinator')
-				.ariaLabel('FCVER')
-				.targetEvent(event)
-				.ok('Confirm Rejection')
-				.theme('normal')
-				.cancel('No, not now !!!');
-			$mdDialog.show(confirm).then(function () {
-				return memberService.rejectFaculty(id)
-					.then(rejectFacultySuccess)
-					.catch(rejectFacultyFailure);
-			}, function () {
-				//failed
-			});
-		}
-
-		function rejectFacultySuccess(response) {
-			vm.faculties[vm.rejectionIndex].rejected = true;
-			vm.faculties.splice(vm.rejectionIndex, 1);
-			console.log(response);
-		}
-
-		function rejectFacultyFailure(error) {
-			//fctToast.show('FAilure');
-			console.log(error);
-		}
-
-		function loadmore() {
-			vm.limitFaculty += 5;
-			if (vm.limitFaculty >= vm.faculties.length) {
-				vm.nomoreFaculty = true;
-			}
-		}
-	}
-})();
-
-(function () {
-	'use strict';
-
-	angular
-		.module('fct.core')
-		.controller('FacultyLayoutController', FacultyLayoutController)
-		.controller('ContactDialogController', ContactDialogController);
-
-	FacultyLayoutController.$inject = ['facultyAuthService', '$mdSidenav', '$rootScope', 'fctToast', '$state', '$mdDialog', '$mdMedia', '$scope'];
-
-	function FacultyLayoutController(facultyAuthService, $mdSidenav, $rootScope, fctToast, $state, $mdDialog, $mdMedia, $scope) {
-		var vm = this;
-
-		$scope.$watch(function () {
-			return $mdMedia('xs') || $mdMedia('sm');
-		});
-
-		angular.extend(vm, {
-			logout: logout,
-			openLeftSidenav: openLeftSidenav,
-			isOpenLeftSidenav: isOpenLeftSidenav,
-			closeLeftSidenav: closeLeftSidenav,
-			contact: contact
-		});
-
-		activate();
-
-		function activate() {
-
-		}
-
-		function logout() {
-			facultyAuthService.logout();
-		}
-
-		$rootScope.$on('logoutSuccessful', logoutSuccessful);
-
-		function logoutSuccessful(event) {
-			fctToast.showToast("Succesfully Logged out", true);
-			$state.go('out.login');
-		}
-
-		function openLeftSidenav() {
-			$mdSidenav('left').open();
-		}
-
-		function isOpenLeftSidenav() {
-			return $mdSidenav('left').isOpen();
-		}
-
-		function closeLeftSidenav() {
-			$mdSidenav('left').close();
-		}
-
-		function contact(ev) {
-			var useFullScreen = $mdMedia('sm') || $mdMedia('xs');
-			$mdDialog.show({
-				controller: 'ContactDialogController',
-				templateUrl: '/templates/components/dialogs/contact.html',
-				parent: angular.element(document.body),
-				targetEvent: ev,
-				clickOutsideToClose: true,
-				fullscreen: useFullScreen // Only for -xs, -sm breakpoints.
-			});
-		}
-	}
-
-	ContactDialogController.$inject = ['$scope', '$mdDialog'];
-
-	function ContactDialogController($scope, $mdDialog) {
-		$scope.cancel = function () {
-			$mdDialog.cancel();
-		};
-
-		$scope.hide = function () {
-			$mdDialog.hide();
-		};
-	}
-})();
-
-(function () {
-	'use strict';
-
-	angular
-		.module('fct.core')
-		.controller('MemberLayoutController', MemberLayoutController);
-
-	MemberLayoutController.$inject = ['memberAuthService', '$mdSidenav', '$rootScope', 'fctToast', '$state', '$scope'];
-
-	function MemberLayoutController(memberAuthService, $mdSidenav, $rootScope, fctToast, $state, $scope) {
-		var vm = this;
-
-		angular.extend(vm, {
-			logout: logout,
-			openLeftSidenav: openLeftSidenav,
-			isOpenLeftSidenav: isOpenLeftSidenav,
-			closeLeftSidenav: closeLeftSidenav,
-		});
-
-		activate();
-
-		function activate() {
-
-		}
-
-		function logout() {
-			memberAuthService.logout();
-		}
-
-		$rootScope.$on('logoutSuccessful', logoutSuccessful);
-
-		function logoutSuccessful(event) {
-			fctToast.showToast("Succesfully Logged out", true);
-			$state.go('out.member_login');
-		}
-
-		function openLeftSidenav() {
-			$mdSidenav('left').open();
-		}
-
-		function isOpenLeftSidenav() {
-			return $mdSidenav('left').isOpen();
-		}
-
-		function closeLeftSidenav() {
-			$mdSidenav('left').close();
-		}
-	}
-
 })();
 
 (function () {

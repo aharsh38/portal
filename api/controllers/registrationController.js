@@ -458,9 +458,9 @@ var registrationController = function (Registration) {
 						},
 						event_section: {
 							$first: "$eventObject.event_section"
-						},
+						}
 						// >>>>>>> master
-					},
+					}
 				},
 				{
 					$unwind: "$unconfirmed_registrations",

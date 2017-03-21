@@ -7,26 +7,26 @@ var eventModel = new Schema({
 		required: true
 	},
 	main_section: {
-		type: String,
-		default: ''
+		type: String
+		// default: ''
 	},
 	tagline: {
 		type: String,
 	},
 	description: {
-		type: String,
+		type: String
 	},
 	rules: {
-		type: String,
+		type: String
 	},
 	specification: {
-		type: String,
+		type: String
 	},
 	problem_statement: {
-		type: String,
+		type: String
 	},
 	judging_criteria: {
-		type: String,
+		type: String
 	},
 	managers: [{
 		manager_name: String,
@@ -63,8 +63,7 @@ var eventModel = new Schema({
 	},
 	attachments: [{
 		doc_name: String,
-		link: String,
-		default: null
+		link: String
 	}]
 }, {
 	minimize: false,
