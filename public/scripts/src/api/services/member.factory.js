@@ -19,6 +19,8 @@
 			getUnconfirmedRegistration: getUnconfirmedRegistration,
 			getRegistrationsByEvent: getRegistrationsByEvent,
 			getEventRegistrationExcel: getEventRegistrationExcel,
+			getConfirmedRegistrationCount: getConfirmedRegistrationCount,
+			exportParticipantList: exportParticipantList,
 		};
 
 		return service;
@@ -73,6 +75,18 @@
 
 		function getEventRegistrationExcel(request) {
 			return $http.post('/api/members/registrations/export', request)
+				.then(responseFunc)
+				.catch(errorFunc);
+		}
+
+		function getConfirmedRegistrationCount() {
+			return $http.get('/api/members/registration/confirmRegistrationCount')
+				.then(responseFunc)
+				.catch(errorFunc);
+		}
+
+		function exportParticipantList() {
+			return $http.get('/api/members/registration/exportParticipantList')
 				.then(responseFunc)
 				.catch(errorFunc);
 		}

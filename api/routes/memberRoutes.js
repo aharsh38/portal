@@ -48,6 +48,8 @@ var memberRoutes = function(Faculty, Member, Registration, College, Events) {
 
 
     memberRouter.get('/registration/exportUnconfirmedRegistration', registrationController.exportUnconfirmedRegistration);
+    memberRouter.get('/registration/exportParticipantList', registrationController.exportParticipantList);
+    memberRouter.get('/registration/confirmRegistrationCount', registrationController.getConfirmRegistrationCount);
     memberRouter.get('/faculty', facultyController.getAllFacultyCoordinators);
 
     // memberRouter.get('/registrations/', registrationController.getAllEventsRegistrationData);

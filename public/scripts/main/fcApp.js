@@ -822,6 +822,8 @@
 			getUnconfirmedRegistration: getUnconfirmedRegistration,
 			getRegistrationsByEvent: getRegistrationsByEvent,
 			getEventRegistrationExcel: getEventRegistrationExcel,
+			getConfirmedRegistrationCount: getConfirmedRegistrationCount,
+			exportParticipantList: exportParticipantList,
 		};
 
 		return service;
@@ -876,6 +878,18 @@
 
 		function getEventRegistrationExcel(request) {
 			return $http.post('/api/members/registrations/export', request)
+				.then(responseFunc)
+				.catch(errorFunc);
+		}
+
+		function getConfirmedRegistrationCount() {
+			return $http.get('/api/members/registration/confirmRegistrationCount')
+				.then(responseFunc)
+				.catch(errorFunc);
+		}
+
+		function exportParticipantList() {
+			return $http.get('/api/members/registration/exportParticipantList')
 				.then(responseFunc)
 				.catch(errorFunc);
 		}
@@ -1678,6 +1692,8 @@
 		var vm = this;
 		vm.limitFaculty = 5;
 		vm.nomoreFaculty = true;
+		vm.orderField = 'registrations_count';
+		vm.reverseSort = true;
 
 		angular.extend(vm, {
 			verifyFaculty: verifyFaculty,
@@ -1943,6 +1959,10 @@
 
     function DashboardController($rootScope, memberService, $window) {
         var vm = this;
+        vm.confirmedCount = 0;
+        vm.unConfirmedCount = 0;
+        vm.totalConfirmedParticipants = 0;
+        vm.totalAmountCollected = 0;
 
         angular.extend(vm, {
             getVFS: getVFS,
@@ -1954,7 +1974,8 @@
         function activate() {
             getVFS();
             getUVF();
-            // getUnconfirmedRegistration();
+            getConfirmedRegistrationCount();
+            exportParticipantList();
         }
 
         function getVFS() {
@@ -1981,15 +2002,29 @@
                 });
         }
 
-        // function getUnconfirmedRegistration() {
-        //     return memberService.getUnconfirmedRegistration()
-        //
-        //         .then(function(response) {
-        //             console.log(reponse);
-        //         })
-        //         .catch(function(error) { //console.log(error);
-        //         });
-        // }
+        function getConfirmedRegistrationCount() {
+          return memberService.getConfirmedRegistrationCount()
+            .then(function(response) {
+              vm.confirmedCount = response.data.confirmedCount;
+              vm.unConfirmedCount = response.data.unConfirmedCount;
+              vm.totalConfirmedParticipants = response.data.totalConfirmedParticipants;
+              vm.totalAmountCollected = response.data.totalAmountCollected;
+              console.log(response);
+            })
+            .catch(function(error) {
+              console.log(error);
+            });
+        }
+
+        function exportParticipantList() {
+          return memberService.exportParticipantList()
+            .then(function(response) {
+                console.log(response);
+            })
+            .catch(function(error) {
+                console.log(error);
+            });
+          }
     }
 })();
 // return memberService.getUnverifiedFaculty()

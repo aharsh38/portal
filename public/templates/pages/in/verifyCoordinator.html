@@ -5,9 +5,15 @@
             <label>Search</label>
             <input class="margin-tb-xs-1" type="text" name="search" ng-model="search">
         </md-input-container>
+        <md-button class="md-raised md-primary" ng-click="vcc.orderField ='registrations_count'; vcc.reverseSort = !vcc.reverseSort">
+          Sort By Registrations
+        </md-button>
+        <md-button class="md-raised md-primary" ng-click="vcc.orderField ='verified'; vcc.reverseSort = !vcc.reverseSort">
+          Sort By Verification
+        </md-button>
     </div>
     <div layout="column" >
-        <div class="faculty-card padding-lr-gt-xs-3 padding-lr-xs-1 margin-tb-2" layout-xs="column" layout-gt-xs="row" layout-wrap layout-align-gt-xs="none center" ng-repeat="detail in vcc.faculties|filter:search|limitTo:vcc.limitFaculty track by $index">
+        <div class="faculty-card padding-lr-gt-xs-3 padding-lr-xs-1 margin-tb-2" layout-xs="column" layout-gt-xs="row" layout-wrap layout-align-gt-xs="none center" ng-repeat="detail in vcc.faculties|orderBy:vcc.orderField:vcc.reverseSort|filter:search|limitTo:vcc.limitFaculty track by $index">
             <p flex-gt-xs="40">Name: <strong>{{detail.name}}</strong></p>
             <p flex-gt-xs="55">College Name: <strong>{{detail.collegeId.name}}</strong></p>
             <p flex-gt-xs="40">Mobile: <strong>{{detail.mobileno}}</strong></p>
