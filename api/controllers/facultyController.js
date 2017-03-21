@@ -286,7 +286,8 @@ var facultyController = function(Faculty, Registration) {
                 mobileno: 1,
                 verified: 1,
                 student_coordinator: 1,
-                collegeId: 1
+                collegeId: 1,
+                updatedAt: 1
             })
             .populate({
                 path: 'collegeId',
@@ -320,7 +321,8 @@ var facultyController = function(Faculty, Registration) {
                             college_name: element.collegeId.name,
                             college_city: element.collegeId.city,
                             college_code: element.collegeId.code,
-                            State: element.collegeId.state
+                            State: element.collegeId.state,
+                            updated_at: element.updatedAt,
                         };
                         data.push(arrayOfFaculty);
                     });
@@ -349,7 +351,8 @@ var facultyController = function(Faculty, Registration) {
                 email: 1,
                 mobileno: 1,
                 verified: 1,
-                collegeId: 1
+                collegeId: 1,
+                updatedAt: 1
             })
             .populate({
                 path: 'collegeId',
@@ -378,7 +381,8 @@ var facultyController = function(Faculty, Registration) {
                             college_name: element.collegeId.name,
                             college_city: element.collegeId.city,
                             college_code: element.collegeId.code,
-                            State: element.collegeId.state
+                            State: element.collegeId.state,
+                            updated_at: element.updatedAt,
                         };
                         // console.log(arrayOfFaculty);
                         data.push(arrayOfFaculty);
