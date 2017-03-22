@@ -1,125 +1,183 @@
-(function() {
-    'use strict';
+(function () {
+	'use strict';
 
-    angular
-        .module('fct.core')
-        .controller('DashboardController', DashboardController);
+	angular
+		.module('fct.core')
+		.controller('DashboardController', DashboardController);
 
-    DashboardController.$inject = ['$rootScope', 'memberService', '$window'];
+	DashboardController.$inject = ['$rootScope', 'memberService', '$window'];
 
-    function DashboardController($rootScope, memberService, $window) {
-        var vm = this;
-        vm.confirmedCount = 0;
-        vm.unConfirmedCount = 0;
-        vm.totalConfirmedParticipants = 0;
-        vm.totalAmountCollected = 0;
+	function DashboardController($rootScope, memberService, $window) {
+		var vm = this;
+		vm.confirmedCount = 0;
+		vm.unConfirmedCount = 0;
+		vm.totalConfirmedParticipants = 0;
+		vm.totalAmountCollected = 0;
 
-        angular.extend(vm, {
-            getVFS: getVFS,
-            getUVF: getUVF
-        });
+		angular.extend(vm, {
+			getVFS: getVFS,
+			getUVF: getUVF
+		});
 
-        activate();
+		activate();
 
-        function activate() {
-            getVFS();
-            getUVF();
-            getConfirmedRegistrationCount();
-            // exportParticipantList();
-        }
+		function activate() {
+			getVFS();
+			getUVF();
+			getConfirmedRegistrationCount();
+			getRegistrationData();
+			// exportParticipantList();
+		}
 
-        function getVFS() {
-            return memberService.getVerifyFacultyStudent()
-                .then(function(response) {
-                    vm.VFSPath = response.data.path;
-                    // $window.open(response.data.path);
-                    //console.log(response);
-                })
-                .catch(function(error) {
-                    //console.log(error);
-                });
-        }
+		function getRegistrationData() {
+			return memberService.getRegistrationsByEvent()
+				.then(function (response) {
+					var array = response.data;
+					console.log(response);
+					var each = 0;
+					var index = 0;
+					for (index = 0; index < array.length; index++) {
+						each += parseInt(array[index].unconfirmed_registrations);
+					}
+				}).catch(function (error) {
+					// console.log(error);
+				});
+		}
 
-        function getUVF() {
-            return memberService.getUnverifiedFaculty()
-                .then(function(response) {
-                    vm.UVFPath = response.data.path;
-                    // $window.open(response.data.path);
-                    //console.log(response);
-                })
-                .catch(function(error) {
-                    //console.log(error);
-                });
-        }
+		function getVFS() {
+			return memberService.getVerifyFacultyStudent()
+				.then(function (response) {
+					vm.VFSPath = response.data.path;
+					// $window.open(response.data.path);
+					//console.log(response);
+				})
+				.catch(function (error) {
+					//console.log(error);
+				});
+		}
 
-        function getConfirmedRegistrationCount() {
-          return memberService.getConfirmedRegistrationCount()
-            .then(function(response) {
-              vm.confirmedCount = response.data.confirmedCount;
-              vm.unConfirmedCount = response.data.unConfirmedCount;
-              vm.totalConfirmedParticipants = response.data.totalConfirmedParticipants;
-              vm.totalAmountCollected = response.data.totalAmountCollected;
-              console.log(response);
-            })
-            .catch(function(error) {
-              console.log(error);
-            });
-        }
+		function getUVF() {
+			return memberService.getUnverifiedFaculty()
+				.then(function (response) {
+					vm.UVFPath = response.data.path;
+					// $window.open(response.data.path);
+					//console.log(response);
+				})
+				.catch(function (error) {
+					//console.log(error);
+				});
+		}
 
-        function exportParticipantList() {
-          return memberService.exportParticipantList()
-            .then(function(response) {
-                console.log(response);
-            })
-            .catch(function(error) {
-                console.log(error);
-            });
-          }
-    }
+		function getConfirmedRegistrationCount() {
+			return memberService.getConfirmedRegistrationCount()
+				.then(function (response) {
+					vm.confirmedCount = response.data.confirmedCount;
+					vm.unConfirmedCount = response.data.unConfirmedCount;
+					vm.totalConfirmedParticipants = response.data.totalConfirmedParticipants;
+					vm.totalAmountCollected = response.data.totalAmountCollected;
+					console.log(response);
+				})
+				.catch(function (error) {
+					console.log(error);
+				});
+		}
+
+		function exportParticipantList() {
+			return memberService.exportParticipantList()
+				.then(function (response) {
+					console.log(response);
+				})
+				.catch(function (error) {
+					console.log(error);
+				});
+		}
+	}
 })();
-// return memberService.getUnverifiedFaculty()
-//     .then(function(response) {
-//         vm.UVFPath = response.data.path;
-//         // $window.open(response.data.path);
-//         //console.log(response);
-//     })
-//     .catch(function(error) {
-//         //console.log(error);
-//     });
-// }
+
+
+
+
+
+
+
+
+
+// (function() {
+//     'use strict';
 //
-// function getUnconfirmedRegistration() {
-//     return memberService.getUnconfirmedRegistration()
-//         .then(function(response) {
-//             console.log(reponse);
-//         })
-//         .catch(function(error) {
-//             //console.log(error);
+//     angular
+//         .module('fct.core')
+//         .controller('DashboardController', DashboardController);
+//
+//     DashboardController.$inject = ['$rootScope', 'memberService', '$window'];
+//
+//     function DashboardController($rootScope, memberService, $window) {
+//         var vm = this;
+//         vm.confirmedCount = 0;
+//         vm.unConfirmedCount = 0;
+//         vm.totalConfirmedParticipants = 0;
+//         vm.totalAmountCollected = 0;
+//
+//         angular.extend(vm, {
+//             getVFS: getVFS,
+//             getUVF: getUVF
 //         });
-// }
-// }
-// })();
-// // $window.open(response.data.path);
-// //console.log(response);
-// })
-// .catch(function(error) {
-//         .catch(function(error) {
-//             //console.log(error);
-//         });
-//     }
 //
-//     function getUnconfirmedRegistration() {
-//         return memberService.getUnconfirmedRegistration()
+//         activate();
 //
+//         function activate() {
+//             getVFS();
+//             getUVF();
+//             getConfirmedRegistrationCount();
+//             // exportParticipantList();
+//         }
+//
+//         function getVFS() {
+//             return memberService.getVerifyFacultyStudent()
+//                 .then(function(response) {
+//                     vm.VFSPath = response.data.path;
+//                     // $window.open(response.data.path);
+//                     //console.log(response);
+//                 })
+//                 .catch(function(error) {
+//                     //console.log(error);
+//                 });
+//         }
+//
+//         function getUVF() {
+//             return memberService.getUnverifiedFaculty()
+//                 .then(function(response) {
+//                     vm.UVFPath = response.data.path;
+//                     // $window.open(response.data.path);
+//                     //console.log(response);
+//                 })
+//                 .catch(function(error) {
+//                     //console.log(error);
+//                 });
+//         }
+//
+//         function getConfirmedRegistrationCount() {
+//           return memberService.getConfirmedRegistrationCount()
 //             .then(function(response) {
-//                 console.log(reponse);
+//               vm.confirmedCount = response.data.confirmedCount;
+//               vm.unConfirmedCount = response.data.unConfirmedCount;
+//               vm.totalConfirmedParticipants = response.data.totalConfirmedParticipants;
+//               vm.totalAmountCollected = response.data.totalAmountCollected;
+//               console.log(response);
 //             })
 //             .catch(function(error) {
-//                     .then(function(response) {
-//                             console.log(reponse);
-//                         })
-//                         .catch(function(error) { //console.log(error);
-//                         });
-//                 }
-//             }
-//     })();
+//               console.log(error);
+//             });
+//         }
+//
+//         function exportParticipantList() {
+//           return memberService.exportParticipantList()
+//             .then(function(response) {
+//                 console.log(response);
+//             })
+//             .catch(function(error) {
+//                 console.log(error);
+//             });
+//           }
+//     }
+// })();
