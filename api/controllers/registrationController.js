@@ -110,7 +110,23 @@ var registrationController = function (Registration) {
 										"error": error
 									};
 								} else {
-									console.log("PDDF DONE");
+									registration.save(function (error) {
+										if (error) {
+											throwError(response, error, 500, 'Internal Server error', 'Event Register');
+										} else {
+
+											var dnlink = 'http://portal.gtu.ac.in/api/registration/downloadSlip/' + registration.teamId + '?type=';
+											if (request.body.do_payment) {
+												dnlink += 'forPayment';
+											} else if (request.body.late_payment) {
+												dnlink += 'latePayment';
+											}
+											response.status(200);
+											response.json({
+												downloadSlip: dnlink
+											});
+										}
+									});
 								}
 							});
 						}
