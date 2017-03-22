@@ -1,7 +1,7 @@
 <!DOCTYPE html>
 <div class="margin-tb-gt-xs-4 margin-lr-gt-xs-2 bg-white margin-xs-1 padding-tb-3 padding-lr-xs-1 padding-lr-gt-xs-2 page" md-whiteframe="5">
     <div layout-gt-xs="row" layout-align-gt-xs="space-between center" layout-xs="column" >
-              <md-card class="style1" md-theme-watch flex="25" ng-click="tdc.showAdvanced($event);">
+              <md-card class="style1" md-theme-watch flex-xs="95" flex-gt-xs="45" ng-click="tdc.showAdvanced($event);">
         <md-card-title>
           <md-card-title-text>
             <span class="md-headline text-center ">Total Confirm Registration</span>
@@ -9,17 +9,16 @@
           </md-card-title-text>
         </md-card-title>
       </md-card>
-      <md-card class="style1" md-theme-watch flex="25" theme="default">
+      <!-- <md-card class="style1" md-theme-watch flex="25" theme="default">
         <md-card-title>
           <md-card-title-text>
             <span class="md-headline text-center">Collected Amount</span>
             <br/>
-            <!-- <span class="text-center "><h1>&#8377; 0/-</h1></span> -->
             <span class="text-center "><h1>&#8377; {{ dc.totalAmountCollected }}/-</h1></span>
           </md-card-title-text>
         </md-card-title>
-      </md-card>
-      <md-card class="style1" md-theme="dark-grey" md-theme-watch flex="25">
+      </md-card> -->
+      <md-card class="style1" md-theme="dark-grey" md-theme-watch flex-xs="95" flex-gt-xs="45">
         <md-card-title>
           <md-card-title-text>
             <span class="md-headline text-center">Total Confirm Participants</span>
@@ -27,14 +26,14 @@
           </md-card-title-text>
         </md-card-title>
       </md-card>
-      <md-card class="style2" md-theme="dark-grey" md-theme-watch flex="25">
+      <!-- <md-card class="style2" md-theme="dark-grey" md-theme-watch flex="25">
         <md-card-title>
           <md-card-title-text>
             <span class="md-headline text-center">Unconfirm Registration</span>
               <span class="text-center "><h1>{{ dc.unConfirmedCount }}</h1></span>
           </md-card-title-text>
         </md-card-title>
-      </md-card>
+      </md-card> -->
     </div>
       <div layout="row">
       <md-button flex="50" ng-show="!detail.verified" ng-if="dc.VFSPath" href="{{dc.VFSPath}}" target="_self" class="md-raised md-primary margin-lr-1" md-no-ink="true">Export Verified Faculty Coordinators</md-button>
