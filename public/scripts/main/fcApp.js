@@ -1612,6 +1612,12 @@
         });
 
         function confirmData() {
+            if (vm.registrationButtonClicked) {
+                event.preventDefault();
+            } else {
+                vm.registrationButtonClicked = true;
+            }
+
             return facultyService.confirmRegistration(registration)
                 .then(confirmRegistrationSuccess)
                 .catch(confirmRegistrationFailure);
@@ -1619,6 +1625,7 @@
 
         function confirmRegistrationSuccess(response) {
             console.log(response);
+            hide();
             vm.registrationButtonClicked = false;
             vm.registration = {};
             $scope.confirmRegistrationForm.$setPristine();
@@ -1635,11 +1642,11 @@
                 msg = response.data.message;
                 fctToast.showToast(msg, true);
             }
-            hide();
         }
 
         function confirmRegistrationFailure(error) {
             var msg;
+            hide();
 
             if (error.status == 500) {
                 msg = 'Internal server error, try again !!';
@@ -1647,7 +1654,6 @@
                 msg = error.data.error.for;
             }
             fctToast.showToast(msg);
-            hide();
         }
 
         function hide() {
