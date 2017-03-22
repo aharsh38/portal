@@ -17,6 +17,7 @@
 			editStudentCoordinator: editStudentCoordinator,
 			getEachFaculty: getEachFaculty,
 			updateFaculty: updateFaculty,
+			getRegistrationData: getRegistrationData,
 		};
 
 		return service;
@@ -65,6 +66,13 @@
 
 		function updateFaculty(data) {
 			var link = baseLink + '/updateFaculty/';
+			return $http.post(link, data)
+				.then(resolveFunc)
+				.catch(errorFunc);
+		}
+
+		function getRegistrationData(data) {
+			var link = baseLink + '/getRegistrationData';
 			return $http.post(link, data)
 				.then(resolveFunc)
 				.catch(errorFunc);

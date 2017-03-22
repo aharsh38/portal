@@ -110,6 +110,171 @@
 	                .warnPalette(themePalette.warn);
 	        }
 
+	        //
+	        //     function setRoutes() {
+	        //         $locationProvider.html5Mode(true);
+	        //         $urlRouterProvider.when('/', '/login');
+	        //         $urlRouterProvider.otherwise('/login');
+	        //         $stateProvider
+	        //             .state('out', {
+	        //                 templateUrl: '/templates/layouts/out.html',
+	        //                 resolve: {
+	        //                     redirectLoggedIn: redirectLoggedIn
+	        //                 }
+	        //             })
+	        //             .state('in_fc', {
+	        //                 templateUrl: '/templates/layouts/in_fc.html',
+	        //                 controller: 'FacultyLayoutController',
+	        //                 controllerAs: 'flayc',
+	        //                 resolve: {
+	        //                     redirectFacultyNotLoggedIn: redirectFacultyNotLoggedIn
+	        //                 }
+	        //             })
+	        //             .state('in_tc', {
+	        //                 controller: 'MemberLayoutController',
+	        //                 controllerAs: 'mlayc',
+	        //                 templateUrl: '/templates/layouts/in_tc.html',
+	        //                 resolve: {
+	        //                     redirectTeamNotLoggedIn: redirectTeamNotLoggedIn
+	        //                 }
+	        //             })
+	        //             .state('out.login', {
+	        //                 url: '/login',
+	        //                 templateUrl: '/templates/pages/out/login.html',
+	        //                 controller: 'FacultyLoginController',
+	        //                 controllerAs: 'flc'
+	        //             })
+	        //             .state('out.register', {
+	        //                 url: '/register',
+	        //                 templateUrl: '/templates/pages/out/register.html',
+	        //                 controller: 'FacultyRegistrationController',
+	        //                 controllerAs: 'frc'
+	        //             })
+	        //             .state('out.forgotPasswordApply', {
+	        //                 url: '/forgotPasswordApply',
+	        //                 templateUrl: '/templates/pages/out/forgotPasswordApply.html',
+	        //                 controller: 'FacultyForgotPasswordApplyController',
+	        //                 controllerAs: 'ffpac'
+	        //             })
+	        //             .state('out.forgotPasswordSet', {
+	        //                 url: '/forgotPasswordSet?token&id',
+	        //                 templateUrl: '/templates/pages/out/forgotPasswordSet.html',
+	        //                 controller: 'FacultyForgotPasswordSetController',
+	        //                 controllerAs: 'ffpsc'
+	        //             })
+	        //             .state('out.member_login', {
+	        //                 url: '/member/login',
+	        //                 templateUrl: '/templates/pages/out/member/login.html',
+	        //                 controller: 'MemberLoginController',
+	        //                 controllerAs: 'mlc'
+	        //             })
+	        //             .state('out.member_register', {
+	        //                 url: '/member/register',
+	        //                 templateUrl: '/templates/pages/out/member/register.html',
+	        //                 controller: 'MemberRegistrationController',
+	        //                 controllerAs: 'mrc'
+	        //             })
+	        //             .state('out.member_forgotPasswordSet', {
+	        //                 url: '/member/forgotPasswordSet?token&id',
+	        //                 templateUrl: '/templates/pages/out/member/forgotPasswordSet.html',
+	        //                 controller: 'MemberForgotPasswordSetController',
+	        //                 controllerAs: 'mfpsc'
+	        //             })
+	        //             .state('out.member_forgotPasswordApply', {
+	        //                 url: '/member/forgotPasswordApply',
+	        //                 templateUrl: '/templates/pages/out/member/forgotPasswordApply.html',
+	        //                 controller: 'MemberForgotPasswordApplyController',
+	        //                 controllerAs: 'mfpac'
+	        //             })
+	        //             .state('in_tc.verifyCoordinator', {
+	        //                 url: '/member/verifyCoordinator',
+	        //                 templateUrl: '/templates/pages/in/verifyCoordinator.html',
+	        //                 controller: 'VerifyCoordinatorController',
+	        //                 controllerAs: 'vcc'
+	        //             })
+	        //             .state('in_tc.collegeList', {
+	        //                 url: '/member/collegeList',
+	        //                 templateUrl: '/templates/pages/in/collegeList.html'
+	        //             })
+	        //             .state('in_tc.dashboard', {
+	        //                 url: '/dashboard',
+	        //                 templateUrl: '/templates/pages/in/dashboard.html',
+	        //                 controller: 'DashboardController',
+	        //                 controllerAs: 'dc'
+	        //             })
+	        //             .state('in_tc.eventRegistrations', {
+	        //                 url: '/eventRegistration',
+	        //                 templateUrl: '/templates/pages/in/eventRegistration.html',
+	        //                 controller: 'EventRegistrationController',
+	        //                 controllerAs: 'erc'
+	        //             })
+	        //             .state('in_tc.addEvent', {
+	        //                 url: '/member/events/create',
+	        //                 templateUrl: '/templates/pages/in/addEvent.html',
+	        //                 controller: 'AddEventController',
+	        //                 controllerAs: 'ec',
+	        //             })
+	        //             .state('in_tc.settings', {
+	        //                 url: '/member/settings',
+	        //                 templateUrl: '/templates/pages/in/memberSettings.html',
+	        //                 controller: 'MemberSettingsController',
+	        //                 controllerAs: 'msc'
+	        //             })
+	        //             .state('in_tc.updateEvent', {
+	        //                 url: '/member/events/:eventId/update',
+	        //                 templateUrl: '/templates/pages/in/addEvent.html',
+	        //                 controller: 'UpdateEventController',
+	        //                 controllerAs: 'ec'
+	        //             })
+	        //             .state('in_tc.showEvent', {
+	        //                 url: '/member/events',
+	        //                 templateUrl: '/templates/pages/in/showEvent.html',
+	        //                 controller: 'ShowEventController',
+	        //                 controllerAs: 'sec'
+	        //             })
+	        //             .state('in_tc.eachEvent', {
+	        //                 url: '/member/events/:eventId',
+	        //                 templateUrl: '/templates/pages/in/eachEvent.html',
+	        //                 controller: 'EachEventController',
+	        //                 controllerAs: 'eec'
+	        //             })
+	        //             .state('in_fc.guidelines', {
+	        //                 url: '/guidelines',
+	        //                 templateUrl: '/templates/pages/in/guidelines.html'
+	        //             })
+	        //             .state('in_fc.settings', {
+	        //                 url: '/settings',
+	        //                 templateUrl: '/templates/pages/in/facultySettings.html',
+	        //                 controller: 'FacultySettingsController',
+	        //                 controllerAs: 'fsc'
+	        //             })
+	        //             .state('in_fc.confirm_registration', {
+	        //                 url: '/confirm/registrations',
+	        //                 templateUrl: '/templates/pages/in/faculty/confirmRegistration1.html',
+	        //                 controller: 'ConfirmRegistrationsController1',
+	        //                 controllerAs: 'crc'
+	        //             })
+	        //             .state('in_fc.registration_details', {
+	        //                 url: '/registrations',
+	        //                 templateUrl: '/templates/pages/in/faculty/registrationDetails.html',
+	        //                 controller: 'RegistrationDetailsController',
+	        //                 controllerAs: 'rdc'
+	        //             })
+	        //             .state('in_fc.student_coordinator', {
+	        //                 url: '/studentCoordinator',
+	        //                 templateUrl: '/templates/pages/in/faculty/addStudentCordinator.html',
+	        //                 controller: 'AddStudentController',
+	        //                 controllerAs: 'ascc'
+	        //             })
+	        //             .state('in_fc.participant_registration', {
+	        //                 url: '/participantRegistration',
+	        //                 templateUrl: '/templates/pages/in/faculty/participantRegistration.html',
+	        //                 controller: 'ParticipantRegistrationController',
+	        //                 controllerAs: 'prc'
+	        //             });
+	        //     }
+	        // }
+
 	        function setRoutes() {
 	            $locationProvider.html5Mode(true);
 	            $urlRouterProvider.when('/', '/login');
@@ -273,7 +438,6 @@
 	                });
 	        }
 	    }
-
 	    redirectFacultyNotLoggedIn.$inject = ['facultyAuthService', 'memberAuthService', '$q', '$state', '$timeout', '$rootScope'];
 
 	    function redirectFacultyNotLoggedIn(facultyAuthService, memberAuthService, $q, $state, $timeout, $rootScope) {
@@ -522,6 +686,7 @@
 			editStudentCoordinator: editStudentCoordinator,
 			getEachFaculty: getEachFaculty,
 			updateFaculty: updateFaculty,
+			getRegistrationData: getRegistrationData,
 		};
 
 		return service;
@@ -570,6 +735,13 @@
 
 		function updateFaculty(data) {
 			var link = baseLink + '/updateFaculty/';
+			return $http.post(link, data)
+				.then(resolveFunc)
+				.catch(errorFunc);
+		}
+
+		function getRegistrationData(data) {
+			var link = baseLink + '/getRegistrationData';
 			return $http.post(link, data)
 				.then(resolveFunc)
 				.catch(errorFunc);
@@ -1420,6 +1592,71 @@
 	}
 })();
 
+(function() {
+    'use strict';
+
+    angular
+        .module('fct.core')
+        .controller('ConfirmRegistrationModalController', ConfirmRegistrationModalController);
+
+    ConfirmRegistrationModalController.$inject = ['facultyService', '$mdDialog', 'fctToast', 'registration'];
+
+    function ConfirmRegistrationModalController(facultyService, $mdDialog, fctToast, registration) {
+        var vm = this;
+        vm.registration = registration;
+        vm.registrationButtonClicked = false
+
+        angular.extend(vm, {
+            confirmData: confirmData,
+            hide: hide
+        });
+
+        function confirmData() {
+            return facultyService.confirmRegistration(registration)
+                .then(confirmRegistrationSuccess)
+                .catch(confirmRegistrationFailure);
+        }
+
+        function confirmRegistrationSuccess(response) {
+            console.log(response);
+            vm.registrationButtonClicked = false;
+            vm.registration = {};
+            $scope.confirmRegistrationForm.$setPristine();
+            $scope.confirmRegistrationForm.$setUntouched();
+
+            var msg;
+
+            if (response.status == 400) {
+                msg = response.data.error.for;
+                fctToast.showToast(msg);
+            }
+
+            if (msg) {
+                msg = response.data.message;
+                fctToast.showToast(msg, true);
+            }
+            hide();
+        }
+
+        function confirmRegistrationFailure(error) {
+            var msg;
+
+            if (error.status == 500) {
+                msg = 'Internal server error, try again !!';
+            } else {
+                msg = error.data.error.for;
+            }
+            fctToast.showToast(msg);
+            hide();
+        }
+
+        function hide() {
+            $mdDialog.hide();
+        }
+    }
+
+})();
+
 (function () {
 	'use strict';
 
@@ -1509,6 +1746,152 @@
 		}
 
 	}
+})();
+
+(function () {
+	'use strict';
+
+	angular
+		.module('fct.core')
+		.controller('ConfirmRegistrationsController1', ConfirmRegistrationsController1);
+
+	ConfirmRegistrationsController1.$inject = ['facultyService', '$mdDialog', 'fctToast', '$scope'];
+
+	function ConfirmRegistrationsController1(facultyService, $mdDialog, fctToast, $scope) {
+		var vm = this;
+		vm.registration = {};
+		vm.registrationButtonClicked = false;
+		angular.extend(vm, {
+			confirmRegistration: confirmRegistration,
+			getRegistrationData: getRegistrationData
+		});
+
+		activate();
+
+		function activate() {
+
+		}
+
+		function getFacultyRegistrationData() {
+
+		}
+
+		function confirmRegistration(event) {
+			if (vm.registrationButtonClicked) {
+				event.preventDefault();
+			} else {
+				vm.registrationButtonClicked = true;
+			}
+
+			// return
+			var confirm = $mdDialog.prompt()
+				.title('Enter SERIAL ID')
+				.textContent('Enter the serial id provided in ther Registration Slip')
+				.placeholder('Serial Id')
+				.ariaLabel('Serial Id')
+				.targetEvent(event)
+				.theme('normal')
+				.ok('Submit')
+				.cancel('Cancel');
+
+			$mdDialog.show(confirm).then(function (result) {
+				vm.registration.serialId = result;
+				return facultyService.confirmRegistration(vm.registration)
+					.then(confirmRegistrationSuccess)
+					.catch(confirmRegistrationFailure);
+			}, function () {
+				vm.registrationButtonClicked = false;
+			});
+		}
+
+		function confirmRegistrationSuccess(response) {
+			console.log(response);
+			vm.registrationButtonClicked = false;
+			vm.registration = {};
+			$scope.confirmRegistrationForm.$setPristine();
+			$scope.confirmRegistrationForm.$setUntouched();
+
+			var msg;
+
+			if (response.status == 400) {
+				msg = response.data.error.for;
+				fctToast.showToast(msg);
+			}
+
+			if (msg) {
+				msg = response.data.message;
+				fctToast.showToast(msg, true);
+			}
+		}
+
+		function confirmRegistrationFailure(error) {
+			var msg;
+
+			if (error.status == 500) {
+				msg = 'Internal server error, try again !!';
+			} else {
+				msg = error.data.error.for;
+			}
+
+			vm.registrationButtonClicked = false;
+			fctToast.showToast(msg);
+		}
+
+		function getRegistrationData() {
+			if (vm.registrationButtonClicked) {
+				event.preventDefault();
+			} else {
+				vm.registrationButtonClicked = true;
+			}
+
+			facultyService.getRegistrationData(vm.registration)
+			.then(function (response) {
+				console.log(response);
+				vm.registration.teamId = response.data.teamId;
+				vm.registration.email = response.data.email;
+				vm.registration.mobileno = response.data.mobileno;
+				$mdDialog.show({
+					templateUrl: './templates/components/dialogs/confirmDetailDialog.html',
+					// parent: angular.element(document.body),
+					controller: 'ConfirmRegistrationModalController',
+					controllerAs: 'crmc',
+					locals: {
+           registration: vm.registration
+         },
+					targetEvent: event,
+					clickOutsideToClose: true,
+					fullscreen: true
+				})
+				.then(function(response) {
+					return facultyService.confirmRegistration(vm.registration)
+						.then(confirmRegistrationSuccess)
+						.catch(confirmRegistrationFailure);
+				}, function(error) {
+					//error
+				});
+				// var confirm = $mdDialog.confirm()
+					// .title('Confirmation Details')
+					// .textContent('Team Id: ' + response.data.teamId + '                  Team Leader Email: ' + response.data.email + '          Team Leader Mobile Number: ' + response.data.mobileno)
+					// .targetEvent(event)
+					// .theme('normal')
+					// .ok('Register')
+					// .cancel('Cancel');
+					// $mdDialog.show(confirm).then(function(result) {
+					// 	return facultyService.confirmRegistration(vm.registration)
+					// 		.then(confirmRegistrationSuccess)
+					// 		.catch(confirmRegistrationFailure);
+			    // }, function() {
+			    //   //error
+			    // });
+			})
+			.catch(function (error) {
+				console.log(error);
+			});
+		}
+
+	}
+
+
 })();
 
 (function () {
