@@ -172,8 +172,8 @@
 					})
 					.state('in_fc.confirm_registration', {
 						url: '/confirm/registrations',
-						templateUrl: '/templates/pages/in/faculty/confirmRegistration.html',
-						controller: 'ConfirmRegistrationsController',
+						templateUrl: '/templates/pages/in/faculty/confirmRegistration1.html',
+						controller: 'ConfirmRegistrationsController1',
 						controllerAs: 'crc'
 					})
 					.state('in_fc.registration_details', {

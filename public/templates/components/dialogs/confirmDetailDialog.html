@@ -1,0 +1,36 @@
+<!DOCTYPE html>
+<md-dialog class="contact-dialog" aria-label="Mango (Fruit)">
+  <form ng-cloak>
+    <md-toolbar>
+      <div class="md-toolbar-tools">
+        <h2 style="color:#fff">Confirmation Details</h2>
+        <span flex></span>
+        <md-button class="md-icon-button" ng-click="crmc.hide()">
+          <ng-md-icon style="fill:#fff" icon="close" class="title-icon" size="24"></ng-md-icon>
+        </md-button>
+      </div>
+    </md-toolbar>
+
+    <md-dialog-content>
+      <div class="md-dialog-content" flex layout-padding layout-align-gt-xs="space-around center"
+        layout="column">
+		      <label>Team Id: </label><p>{{ crmc.registration.teamId }}</p>
+          <br/>
+          <label>Team Leader Email: </label><p>{{ crmc.registration.email }}</p>
+          <br/>
+          <label>Team Leader Mobile Number: </label><p>{{ crmc.registration.mobileno }}</p>
+      </div>
+    </md-dialog-content>
+    <md-dialog-actions layout="row">
+     <span flex></span>
+     <md-button ng-click="crmc.confirmData()" ng-hide="crmc.registrationButtonClicked">
+      Submit
+     </md-button>
+     <md-progress-circular ng-show="crmc.registrationButtonClicked" class="md-black mini" md-diameter="20px">
+     </md-progress-circular>
+     <md-button ng-click="crmc.hide()">
+       Cancel
+     </md-button>
+   </md-dialog-actions>
+  </form>
+</md-dialog>

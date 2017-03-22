@@ -35,6 +35,38 @@ var registrationController = function (Registration) {
 			});
 	}
 
+	function getRegistrationData(request, response) {
+		if(!request.body.serialId) {
+			throwError(response, request, 404, 'requesting serail id not found', 'no serial id found');
+		} else {
+			Registration.find({
+				serialId: request.body.serialId,
+			})
+			.select({
+				"teamId": 1,
+				"team_leader.email": 1,
+				"team_leader.mobileno": 1,
+			})
+				.exec(function (error, data) {
+					if (error) {
+						throwError(response, error, 500, 'Internal Server Error', 'Registration Fetch Failed');
+						return;
+					}
+					if (!data) {
+						throwError(response, error, 404, 'Not Found', 'Registration not found');
+					} else {
+						var newData = {
+							teamId: data[0].teamId,
+							email: data[0].team_leader.email,
+							mobileno: data[0].team_leader.mobileno,
+						}
+						response.status(200);
+						response.json(newData);
+					}
+				});
+		}
+	}
+
 	function generateSlip2(type, teamid, data) {
 		if (type) {
 			fs.readFile('./api/slips/templates/' + type + '.hbs', function (error, file) {
@@ -891,6 +923,7 @@ var registrationController = function (Registration) {
 	ac.exportUnconfirmedRegistration = exportUnconfirmedRegistration;
 	ac.getConfirmRegistrationCount = getConfirmRegistrationCount;
 	ac.exportParticipantList = exportParticipantList;
+	ac.getRegistrationData = getRegistrationData;
 	return ac;
 };
 
