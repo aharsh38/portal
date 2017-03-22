@@ -41,8 +41,10 @@ var registrationController = function(Registration) {
         } else {
             Registration.find({
                     serialId: request.body.serialId,
+                    // teamId: request.body.teamId,
                 })
                 .select({
+                    "serialId": 1,
                     "teamId": 1,
                     "team_leader.email": 1,
                     "team_leader.mobileno": 1,
@@ -56,10 +58,11 @@ var registrationController = function(Registration) {
                         throwError(response, error, 404, 'Not Found', 'Registration not found');
                     } else {
                         var newData = {
+                            serialId: data[0].serialId,
                             teamId: data[0].teamId,
                             email: data[0].team_leader.email,
                             mobileno: data[0].team_leader.mobileno,
-                        }
+                        };
                         response.status(200);
                         response.json(newData);
                     }

@@ -10,7 +10,7 @@
     function ConfirmRegistrationModalController(facultyService, $mdDialog, fctToast, registration) {
         var vm = this;
         vm.registration = registration;
-        vm.registrationButtonClicked = false
+        vm.registrationButtonClicked = false;
 
         angular.extend(vm, {
             confirmData: confirmData,
@@ -18,6 +18,12 @@
         });
 
         function confirmData() {
+            if (vm.registrationButtonClicked) {
+                event.preventDefault();
+            } else {
+                vm.registrationButtonClicked = true;
+            }
+
             return facultyService.confirmRegistration(registration)
                 .then(confirmRegistrationSuccess)
                 .catch(confirmRegistrationFailure);
