@@ -2,6 +2,13 @@
 	'use strict';
 
 	angular
+		.module('fct.api', []);
+})();
+
+(function () {
+	'use strict';
+
+	angular
 		.module('fct_app', [
 			'fct.api',
 			'fct.core'
@@ -68,356 +75,480 @@
 	}
 })();
 
-(function () {
-	'use strict';
+	(function() {
+	    'use strict';
 
-	angular
-		.module('fct.api', []);
-})();
+	    angular
+	        .module('fct.core')
+	        .config(configName);
 
-	(function () {
-		'use strict';
+	    configName.$inject = ['$mdThemingProvider', '$stateProvider', '$urlRouterProvider', '$locationProvider', '$httpProvider'];
 
-		angular
-			.module('fct.core')
-			.config(configName);
+	    function configName($mdThemingProvider, $stateProvider, $urlRouterProvider, $locationProvider, $httpProvider) {
+	        var themePalette = {
+	            primary: "blue",
+	            accent: "amber",
+	            warn: "red"
+	        };
 
-		configName.$inject = ['$mdThemingProvider', '$stateProvider', '$urlRouterProvider', '$locationProvider', '$httpProvider'];
+	        activate();
 
-		function configName($mdThemingProvider, $stateProvider, $urlRouterProvider, $locationProvider, $httpProvider) {
-			var themePalette = {
-				primary: "blue",
-				accent: "amber",
-				warn: "red"
-			};
+	        function activate() {
+	            setTheme();
+	            setRoutes();
+	            addInterceptors();
+	        }
 
-			activate();
+	        function addInterceptors() {
+	            $httpProvider.interceptors.push('authInterceptor');
+	        }
 
-			function activate() {
-				setTheme();
-				setRoutes();
-				addInterceptors();
-			}
+	        function setTheme() {
+	            $mdThemingProvider.theme('default')
+	                .primaryPalette(themePalette.primary)
+	                .accentPalette(themePalette.accent)
+	                .warnPalette(themePalette.warn);
+	        }
 
-			function addInterceptors() {
-				$httpProvider.interceptors.push('authInterceptor');
-			}
+	        //
+	        //     function setRoutes() {
+	        //         $locationProvider.html5Mode(true);
+	        //         $urlRouterProvider.when('/', '/login');
+	        //         $urlRouterProvider.otherwise('/login');
+	        //         $stateProvider
+	        //             .state('out', {
+	        //                 templateUrl: '/templates/layouts/out.html',
+	        //                 resolve: {
+	        //                     redirectLoggedIn: redirectLoggedIn
+	        //                 }
+	        //             })
+	        //             .state('in_fc', {
+	        //                 templateUrl: '/templates/layouts/in_fc.html',
+	        //                 controller: 'FacultyLayoutController',
+	        //                 controllerAs: 'flayc',
+	        //                 resolve: {
+	        //                     redirectFacultyNotLoggedIn: redirectFacultyNotLoggedIn
+	        //                 }
+	        //             })
+	        //             .state('in_tc', {
+	        //                 controller: 'MemberLayoutController',
+	        //                 controllerAs: 'mlayc',
+	        //                 templateUrl: '/templates/layouts/in_tc.html',
+	        //                 resolve: {
+	        //                     redirectTeamNotLoggedIn: redirectTeamNotLoggedIn
+	        //                 }
+	        //             })
+	        //             .state('out.login', {
+	        //                 url: '/login',
+	        //                 templateUrl: '/templates/pages/out/login.html',
+	        //                 controller: 'FacultyLoginController',
+	        //                 controllerAs: 'flc'
+	        //             })
+	        //             .state('out.register', {
+	        //                 url: '/register',
+	        //                 templateUrl: '/templates/pages/out/register.html',
+	        //                 controller: 'FacultyRegistrationController',
+	        //                 controllerAs: 'frc'
+	        //             })
+	        //             .state('out.forgotPasswordApply', {
+	        //                 url: '/forgotPasswordApply',
+	        //                 templateUrl: '/templates/pages/out/forgotPasswordApply.html',
+	        //                 controller: 'FacultyForgotPasswordApplyController',
+	        //                 controllerAs: 'ffpac'
+	        //             })
+	        //             .state('out.forgotPasswordSet', {
+	        //                 url: '/forgotPasswordSet?token&id',
+	        //                 templateUrl: '/templates/pages/out/forgotPasswordSet.html',
+	        //                 controller: 'FacultyForgotPasswordSetController',
+	        //                 controllerAs: 'ffpsc'
+	        //             })
+	        //             .state('out.member_login', {
+	        //                 url: '/member/login',
+	        //                 templateUrl: '/templates/pages/out/member/login.html',
+	        //                 controller: 'MemberLoginController',
+	        //                 controllerAs: 'mlc'
+	        //             })
+	        //             .state('out.member_register', {
+	        //                 url: '/member/register',
+	        //                 templateUrl: '/templates/pages/out/member/register.html',
+	        //                 controller: 'MemberRegistrationController',
+	        //                 controllerAs: 'mrc'
+	        //             })
+	        //             .state('out.member_forgotPasswordSet', {
+	        //                 url: '/member/forgotPasswordSet?token&id',
+	        //                 templateUrl: '/templates/pages/out/member/forgotPasswordSet.html',
+	        //                 controller: 'MemberForgotPasswordSetController',
+	        //                 controllerAs: 'mfpsc'
+	        //             })
+	        //             .state('out.member_forgotPasswordApply', {
+	        //                 url: '/member/forgotPasswordApply',
+	        //                 templateUrl: '/templates/pages/out/member/forgotPasswordApply.html',
+	        //                 controller: 'MemberForgotPasswordApplyController',
+	        //                 controllerAs: 'mfpac'
+	        //             })
+	        //             .state('in_tc.verifyCoordinator', {
+	        //                 url: '/member/verifyCoordinator',
+	        //                 templateUrl: '/templates/pages/in/verifyCoordinator.html',
+	        //                 controller: 'VerifyCoordinatorController',
+	        //                 controllerAs: 'vcc'
+	        //             })
+	        //             .state('in_tc.collegeList', {
+	        //                 url: '/member/collegeList',
+	        //                 templateUrl: '/templates/pages/in/collegeList.html'
+	        //             })
+	        //             .state('in_tc.dashboard', {
+	        //                 url: '/dashboard',
+	        //                 templateUrl: '/templates/pages/in/dashboard.html',
+	        //                 controller: 'DashboardController',
+	        //                 controllerAs: 'dc'
+	        //             })
+	        //             .state('in_tc.eventRegistrations', {
+	        //                 url: '/eventRegistration',
+	        //                 templateUrl: '/templates/pages/in/eventRegistration.html',
+	        //                 controller: 'EventRegistrationController',
+	        //                 controllerAs: 'erc'
+	        //             })
+	        //             .state('in_tc.addEvent', {
+	        //                 url: '/member/events/create',
+	        //                 templateUrl: '/templates/pages/in/addEvent.html',
+	        //                 controller: 'AddEventController',
+	        //                 controllerAs: 'ec',
+	        //             })
+	        //             .state('in_tc.settings', {
+	        //                 url: '/member/settings',
+	        //                 templateUrl: '/templates/pages/in/memberSettings.html',
+	        //                 controller: 'MemberSettingsController',
+	        //                 controllerAs: 'msc'
+	        //             })
+	        //             .state('in_tc.updateEvent', {
+	        //                 url: '/member/events/:eventId/update',
+	        //                 templateUrl: '/templates/pages/in/addEvent.html',
+	        //                 controller: 'UpdateEventController',
+	        //                 controllerAs: 'ec'
+	        //             })
+	        //             .state('in_tc.showEvent', {
+	        //                 url: '/member/events',
+	        //                 templateUrl: '/templates/pages/in/showEvent.html',
+	        //                 controller: 'ShowEventController',
+	        //                 controllerAs: 'sec'
+	        //             })
+	        //             .state('in_tc.eachEvent', {
+	        //                 url: '/member/events/:eventId',
+	        //                 templateUrl: '/templates/pages/in/eachEvent.html',
+	        //                 controller: 'EachEventController',
+	        //                 controllerAs: 'eec'
+	        //             })
+	        //             .state('in_fc.guidelines', {
+	        //                 url: '/guidelines',
+	        //                 templateUrl: '/templates/pages/in/guidelines.html'
+	        //             })
+	        //             .state('in_fc.settings', {
+	        //                 url: '/settings',
+	        //                 templateUrl: '/templates/pages/in/facultySettings.html',
+	        //                 controller: 'FacultySettingsController',
+	        //                 controllerAs: 'fsc'
+	        //             })
+	        //             .state('in_fc.confirm_registration', {
+	        //                 url: '/confirm/registrations',
+	        //                 templateUrl: '/templates/pages/in/faculty/confirmRegistration1.html',
+	        //                 controller: 'ConfirmRegistrationsController1',
+	        //                 controllerAs: 'crc'
+	        //             })
+	        //             .state('in_fc.registration_details', {
+	        //                 url: '/registrations',
+	        //                 templateUrl: '/templates/pages/in/faculty/registrationDetails.html',
+	        //                 controller: 'RegistrationDetailsController',
+	        //                 controllerAs: 'rdc'
+	        //             })
+	        //             .state('in_fc.student_coordinator', {
+	        //                 url: '/studentCoordinator',
+	        //                 templateUrl: '/templates/pages/in/faculty/addStudentCordinator.html',
+	        //                 controller: 'AddStudentController',
+	        //                 controllerAs: 'ascc'
+	        //             })
+	        //             .state('in_fc.participant_registration', {
+	        //                 url: '/participantRegistration',
+	        //                 templateUrl: '/templates/pages/in/faculty/participantRegistration.html',
+	        //                 controller: 'ParticipantRegistrationController',
+	        //                 controllerAs: 'prc'
+	        //             });
+	        //     }
+	        // }
 
-			function setTheme() {
-				$mdThemingProvider.theme('default')
-					.primaryPalette(themePalette.primary)
-					.accentPalette(themePalette.accent)
-					.warnPalette(themePalette.warn);
-			}
+	        function setRoutes() {
+	            $locationProvider.html5Mode(true);
+	            $urlRouterProvider.when('/', '/login');
+	            $urlRouterProvider.otherwise('/login');
+	            $stateProvider
+	                .state('out', {
+	                    templateUrl: '/templates/layouts/out.html',
+	                    resolve: {
+	                        redirectLoggedIn: redirectLoggedIn
+	                    }
+	                })
+	                .state('in_fc', {
+	                    templateUrl: '/templates/layouts/in_fc.html',
+	                    controller: 'FacultyLayoutController',
+	                    controllerAs: 'flayc',
+	                    resolve: {
+	                        redirectFacultyNotLoggedIn: redirectFacultyNotLoggedIn
+	                    }
+	                })
+	                .state('in_tc', {
+	                    controller: 'MemberLayoutController',
+	                    controllerAs: 'mlayc',
+	                    templateUrl: '/templates/layouts/in_tc.html',
+	                    resolve: {
+	                        redirectTeamNotLoggedIn: redirectTeamNotLoggedIn
+	                    }
+	                })
+	                .state('out.login', {
+	                    url: '/login',
+	                    templateUrl: '/templates/pages/out/login.html',
+	                    controller: 'FacultyLoginController',
+	                    controllerAs: 'flc'
+	                })
+	                .state('out.register', {
+	                    url: '/register',
+	                    templateUrl: '/templates/pages/out/register.html',
+	                    controller: 'FacultyRegistrationController',
+	                    controllerAs: 'frc'
+	                })
+	                .state('out.forgotPasswordApply', {
+	                    url: '/forgotPasswordApply',
+	                    templateUrl: '/templates/pages/out/forgotPasswordApply.html',
+	                    controller: 'FacultyForgotPasswordApplyController',
+	                    controllerAs: 'ffpac'
+	                })
+	                .state('out.forgotPasswordSet', {
+	                    url: '/forgotPasswordSet?token&id',
+	                    templateUrl: '/templates/pages/out/forgotPasswordSet.html',
+	                    controller: 'FacultyForgotPasswordSetController',
+	                    controllerAs: 'ffpsc'
+	                })
+	                .state('out.member_login', {
+	                    url: '/member/login',
+	                    templateUrl: '/templates/pages/out/member/login.html',
+	                    controller: 'MemberLoginController',
+	                    controllerAs: 'mlc'
+	                })
+	                .state('out.member_register', {
+	                    url: '/member/register',
+	                    templateUrl: '/templates/pages/out/member/register.html',
+	                    controller: 'MemberRegistrationController',
+	                    controllerAs: 'mrc'
+	                })
+	                .state('out.member_forgotPasswordSet', {
+	                    url: '/member/forgotPasswordSet?token&id',
+	                    templateUrl: '/templates/pages/out/member/forgotPasswordSet.html',
+	                    controller: 'MemberForgotPasswordSetController',
+	                    controllerAs: 'mfpsc'
+	                })
+	                .state('out.member_forgotPasswordApply', {
+	                    url: '/member/forgotPasswordApply',
+	                    templateUrl: '/templates/pages/out/member/forgotPasswordApply.html',
+	                    controller: 'MemberForgotPasswordApplyController',
+	                    controllerAs: 'mfpac'
+	                })
+	                .state('in_tc.verifyCoordinator', {
+	                    url: '/member/verifyCoordinator',
+	                    templateUrl: '/templates/pages/in/verifyCoordinator.html',
+	                    controller: 'VerifyCoordinatorController',
+	                    controllerAs: 'vcc'
+	                })
+	                .state('in_tc.collegeList', {
+	                    url: '/member/collegeList',
+	                    templateUrl: '/templates/pages/in/collegeList.html'
+	                })
+	                .state('in_tc.dashboard', {
+	                    url: '/dashboard',
+	                    templateUrl: '/templates/pages/in/dashboard.html',
+	                    controller: 'DashboardController',
+	                    controllerAs: 'dc'
+	                })
+	                .state('in_tc.eventRegistrations', {
+	                    url: '/eventRegistration',
+	                    templateUrl: '/templates/pages/in/eventRegistration.html',
+	                    controller: 'EventRegistrationController',
+	                    controllerAs: 'erc'
+	                })
+	                .state('in_tc.addEvent', {
+	                    url: '/member/events/create',
+	                    templateUrl: '/templates/pages/in/addEvent.html',
+	                    controller: 'AddEventController',
+	                    controllerAs: 'ec',
+	                })
+	                .state('in_tc.settings', {
+	                    url: '/member/settings',
+	                    templateUrl: '/templates/pages/in/memberSettings.html',
+	                    controller: 'MemberSettingsController',
+	                    controllerAs: 'msc'
+	                })
+	                .state('in_tc.updateEvent', {
+	                    url: '/member/events/:eventId/update',
+	                    templateUrl: '/templates/pages/in/addEvent.html',
+	                    controller: 'UpdateEventController',
+	                    controllerAs: 'ec'
+	                })
+	                .state('in_tc.showEvent', {
+	                    url: '/member/events',
+	                    templateUrl: '/templates/pages/in/showEvent.html',
+	                    controller: 'ShowEventController',
+	                    controllerAs: 'sec'
+	                })
+	                .state('in_tc.eachEvent', {
+	                    url: '/member/events/:eventId',
+	                    templateUrl: '/templates/pages/in/eachEvent.html',
+	                    controller: 'EachEventController',
+	                    controllerAs: 'eec'
+	                })
+	                .state('in_fc.guidelines', {
+	                    url: '/guidelines',
+	                    templateUrl: '/templates/pages/in/guidelines.html'
+	                })
+	                .state('in_fc.settings', {
+	                    url: '/settings',
+	                    templateUrl: '/templates/pages/in/facultySettings.html',
+	                    controller: 'FacultySettingsController',
+	                    controllerAs: 'fsc'
+	                })
+	                .state('in_fc.confirm_registration', {
+	                    url: '/confirm/registrations',
+	                    templateUrl: '/templates/pages/in/faculty/confirmRegistration1.html',
+	                    controller: 'ConfirmRegistrationsController1',
+	                    controllerAs: 'crc'
+	                })
+	                .state('in_fc.registration_details', {
+	                    url: '/registrations',
+	                    templateUrl: '/templates/pages/in/faculty/registrationDetails.html',
+	                    controller: 'RegistrationDetailsController',
+	                    controllerAs: 'rdc'
+	                })
+	                .state('in_fc.student_coordinator', {
+	                    url: '/studentCoordinator',
+	                    templateUrl: '/templates/pages/in/faculty/addStudentCordinator.html',
+	                    controller: 'AddStudentController',
+	                    controllerAs: 'ascc'
+	                })
+	                .state('in_fc.participant_registration', {
+	                    url: '/participantRegistration',
+	                    templateUrl: '/templates/pages/in/faculty/participantRegistration.html',
+	                    controller: 'ParticipantRegistrationController',
+	                    controllerAs: 'prc'
+	                });
+	        }
+	    }
+	    redirectFacultyNotLoggedIn.$inject = ['facultyAuthService', 'memberAuthService', '$q', '$state', '$timeout', '$rootScope'];
 
-			function setRoutes() {
-				$locationProvider.html5Mode(true);
-				$urlRouterProvider.when('/', '/login');
-				$urlRouterProvider.otherwise('/login');
-				$stateProvider
-					.state('out', {
-						templateUrl: '/templates/layouts/out.html',
-						resolve: {
-							redirectLoggedIn: redirectLoggedIn
-						}
-					})
-					.state('in_fc', {
-						templateUrl: '/templates/layouts/in_fc.html',
-						controller: 'FacultyLayoutController',
-						controllerAs: 'flayc',
-						resolve: {
-							redirectFacultyNotLoggedIn: redirectFacultyNotLoggedIn
-						}
-					})
-					.state('in_tc', {
-						controller: 'MemberLayoutController',
-						controllerAs: 'mlayc',
-						templateUrl: '/templates/layouts/in_tc.html',
-						resolve: {
-							redirectTeamNotLoggedIn: redirectTeamNotLoggedIn
-						}
-					})
-					.state('out.login', {
-						url: '/login',
-						templateUrl: '/templates/pages/out/login.html',
-						controller: 'FacultyLoginController',
-						controllerAs: 'flc'
-					})
-					.state('out.register', {
-						url: '/register',
-						templateUrl: '/templates/pages/out/register.html',
-						controller: 'FacultyRegistrationController',
-						controllerAs: 'frc'
-					})
-					.state('out.forgotPasswordApply', {
-						url: '/forgotPasswordApply',
-						templateUrl: '/templates/pages/out/forgotPasswordApply.html',
-						controller: 'FacultyForgotPasswordApplyController',
-						controllerAs: 'ffpac'
-					})
-					.state('out.forgotPasswordSet', {
-						url: '/forgotPasswordSet?token&id',
-						templateUrl: '/templates/pages/out/forgotPasswordSet.html',
-						controller: 'FacultyForgotPasswordSetController',
-						controllerAs: 'ffpsc'
-					})
-					.state('out.member_login', {
-						url: '/member/login',
-						templateUrl: '/templates/pages/out/member/login.html',
-						controller: 'MemberLoginController',
-						controllerAs: 'mlc'
-					})
-					.state('out.member_register', {
-						url: '/member/register',
-						templateUrl: '/templates/pages/out/member/register.html',
-						controller: 'MemberRegistrationController',
-						controllerAs: 'mrc'
-					})
-					.state('out.member_forgotPasswordSet', {
-						url: '/member/forgotPasswordSet?token&id',
-						templateUrl: '/templates/pages/out/member/forgotPasswordSet.html',
-						controller: 'MemberForgotPasswordSetController',
-						controllerAs: 'mfpsc'
-					})
-					.state('out.member_forgotPasswordApply', {
-						url: '/member/forgotPasswordApply',
-						templateUrl: '/templates/pages/out/member/forgotPasswordApply.html',
-						controller: 'MemberForgotPasswordApplyController',
-						controllerAs: 'mfpac'
-					})
-					.state('in_tc.verifyCoordinator', {
-						url: '/member/verifyCoordinator',
-						templateUrl: '/templates/pages/in/verifyCoordinator.html',
-						controller: 'VerifyCoordinatorController',
-						controllerAs: 'vcc'
-					})
-					.state('in_tc.collegeList', {
-						url: '/member/collegeList',
-						templateUrl: '/templates/pages/in/collegeList.html'
-					})
-					.state('in_tc.dashboard', {
-						url: '/dashboard',
-						templateUrl: '/templates/pages/in/dashboard.html',
-						controller: 'DashboardController',
-						controllerAs: 'dc'
-					})
-					.state('in_tc.eventRegistrations', {
-						url: '/eventRegistration',
-						templateUrl: '/templates/pages/in/eventRegistration.html',
-						controller: 'EventRegistrationController',
-						controllerAs: 'erc'
-					})
-					.state('in_tc.addEvent', {
-						url: '/member/events/create',
-						templateUrl: '/templates/pages/in/addEvent.html',
-						controller: 'AddEventController',
-						controllerAs: 'ec',
-					})
-					.state('in_tc.settings', {
-						url: '/member/settings',
-						templateUrl: '/templates/pages/in/memberSettings.html',
-						controller: 'MemberSettingsController',
-						controllerAs: 'msc'
-					})
-					.state('in_tc.updateEvent', {
-						url: '/member/events/:eventId/update',
-						templateUrl: '/templates/pages/in/addEvent.html',
-						controller: 'UpdateEventController',
-						controllerAs: 'ec'
-					})
-					.state('in_tc.showEvent', {
-						url: '/member/events',
-						templateUrl: '/templates/pages/in/showEvent.html',
-						controller: 'ShowEventController',
-						controllerAs: 'sec'
-					})
-					.state('in_tc.eachEvent', {
-						url: '/member/events/:eventId',
-						templateUrl: '/templates/pages/in/eachEvent.html',
-						controller: 'EachEventController',
-						controllerAs: 'eec'
-					})
-					.state('in_fc.guidelines', {
-						url: '/guidelines',
-						templateUrl: '/templates/pages/in/guidelines.html'
-					})
-					.state('in_fc.settings', {
-						url: '/settings',
-						templateUrl: '/templates/pages/in/facultySettings.html',
-						controller: 'FacultySettingsController',
-						controllerAs: 'fsc'
-					})
-					.state('in_fc.confirm_registration', {
-						url: '/confirm/registrations',
-						templateUrl: '/templates/pages/in/faculty/confirmRegistration.html',
-						controller: 'ConfirmRegistrationsController',
-						controllerAs: 'crc'
-					})
-					.state('in_fc.registration_details', {
-						url: '/registrations',
-						templateUrl: '/templates/pages/in/faculty/registrationDetails.html',
-						controller: 'RegistrationDetailsController',
-						controllerAs: 'rdc'
-					})
-					.state('in_fc.student_coordinator', {
-						url: '/studentCoordinator',
-						templateUrl: '/templates/pages/in/faculty/addStudentCordinator.html',
-						controller: 'AddStudentController',
-						controllerAs: 'ascc'
-					})
-					.state('in_fc.participant_registration', {
-						url: '/participantRegistration',
-						templateUrl: '/templates/pages/in/faculty/participantRegistration.html',
-						controller: 'ParticipantRegistrationController',
-						controllerAs: 'prc'
-					});
-			}
-		}
+	    function redirectFacultyNotLoggedIn(facultyAuthService, memberAuthService, $q, $state, $timeout, $rootScope) {
+	        var defer = $q.defer();
+	        var facultyAuthenticate = facultyAuthService.checkFacultyLoggedIn();
+	        if (facultyAuthenticate) {
+	            if ($rootScope.faculty.verified !== true && !$rootScope.alreadyRedirected) {
+	                $timeout(function() {
+	                    $rootScope.alreadyRedirected = true;
+	                    $state.go('in_fc.guidelines');
+	                });
+	            }
 
-		redirectFacultyNotLoggedIn.$inject = ['facultyAuthService', 'memberAuthService', '$q', '$state', '$timeout', '$rootScope'];
+	            defer.resolve();
+	        } else {
+	            var memberAuthenticate = memberAuthService.checkMemberLoggedIn();
+	            if (memberAuthenticate && !$rootScope.alreadyRedirected) {
+	                $timeout(function() {
+	                    $rootScope.alreadyRedirected = true;
+	                    $state.go('in_tc.dashboard');
+	                });
+	                defer.resolve();
+	            } else {
+	                $timeout(function() {
+	                    $rootScope.alreadyRedirected = true;
+	                    $state.go('out.login');
+	                });
+	                defer.reject();
+	            }
+	        }
+	        return defer.promise;
+	    }
 
-		function redirectFacultyNotLoggedIn(facultyAuthService, memberAuthService, $q, $state, $timeout, $rootScope) {
-			var defer = $q.defer();
-			var facultyAuthenticate = facultyAuthService.checkFacultyLoggedIn();
-			if (facultyAuthenticate) {
-				if ($rootScope.faculty.verified !== true && !$rootScope.alreadyRedirected) {
-					$timeout(function () {
-						$rootScope.alreadyRedirected = true;
-						$state.go('in_fc.guidelines');
-					});
-				}
+	    redirectTeamNotLoggedIn.$inject = ['memberAuthService', 'facultyAuthService', '$q', '$state', '$timeout', '$rootScope'];
 
-				defer.resolve();
-			} else {
-				var memberAuthenticate = memberAuthService.checkMemberLoggedIn();
-				if (memberAuthenticate && !$rootScope.alreadyRedirected) {
-					$timeout(function () {
-						$rootScope.alreadyRedirected = true;
-						$state.go('in_tc.dashboard');
-					});
-					defer.resolve();
-				} else {
-					$timeout(function () {
-						$rootScope.alreadyRedirected = true;
-						$state.go('out.login');
-					});
-					defer.reject();
-				}
-			}
-			return defer.promise;
-		}
-
-		redirectTeamNotLoggedIn.$inject = ['memberAuthService', 'facultyAuthService', '$q', '$state', '$timeout', '$rootScope'];
-
-		function redirectTeamNotLoggedIn(memberAuthService, facultyAuthService, $q, $state, $timeout, $rootScope) {
-			var defer = $q.defer();
-			var memberAuthenticate = memberAuthService.checkMemberLoggedIn();
-			if (memberAuthenticate) {
-				defer.resolve();
-			} else {
-				var facultyAuthenticate = facultyAuthService.checkFacultyLoggedIn();
-				if (facultyAuthenticate && !$rootScope.alreadyRedirected) {
-					$timeout(function () {
-						$rootScope.alreadyRedirected = true;
-						$state.go('in_fc.guidelines');
-					});
-					defer.resolve();
-				} else {
-					$timeout(function () {
-						$rootScope.alreadyRedirected = true;
-						$state.go('out.login');
-					});
-					defer.reject();
-				}
+	    function redirectTeamNotLoggedIn(memberAuthService, facultyAuthService, $q, $state, $timeout, $rootScope) {
+	        var defer = $q.defer();
+	        var memberAuthenticate = memberAuthService.checkMemberLoggedIn();
+	        if (memberAuthenticate) {
+	            defer.resolve();
+	        } else {
+	            var facultyAuthenticate = facultyAuthService.checkFacultyLoggedIn();
+	            if (facultyAuthenticate && !$rootScope.alreadyRedirected) {
+	                $timeout(function() {
+	                    $rootScope.alreadyRedirected = true;
+	                    $state.go('in_fc.guidelines');
+	                });
+	                defer.resolve();
+	            } else {
+	                $timeout(function() {
+	                    $rootScope.alreadyRedirected = true;
+	                    $state.go('out.login');
+	                });
+	                defer.reject();
+	            }
 
 
-			}
+	        }
 
-			return defer.promise;
-		}
+	        return defer.promise;
+	    }
 
 
-		redirectLoggedIn.$inject = ['facultyAuthService', 'memberAuthService', '$state', '$q', '$timeout', '$rootScope'];
+	    redirectLoggedIn.$inject = ['facultyAuthService', 'memberAuthService', '$state', '$q', '$timeout', '$rootScope'];
 
-		function redirectLoggedIn(facultyAuthService, memberAuthService, $state, $q, $timeout, $rootScope) {
-			var defer = $q.defer();
-			var facultyAuthenticate = facultyAuthService.checkFacultyLoggedIn();
-			if (facultyAuthenticate && !$rootScope.alreadyRedirected) {
-				defer.reject();
-				$timeout(function () {
-					$rootScope.alreadyRedirected = true;
-					$state.go('in_fc.guidelines');
-				});
-			} else {
-				var memberAuthenticate = memberAuthService.checkMemberLoggedIn();
-				if (memberAuthenticate && !$rootScope.alreadyRedirected) {
-					defer.reject();
-					$timeout(function () {
-						$rootScope.alreadyRedirected = true;
-						$state.go('in_tc.dashboard');
-					});
-				} else {
-					defer.resolve();
-				}
+	    function redirectLoggedIn(facultyAuthService, memberAuthService, $state, $q, $timeout, $rootScope) {
+	        var defer = $q.defer();
+	        var facultyAuthenticate = facultyAuthService.checkFacultyLoggedIn();
+	        if (facultyAuthenticate && !$rootScope.alreadyRedirected) {
+	            defer.reject();
+	            $timeout(function() {
+	                $rootScope.alreadyRedirected = true;
+	                $state.go('in_fc.guidelines');
+	            });
+	        } else {
+	            var memberAuthenticate = memberAuthService.checkMemberLoggedIn();
+	            if (memberAuthenticate && !$rootScope.alreadyRedirected) {
+	                defer.reject();
+	                $timeout(function() {
+	                    $rootScope.alreadyRedirected = true;
+	                    $state.go('in_tc.dashboard');
+	                });
+	            } else {
+	                defer.resolve();
+	            }
 
-			}
-			return defer.promise;
-		}
+	        }
+	        return defer.promise;
+	    }
 
-		// redirectTeamLoggedIn.$inject = ['memberAuthService','facultyAuthService', '$state', '$q', '$timeout'];
-		//
-		// function redirectTeamLoggedIn(memberAuthService, facultyAuthService, $state, $q, $timeout) {
-		// 	// if(angular.isDefined($rootScope.faculty)){
-		// 	//
-		// 	// }
-		//
-		// 	var defer = $q.defer();
-		// 	var authenticate = memberAuthService.checkMemberLoggedIn();
-		// 	if (authenticate) {
-		// 		defer.reject();
-		// 		$timeout(function () {
-		// 			$state.go('in_tc.verifyCoordinator');
-		// 		});
-		// 	} else {
-		// 		defer.resolve();
-		// 	}
-		// 	return defer.promise;
-		// }
+	    // redirectTeamLoggedIn.$inject = ['memberAuthService','facultyAuthService', '$state', '$q', '$timeout'];
+	    //
+	    // function redirectTeamLoggedIn(memberAuthService, facultyAuthService, $state, $q, $timeout) {
+	    // 	// if(angular.isDefined($rootScope.faculty)){
+	    // 	//
+	    // 	// }
+	    //
+	    // 	var defer = $q.defer();
+	    // 	var authenticate = memberAuthService.checkMemberLoggedIn();
+	    // 	if (authenticate) {
+	    // 		defer.reject();
+	    // 		$timeout(function () {
+	    // 			$state.go('in_tc.verifyCoordinator');
+	    // 		});
+	    // 	} else {
+	    // 		defer.resolve();
+	    // 	}
+	    // 	return defer.promise;
+	    // }
 
 	})();
-
-(function () {
-	'use strict';
-
-	angular
-		.module('fct.core')
-		.factory('fctToast', fctToast);
-
-	fctToast.$inject = ['$mdToast'];
-
-	function fctToast($mdToast) {
-		var service = {
-			showToast: showToast
-		};
-
-		return service;
-
-		function showToast(data, success) {
-			var toasterClass = 'md-toast-warn';
-
-			if (success) {
-				toasterClass = 'md-toast-success';
-			}
-
-			var toaster = $mdToast.simple()
-				.textContent(data)
-				.position('bottom right')
-				.hideDelay(3000)
-				.toastClass(toasterClass);
-			$mdToast.show(toaster);
-		}
-	}
-})();
 
 (function () {
 	'use strict';
@@ -555,6 +686,7 @@
 			editStudentCoordinator: editStudentCoordinator,
 			getEachFaculty: getEachFaculty,
 			updateFaculty: updateFaculty,
+			getRegistrationData: getRegistrationData,
 		};
 
 		return service;
@@ -603,6 +735,13 @@
 
 		function updateFaculty(data) {
 			var link = baseLink + '/updateFaculty/';
+			return $http.post(link, data)
+				.then(resolveFunc)
+				.catch(errorFunc);
+		}
+
+		function getRegistrationData(data) {
+			var link = baseLink + '/getRegistrationData';
 			return $http.post(link, data)
 				.then(resolveFunc)
 				.catch(errorFunc);
@@ -1094,6 +1233,39 @@
 })();
 
 (function () {
+	'use strict';
+
+	angular
+		.module('fct.core')
+		.factory('fctToast', fctToast);
+
+	fctToast.$inject = ['$mdToast'];
+
+	function fctToast($mdToast) {
+		var service = {
+			showToast: showToast
+		};
+
+		return service;
+
+		function showToast(data, success) {
+			var toasterClass = 'md-toast-warn';
+
+			if (success) {
+				toasterClass = 'md-toast-success';
+			}
+
+			var toaster = $mdToast.simple()
+				.textContent(data)
+				.position('bottom right')
+				.hideDelay(3000)
+				.toastClass(toasterClass);
+			$mdToast.show(toaster);
+		}
+	}
+})();
+
+(function () {
   'use strict';
 
   angular
@@ -1329,6 +1501,653 @@
             }
         };
     }
+})();
+
+(function () {
+	'use strict';
+
+	angular
+		.module('fct.core')
+		.controller('AddStudentController', AddStudentController);
+
+	AddStudentController.$inject = ['$http', 'facultyService', '$rootScope', 'fctToast'];
+
+	function AddStudentController($http, facultyService, $rootScope, fctToast) {
+		var vm = this;
+		vm.coordinator = {};
+		vm.editInfo = false;
+		vm.preInfo = false;
+		vm.updateButtonClicked = false;
+		vm.addButtonClicked = false;
+
+		angular.extend(vm, {
+			update: update,
+			addStudentCoordinator: addStudentCoordinator,
+			edit: edit
+		});
+
+		activate();
+
+		function activate() {
+			return facultyService.getStudentCoordinator()
+				.then(getStudentCoordinatorSuccess)
+				.catch(getStudentCoordinatorFailure);
+
+		}
+
+		function getStudentCoordinatorSuccess(response) {
+			if (response.data.student_coordinator) {
+				vm.coordinator = response.data.student_coordinator;
+				vm.preInfo = true;
+			} else {
+				vm.editInfo = true;
+			}
+		}
+
+		function getStudentCoordinatorFailure(error) {
+			// console.log(error);
+		}
+
+		function update(event) {
+			vm.updateButtonClicked = true;
+			return facultyService.editStudentCoordinator({
+					student_coordinator: vm.coordinator
+				})
+				.then(editStudentCoordinatorSuccess)
+				.catch(editStudentCoordinatorFailure);
+		}
+
+		function edit() {
+			vm.editInfo = true;
+		}
+
+		function addStudentCoordinator(event) {
+			vm.addButtonClicked = true;
+			return facultyService.editStudentCoordinator({
+					student_coordinator: vm.coordinator
+				})
+				.then(addStudentCoordinatorSuccess)
+				.catch(editStudentCoordinatorFailure);
+		}
+
+		function addStudentCoordinatorSuccess(response) {
+			vm.preInfo = true;
+			vm.editInfo = false;
+			vm.addButtonClicked = false;
+			fctToast.showToast('Student Coordinator Details Added Successfuly', true);
+		}
+
+		function editStudentCoordinatorSuccess(response) {
+			vm.editInfo = false;
+			vm.updateButtonClicked = false;
+			fctToast.showToast('Student Coordinator Details Updated Successfuly', true);
+		}
+
+		function editStudentCoordinatorFailure(error) {
+			vm.editInfo = false;
+			vm.addButtonClicked = false;
+			vm.updateButtonClicked = false;
+			fctToast.showToast('Error!! Try Again');
+		}
+	}
+})();
+
+(function() {
+    'use strict';
+
+    angular
+        .module('fct.core')
+        .controller('ConfirmRegistrationModalController', ConfirmRegistrationModalController);
+
+    ConfirmRegistrationModalController.$inject = ['facultyService', '$mdDialog', 'fctToast', 'registration'];
+
+    function ConfirmRegistrationModalController(facultyService, $mdDialog, fctToast, registration) {
+        var vm = this;
+        vm.registration = registration;
+        vm.registrationButtonClicked = false;
+
+        angular.extend(vm, {
+            confirmData: confirmData,
+            hide: hide
+        });
+
+        function confirmData() {
+            if (vm.registrationButtonClicked) {
+                event.preventDefault();
+            } else {
+                vm.registrationButtonClicked = true;
+            }
+
+            return facultyService.confirmRegistration(registration)
+                .then(confirmRegistrationSuccess)
+                .catch(confirmRegistrationFailure);
+        }
+
+        function confirmRegistrationSuccess(response) {
+            console.log(response);
+            hide();
+            vm.registrationButtonClicked = false;
+            vm.registration = {};
+            $scope.confirmRegistrationForm.$setPristine();
+            $scope.confirmRegistrationForm.$setUntouched();
+
+            var msg;
+
+            if (response.status == 400) {
+                msg = response.data.error.for;
+                fctToast.showToast(msg);
+            }
+
+            if (msg) {
+                msg = response.data.message;
+                fctToast.showToast(msg, true);
+            }
+        }
+
+        function confirmRegistrationFailure(error) {
+            var msg;
+            hide();
+
+            if (error.status == 500) {
+                msg = 'Internal server error, try again !!';
+            } else {
+                msg = error.data.error.for;
+            }
+            fctToast.showToast(msg);
+        }
+
+        function hide() {
+            $mdDialog.hide();
+        }
+    }
+
+})();
+
+(function () {
+	'use strict';
+
+	angular
+		.module('fct.core')
+		.controller('ConfirmRegistrationsController', ConfirmRegistrationsController);
+
+	ConfirmRegistrationsController.$inject = ['facultyService', '$mdDialog', 'fctToast', '$scope'];
+
+	function ConfirmRegistrationsController(facultyService, $mdDialog, fctToast, $scope) {
+		var vm = this;
+		vm.registration = {};
+		vm.registrationButtonClicked = false;
+		angular.extend(vm, {
+			confirmRegistration: confirmRegistration
+		});
+
+		activate();
+
+		function activate() {
+
+		}
+
+		function getFacultyRegistrationData() {
+
+		}
+
+		function confirmRegistration(event) {
+			if (vm.registrationButtonClicked) {
+				event.preventDefault();
+			} else {
+				vm.registrationButtonClicked = true;
+			}
+
+			// return
+			var confirm = $mdDialog.prompt()
+				.title('Enter SERIAL ID')
+				.textContent('Enter the serial id provided in ther Registration Slip')
+				.placeholder('Serial Id')
+				.ariaLabel('Serial Id')
+				.targetEvent(event)
+				.theme('normal')
+				.ok('Submit')
+				.cancel('Cancel');
+
+			$mdDialog.show(confirm).then(function (result) {
+				vm.registration.serialId = result;
+				return facultyService.confirmRegistration(vm.registration)
+					.then(confirmRegistrationSuccess)
+					.catch(confirmRegistrationFailure);
+			}, function () {
+				vm.registrationButtonClicked = false;
+			});
+		}
+
+		function confirmRegistrationSuccess(response) {
+			console.log(response);
+			vm.registrationButtonClicked = false;
+			vm.registration = {};
+			$scope.confirmRegistrationForm.$setPristine();
+			$scope.confirmRegistrationForm.$setUntouched();
+
+			var msg;
+
+			if (response.status == 400) {
+				msg = response.data.error.for;
+				fctToast.showToast(msg);
+			}
+
+			if (msg) {
+				msg = response.data.message;
+				fctToast.showToast(msg, true);
+			}
+		}
+
+		function confirmRegistrationFailure(error) {
+			var msg;
+
+			if (error.status == 500) {
+				msg = 'Internal server error, try again !!';
+			} else {
+				msg = error.data.error.for;
+			}
+
+			vm.registrationButtonClicked = false;
+			fctToast.showToast(msg);
+		}
+
+	}
+})();
+
+(function() {
+    'use strict';
+
+    angular
+        .module('fct.core')
+        .controller('ConfirmRegistrationsController1', ConfirmRegistrationsController1);
+
+    ConfirmRegistrationsController1.$inject = ['facultyService', '$mdDialog', 'fctToast', '$scope'];
+
+    function ConfirmRegistrationsController1(facultyService, $mdDialog, fctToast, $scope) {
+        var vm = this;
+        vm.registration = {};
+        vm.registrationButtonClicked = false;
+        angular.extend(vm, {
+            confirmRegistration: confirmRegistration,
+            getRegistrationData: getRegistrationData
+        });
+
+        activate();
+
+        function activate() {
+
+        }
+
+        function getFacultyRegistrationData() {
+
+        }
+
+        function confirmRegistration(event) {
+            if (vm.registrationButtonClicked) {
+                event.preventDefault();
+            } else {
+                vm.registrationButtonClicked = true;
+            }
+
+            // return
+            var confirm = $mdDialog.prompt()
+                .title('Enter SERIAL ID')
+                .textContent('Enter the serial id provided in ther Registration Slip')
+                .placeholder('Serial Id')
+                .ariaLabel('Serial Id')
+                .targetEvent(event)
+                .theme('normal')
+                .ok('Submit')
+                .cancel('Cancel');
+
+            $mdDialog.show(confirm).then(function(result) {
+                vm.registration.serialId = result;
+                return facultyService.confirmRegistration(vm.registration)
+                    .then(confirmRegistrationSuccess)
+                    .catch(confirmRegistrationFailure);
+            }, function() {
+                vm.registrationButtonClicked = false;
+            });
+        }
+
+        function confirmRegistrationSuccess(response) {
+            console.log(response);
+            vm.registrationButtonClicked = false;
+            vm.registration = {};
+            $scope.confirmRegistrationForm.$setPristine();
+            $scope.confirmRegistrationForm.$setUntouched();
+
+            var msg;
+
+            if (response.status == 400) {
+                msg = response.data.error.for;
+                fctToast.showToast(msg);
+            }
+
+            if (msg) {
+                msg = response.data.message;
+                fctToast.showToast(msg, true);
+            }
+
+        }
+
+        function confirmRegistrationFailure(error) {
+            var msg;
+
+            if (error.status == 500) {
+                msg = 'Internal server error, try again !!';
+            } else {
+                msg = error.data.error.for;
+            }
+
+            vm.registrationButtonClicked = false;
+            fctToast.showToast(msg);
+        }
+
+        function getRegistrationData() {
+            if (vm.registrationButtonClicked) {
+                event.preventDefault();
+            } else {
+                vm.registrationButtonClicked = true;
+            }
+
+            facultyService.getRegistrationData(vm.registration)
+                .then(function(response) {
+                    console.log(response);
+                    vm.registration.teamId = response.data.teamId;
+                    vm.registration.email = response.data.email;
+                    vm.registration.mobileno = response.data.mobileno;
+                    $mdDialog.show({
+                            templateUrl: './templates/components/dialogs/confirmDetailDialog.html',
+                            // parent: angular.element(document.body),
+                            controller: 'ConfirmRegistrationModalController',
+                            controllerAs: 'crmc',
+                            locals: {
+                                registration: vm.registration
+                            },
+                            targetEvent: event,
+                            clickOutsideToClose: true,
+                            fullscreen: true
+                        })
+                        .then(function(response) {
+                            return facultyService.confirmRegistration(vm.registration)
+                                .then(confirmRegistrationSuccess)
+                                .catch(confirmRegistrationFailure);
+                        }, function(error) {
+                            //error
+                        });
+                    // var confirm = $mdDialog.confirm()
+                    // .title('Confirmation Details')
+                    // .textContent('Team Id: ' + response.data.teamId + '                  Team Leader Email: ' + response.data.email + '          Team Leader Mobile Number: ' + response.data.mobileno)
+                    // .targetEvent(event)
+                    // .theme('normal')
+                    // .ok('Register')
+                    // .cancel('Cancel');
+                    // $mdDialog.show(confirm).then(function(result) {
+                    // 	return facultyService.confirmRegistration(vm.registration)
+                    // 		.then(confirmRegistrationSuccess)
+                    // 		.catch(confirmRegistrationFailure);
+                    // }, function() {
+                    //   //error
+                    // });
+                })
+                .catch(function(error) {
+                    console.log(error);
+                });
+        }
+
+    }
+
+
+})();
+
+(function () {
+	'use strict';
+
+	angular
+		.module('fct.core')
+		.controller('FacultySettingsController', FacultySettingsController);
+
+	FacultySettingsController.$inject = ['facultyAuthService', 'fctToast', '$scope', '$rootScope', '$timeout', 'facultyService'];
+
+	function FacultySettingsController(facultyAuthService, fctToast, $scope, $rootScope, $timeout, facultyService) {
+		var vm = this;
+		vm.updateInfo = false;
+		$scope.changePasswordForm = {};
+		vm.user = {};
+		vm.userDetail = {};
+		vm.updateButtonClicked = false;
+
+		angular.extend(vm, {
+			changePassword: changePassword,
+			updateFaculty: updateFaculty,
+		});
+
+		activate();
+
+		function activate() {
+			getEachFaculty();
+		}
+
+		function getEachFaculty() {
+			return facultyService.getEachFaculty()
+			.then(function (response) {
+				console.log(response);
+				vm.userDetail.email = response.data.email;
+				vm.userDetail.mobileno = parseInt(response.data.mobileno);
+				vm.userDetail.name = response.data.name;
+				vm.preInfo = true;
+			}).catch(function (error) {
+				console.log(error);
+			});
+		}
+
+		function updateFaculty() {
+			if (vm.updating) {
+				event.preventDefault();
+			} else {
+				vm.updating = true;
+				vm.updateButtonClicked = true;
+				return facultyService.updateFaculty(vm.userDetail)
+				.then(function (response) {
+					vm.userDetail = response.data;
+					vm.updateButtonClicked = false;
+					vm.updating = false;
+					vm.editInfo = false;
+					getEachFaculty();
+					console.log(response);
+				})
+				.catch(function (error) {
+					vm.updateButtonClicked = false;
+					vm.updating = false;
+					console.log(error);
+				});
+			}
+		}
+
+		function changePassword(event) {
+			if (vm.updateInfo) {
+				event.preventDefault();
+			} else {
+				vm.updateInfo = true;
+				facultyAuthService.changeFacultyPassword(vm.user);
+			}
+		}
+
+		$rootScope.$on('FacultyChangePasswordSuccess', FacultyChangePasswordSuccess);
+		$rootScope.$on('FacultyChangePasswordFailure', FacultyChangePasswordFailure);
+
+		function FacultyChangePasswordSuccess(event) {
+			fctToast.showToast("Password Changed Successfully", true);
+			$timeout(function () {
+				resetForm();
+			});
+
+		}
+
+		function FacultyChangePasswordFailure(event, error) {
+			fctToast.showToast(error.data.message);
+			$timeout(function () {
+				resetForm();
+			});
+		}
+
+		function resetForm() {
+			vm.user = {};
+			vm.updateInfo = false;
+			$scope.changePasswordForm.$setUntouched();
+		}
+	}
+})();
+
+
+(function () {
+	'use strict';
+
+	angular
+		.module('fct.core')
+		.controller('RegistrationDetailsController', RegistrationDetailsController);
+
+	RegistrationDetailsController.$inject = ['fctToast', '$rootScope', 'facultyService'];
+
+	function RegistrationDetailsController(fctToast, $rootScope, facultyService) {
+		var vm = this;
+		vm.noregistration = true;
+		activate();
+
+		function activate() {
+			return facultyService.getFacultyRegistrations()
+				.then(getRegistrationsSuccess)
+				.catch(getRegistrationsFailure);
+		}
+
+		function getRegistrationsSuccess(response) {
+
+			if (response.data.registrations.length !== 0) {
+				vm.registrations = response.data.registrations;
+				vm.registrations_count = response.data.totalRegistrations;
+				vm.collected_amount = response.data.totalCollectedAmount;
+				vm.noregistration = false;
+			} else {
+				vm.noregistration = true;
+			}
+		}
+
+		function getRegistrationsFailure(error) {
+			fctToast.showToast('Internal Server Error');
+		}
+	}
+})();
+
+(function () {
+	'use strict';
+
+	angular
+		.module('fct.core')
+		.controller('VerifyCoordinatorController', VerifyCoordinatorController);
+
+	VerifyCoordinatorController.$inject = ['$scope', 'memberService', '$mdDialog'];
+
+	function VerifyCoordinatorController($scope, memberService, $mdDialog) {
+		var vm = this;
+		vm.limitFaculty = 5;
+		vm.nomoreFaculty = true;
+		vm.orderField = 'registrations_count';
+		vm.reverseSort = true;
+
+		angular.extend(vm, {
+			verifyFaculty: verifyFaculty,
+			rejectFaculty: rejectFaculty,
+			loadmore: loadmore
+		});
+
+		activate();
+
+		function activate() {
+			return memberService.getAllFacultyCoordinators()
+				.then(getAllFacultyCoordinatorsSuccess)
+				.catch(getAllFacultyCoordinatorsFailure);
+		}
+
+
+		function getAllFacultyCoordinatorsSuccess(response) {console.log(response);
+			vm.faculties = response.data;
+			// console.log(vm.faculties);
+			if (vm.limitFaculty <= vm.faculties.length) {
+				vm.nomoreFaculty = false;
+			}
+		}
+
+		function getAllFacultyCoordinatorsFailure(error) {
+			//State go to Add Events
+			//Dashboard
+			// console.log(error);
+		}
+
+		function verifyFaculty(id, index, event) {
+			vm.verifyingIndex = index;
+			var confirm = $mdDialog.confirm()
+				.title('Are you sure?')
+				.textContent('You will be Verifying ' + vm.faculties[index].name + ' as a Faculty Coordinator')
+				.ariaLabel('FCVER')
+				.targetEvent(event)
+				.ok('Confirm Verification')
+				.theme('normal')
+				.cancel('No, not now !!!');
+			$mdDialog.show(confirm).then(function () {
+				return memberService.verifyFaculty(id)
+					.then(verifyFacultySuccess)
+					.catch(verifyFacultyFailure);
+			}, function () {
+				//failed
+			});
+		}
+
+		function verifyFacultySuccess(response) {
+			vm.faculties[vm.verifyingIndex].verified = true;
+		}
+
+		function verifyFacultyFailure(error) {
+			//fctToast.show('FAilure');
+		}
+
+		function rejectFaculty(id, index, event) {
+			vm.rejectionIndex = index;
+			var confirm = $mdDialog.confirm()
+				.title('Are you sure?')
+				.textContent('You will be Rejecting ' + vm.faculties[index].name + ' as a Faculty Coordinator')
+				.ariaLabel('FCVER')
+				.targetEvent(event)
+				.ok('Confirm Rejection')
+				.theme('normal')
+				.cancel('No, not now !!!');
+			$mdDialog.show(confirm).then(function () {
+				return memberService.rejectFaculty(id)
+					.then(rejectFacultySuccess)
+					.catch(rejectFacultyFailure);
+			}, function () {
+				//failed
+			});
+		}
+
+		function rejectFacultySuccess(response) {
+			vm.faculties[vm.rejectionIndex].rejected = true;
+			vm.faculties.splice(vm.rejectionIndex, 1);
+			console.log(response);
+		}
+
+		function rejectFacultyFailure(error) {
+			//fctToast.show('FAilure');
+			console.log(error);
+		}
+
+		function loadmore() {
+			vm.limitFaculty += 5;
+			if (vm.limitFaculty >= vm.faculties.length) {
+				vm.nomoreFaculty = true;
+			}
+		}
+	}
 })();
 
 (function () {
@@ -2890,435 +3709,6 @@
 			vm.user = {};
 			$scope.registerForm.$setPristine();
 			$scope.registerForm.$setUntouched();
-		}
-	}
-})();
-
-(function () {
-	'use strict';
-
-	angular
-		.module('fct.core')
-		.controller('AddStudentController', AddStudentController);
-
-	AddStudentController.$inject = ['$http', 'facultyService', '$rootScope', 'fctToast'];
-
-	function AddStudentController($http, facultyService, $rootScope, fctToast) {
-		var vm = this;
-		vm.coordinator = {};
-		vm.editInfo = false;
-		vm.preInfo = false;
-		vm.updateButtonClicked = false;
-		vm.addButtonClicked = false;
-
-		angular.extend(vm, {
-			update: update,
-			addStudentCoordinator: addStudentCoordinator,
-			edit: edit
-		});
-
-		activate();
-
-		function activate() {
-			return facultyService.getStudentCoordinator()
-				.then(getStudentCoordinatorSuccess)
-				.catch(getStudentCoordinatorFailure);
-
-		}
-
-		function getStudentCoordinatorSuccess(response) {
-			if (response.data.student_coordinator) {
-				vm.coordinator = response.data.student_coordinator;
-				vm.preInfo = true;
-			} else {
-				vm.editInfo = true;
-			}
-		}
-
-		function getStudentCoordinatorFailure(error) {
-			// console.log(error);
-		}
-
-		function update(event) {
-			vm.updateButtonClicked = true;
-			return facultyService.editStudentCoordinator({
-					student_coordinator: vm.coordinator
-				})
-				.then(editStudentCoordinatorSuccess)
-				.catch(editStudentCoordinatorFailure);
-		}
-
-		function edit() {
-			vm.editInfo = true;
-		}
-
-		function addStudentCoordinator(event) {
-			vm.addButtonClicked = true;
-			return facultyService.editStudentCoordinator({
-					student_coordinator: vm.coordinator
-				})
-				.then(addStudentCoordinatorSuccess)
-				.catch(editStudentCoordinatorFailure);
-		}
-
-		function addStudentCoordinatorSuccess(response) {
-			vm.preInfo = true;
-			vm.editInfo = false;
-			vm.addButtonClicked = false;
-			fctToast.showToast('Student Coordinator Details Added Successfuly', true);
-		}
-
-		function editStudentCoordinatorSuccess(response) {
-			vm.editInfo = false;
-			vm.updateButtonClicked = false;
-			fctToast.showToast('Student Coordinator Details Updated Successfuly', true);
-		}
-
-		function editStudentCoordinatorFailure(error) {
-			vm.editInfo = false;
-			vm.addButtonClicked = false;
-			vm.updateButtonClicked = false;
-			fctToast.showToast('Error!! Try Again');
-		}
-	}
-})();
-
-(function () {
-	'use strict';
-
-	angular
-		.module('fct.core')
-		.controller('ConfirmRegistrationsController', ConfirmRegistrationsController);
-
-	ConfirmRegistrationsController.$inject = ['facultyService', '$mdDialog', 'fctToast', '$scope'];
-
-	function ConfirmRegistrationsController(facultyService, $mdDialog, fctToast, $scope) {
-		var vm = this;
-		vm.registration = {};
-		vm.registrationButtonClicked = false;
-		angular.extend(vm, {
-			confirmRegistration: confirmRegistration
-		});
-
-		activate();
-
-		function activate() {
-
-		}
-
-		function getFacultyRegistrationData() {
-
-		}
-
-		function confirmRegistration(event) {
-			if (vm.registrationButtonClicked) {
-				event.preventDefault();
-			} else {
-				vm.registrationButtonClicked = true;
-			}
-
-			// return
-			var confirm = $mdDialog.prompt()
-				.title('Enter SERIAL ID')
-				.textContent('Enter the serial id provided in ther Registration Slip')
-				.placeholder('Serial Id')
-				.ariaLabel('Serial Id')
-				.targetEvent(event)
-				.theme('normal')
-				.ok('Submit')
-				.cancel('Cancel');
-
-			$mdDialog.show(confirm).then(function (result) {
-				vm.registration.serialId = result;
-				return facultyService.confirmRegistration(vm.registration)
-					.then(confirmRegistrationSuccess)
-					.catch(confirmRegistrationFailure);
-			}, function () {
-				vm.registrationButtonClicked = false;
-			});
-		}
-
-		function confirmRegistrationSuccess(response) {
-			console.log(response);
-			vm.registrationButtonClicked = false;
-			vm.registration = {};
-			$scope.confirmRegistrationForm.$setPristine();
-			$scope.confirmRegistrationForm.$setUntouched();
-
-			var msg;
-
-			if (response.status == 400) {
-				msg = response.data.error.for;
-				fctToast.showToast(msg);
-			}
-
-			if (msg) {
-				msg = response.data.message;
-				fctToast.showToast(msg, true);
-			}
-		}
-
-		function confirmRegistrationFailure(error) {
-			var msg;
-
-			if (error.status == 500) {
-				msg = 'Internal server error, try again !!';
-			} else {
-				msg = error.data.error.for;
-			}
-
-			vm.registrationButtonClicked = false;
-			fctToast.showToast(msg);
-		}
-
-	}
-})();
-
-(function () {
-	'use strict';
-
-	angular
-		.module('fct.core')
-		.controller('FacultySettingsController', FacultySettingsController);
-
-	FacultySettingsController.$inject = ['facultyAuthService', 'fctToast', '$scope', '$rootScope', '$timeout', 'facultyService'];
-
-	function FacultySettingsController(facultyAuthService, fctToast, $scope, $rootScope, $timeout, facultyService) {
-		var vm = this;
-		vm.updateInfo = false;
-		$scope.changePasswordForm = {};
-		vm.user = {};
-		vm.userDetail = {};
-		vm.updateButtonClicked = false;
-
-		angular.extend(vm, {
-			changePassword: changePassword,
-			updateFaculty: updateFaculty,
-		});
-
-		activate();
-
-		function activate() {
-			getEachFaculty();
-		}
-
-		function getEachFaculty() {
-			return facultyService.getEachFaculty()
-			.then(function (response) {
-				console.log(response);
-				vm.userDetail.email = response.data.email;
-				vm.userDetail.mobileno = parseInt(response.data.mobileno);
-				vm.userDetail.name = response.data.name;
-				vm.preInfo = true;
-			}).catch(function (error) {
-				console.log(error);
-			});
-		}
-
-		function updateFaculty() {
-			if (vm.updating) {
-				event.preventDefault();
-			} else {
-				vm.updating = true;
-				vm.updateButtonClicked = true;
-				return facultyService.updateFaculty(vm.userDetail)
-				.then(function (response) {
-					vm.userDetail = response.data;
-					vm.updateButtonClicked = false;
-					vm.updating = false;
-					vm.editInfo = false;
-					getEachFaculty();
-					console.log(response);
-				})
-				.catch(function (error) {
-					vm.updateButtonClicked = false;
-					vm.updating = false;
-					console.log(error);
-				});
-			}
-		}
-
-		function changePassword(event) {
-			if (vm.updateInfo) {
-				event.preventDefault();
-			} else {
-				vm.updateInfo = true;
-				facultyAuthService.changeFacultyPassword(vm.user);
-			}
-		}
-
-		$rootScope.$on('FacultyChangePasswordSuccess', FacultyChangePasswordSuccess);
-		$rootScope.$on('FacultyChangePasswordFailure', FacultyChangePasswordFailure);
-
-		function FacultyChangePasswordSuccess(event) {
-			fctToast.showToast("Password Changed Successfully", true);
-			$timeout(function () {
-				resetForm();
-			});
-
-		}
-
-		function FacultyChangePasswordFailure(event, error) {
-			fctToast.showToast(error.data.message);
-			$timeout(function () {
-				resetForm();
-			});
-		}
-
-		function resetForm() {
-			vm.user = {};
-			vm.updateInfo = false;
-			$scope.changePasswordForm.$setUntouched();
-		}
-	}
-})();
-
-
-(function () {
-	'use strict';
-
-	angular
-		.module('fct.core')
-		.controller('RegistrationDetailsController', RegistrationDetailsController);
-
-	RegistrationDetailsController.$inject = ['fctToast', '$rootScope', 'facultyService'];
-
-	function RegistrationDetailsController(fctToast, $rootScope, facultyService) {
-		var vm = this;
-		vm.noregistration = true;
-		activate();
-
-		function activate() {
-			return facultyService.getFacultyRegistrations()
-				.then(getRegistrationsSuccess)
-				.catch(getRegistrationsFailure);
-		}
-
-		function getRegistrationsSuccess(response) {
-
-			if (response.data.registrations.length !== 0) {
-				vm.registrations = response.data.registrations;
-				vm.registrations_count = response.data.totalRegistrations;
-				vm.collected_amount = response.data.totalCollectedAmount;
-				vm.noregistration = false;
-			} else {
-				vm.noregistration = true;
-			}
-		}
-
-		function getRegistrationsFailure(error) {
-			fctToast.showToast('Internal Server Error');
-		}
-	}
-})();
-
-(function () {
-	'use strict';
-
-	angular
-		.module('fct.core')
-		.controller('VerifyCoordinatorController', VerifyCoordinatorController);
-
-	VerifyCoordinatorController.$inject = ['$scope', 'memberService', '$mdDialog'];
-
-	function VerifyCoordinatorController($scope, memberService, $mdDialog) {
-		var vm = this;
-		vm.limitFaculty = 5;
-		vm.nomoreFaculty = true;
-		vm.orderField = 'registrations_count';
-		vm.reverseSort = true;
-
-		angular.extend(vm, {
-			verifyFaculty: verifyFaculty,
-			rejectFaculty: rejectFaculty,
-			loadmore: loadmore
-		});
-
-		activate();
-
-		function activate() {
-			return memberService.getAllFacultyCoordinators()
-				.then(getAllFacultyCoordinatorsSuccess)
-				.catch(getAllFacultyCoordinatorsFailure);
-		}
-
-
-		function getAllFacultyCoordinatorsSuccess(response) {console.log(response);
-			vm.faculties = response.data;
-			// console.log(vm.faculties);
-			if (vm.limitFaculty <= vm.faculties.length) {
-				vm.nomoreFaculty = false;
-			}
-		}
-
-		function getAllFacultyCoordinatorsFailure(error) {
-			//State go to Add Events
-			//Dashboard
-			// console.log(error);
-		}
-
-		function verifyFaculty(id, index, event) {
-			vm.verifyingIndex = index;
-			var confirm = $mdDialog.confirm()
-				.title('Are you sure?')
-				.textContent('You will be Verifying ' + vm.faculties[index].name + ' as a Faculty Coordinator')
-				.ariaLabel('FCVER')
-				.targetEvent(event)
-				.ok('Confirm Verification')
-				.theme('normal')
-				.cancel('No, not now !!!');
-			$mdDialog.show(confirm).then(function () {
-				return memberService.verifyFaculty(id)
-					.then(verifyFacultySuccess)
-					.catch(verifyFacultyFailure);
-			}, function () {
-				//failed
-			});
-		}
-
-		function verifyFacultySuccess(response) {
-			vm.faculties[vm.verifyingIndex].verified = true;
-		}
-
-		function verifyFacultyFailure(error) {
-			//fctToast.show('FAilure');
-		}
-
-		function rejectFaculty(id, index, event) {
-			vm.rejectionIndex = index;
-			var confirm = $mdDialog.confirm()
-				.title('Are you sure?')
-				.textContent('You will be Rejecting ' + vm.faculties[index].name + ' as a Faculty Coordinator')
-				.ariaLabel('FCVER')
-				.targetEvent(event)
-				.ok('Confirm Rejection')
-				.theme('normal')
-				.cancel('No, not now !!!');
-			$mdDialog.show(confirm).then(function () {
-				return memberService.rejectFaculty(id)
-					.then(rejectFacultySuccess)
-					.catch(rejectFacultyFailure);
-			}, function () {
-				//failed
-			});
-		}
-
-		function rejectFacultySuccess(response) {
-			vm.faculties[vm.rejectionIndex].rejected = true;
-			vm.faculties.splice(vm.rejectionIndex, 1);
-			console.log(response);
-		}
-
-		function rejectFacultyFailure(error) {
-			//fctToast.show('FAilure');
-			console.log(error);
-		}
-
-		function loadmore() {
-			vm.limitFaculty += 5;
-			if (vm.limitFaculty >= vm.faculties.length) {
-				vm.nomoreFaculty = true;
-			}
 		}
 	}
 })();

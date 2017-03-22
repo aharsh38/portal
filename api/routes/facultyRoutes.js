@@ -13,6 +13,7 @@ var facultyRoutes = function(Faculty, Registration) {
     facultyRouter.patch('/settings/changePassword', facultyController.facultyChangePassword);
     facultyRouter.post('/:facultyId/registrations/confirm', facultyController.confirmRegistration);
     facultyRouter.get('/:facultyId/registrations', registrationController.getFacultyRegistrations);
+    facultyRouter.post('/:facultyId/getRegistrationData', registrationController.getRegistrationData);
     facultyRouter.post('/:facultyId/studentCoordinator', facultyController.addStudentCoordinator);
     facultyRouter.get('/:facultyId/studentCoordinator', facultyController.getStudentCoordinator);
     //facultyRouter.get('/check', facultyController.checkFacultyVerified);
