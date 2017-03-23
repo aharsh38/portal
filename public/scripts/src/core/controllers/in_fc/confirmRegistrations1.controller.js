@@ -26,33 +26,7 @@
 
 		}
 
-		// function confirmRegistration(event) {
-		// 	if (vm.registrationButtonClicked) {
-		// 		event.preventDefault();
-		// 	} else {
-		// 		vm.registrationButtonClicked = true;
-		// 	}
-		//
-		// 	// return
-		// 	var confirm = $mdDialog.prompt()
-		// 		.title('Enter SERIAL ID')
-		// 		.textContent('Enter the serial id provided in ther Registration Slip')
-		// 		.placeholder('Serial Id')
-		// 		.ariaLabel('Serial Id')
-		// 		.targetEvent(event)
-		// 		.theme('normal')
-		// 		.ok('Submit')
-		// 		.cancel('Cancel');
-		//
-		// 	$mdDialog.show(confirm).then(function (result) {
-		// 		vm.registration.serialId = result;
-		// 		return facultyService.confirmRegistration(vm.registration)
-		// 			.then(confirmRegistrationSuccess)
-		// 			.catch(confirmRegistrationFailure);
-		// 	}, function () {
-		// 		vm.registrationButtonClicked = false;
-		// 	});
-		// }
+
 
 		function confirmRegistrationSuccess(response) {
 			console.log(response);
@@ -73,9 +47,15 @@
 				$scope.confirmRegistrationForm.$setPristine();
 				$scope.confirmRegistrationForm.$setUntouched();
 
+			} else if (response.status == 404) {
+				vm.registration = {};
+				fctToast.showToast("REGISTRAION NOT FOUND");
+			} else if (response.status == 405) {
+				vm.registration = {};
+				fctToast.showToast("REGISTRAION CONFIRMED ALREADY", true);
 			} else {
 				vm.registration = {};
-				fctToast.showToast("ERROR PLEASE TRY AGAIN");
+				fctToast.showToast("ERROR PLEASE TRY AGAIN", true);
 			}
 
 		}

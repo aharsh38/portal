@@ -13,7 +13,7 @@ var mailController = require('./mailController')();
 
 var facultyController = function (Faculty, Registration) {
 	function throwError(response, error, status, message, errorFor) {
-		console.log("ERROR,"
+		console.log("ERROR",
 			error);
 		console.log("ERROR_FOR", errorFor);
 		response.status(status);
@@ -124,7 +124,7 @@ var facultyController = function (Faculty, Registration) {
 							}
 						});
 					} else {
-						throwError(response, error, 403, 'Forbidden', 'Registration confirmed already!');
+						throwError(response, error, 405, 'Forbidden', 'Registration confirmed already!');
 					}
 				}
 			});
