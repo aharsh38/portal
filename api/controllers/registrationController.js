@@ -298,7 +298,7 @@ var registrationController = function (Registration) {
 				return;
 
 			} else {
-				var time = registration.confirmation_date;
+				var time = registration.updatedAt;
 				var teamid = registration.teamId;
 				var type = 'confirmPayment';
 				var nd = time.toLocaleDateString('en-US', {
