@@ -57,7 +57,7 @@ var registrationModel = new Schema({
 	},
 	other_participants: [{
 		name: {
-			type: Number,
+			type: String,
 			required: true
 		},
 		mobileno: {
