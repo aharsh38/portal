@@ -216,7 +216,7 @@ var registrationController = function (Registration) {
 
 	function register(request, response) {
 		var registration = new Registration();
-		console.log("reqqqqqqqqqqqqq", request.body.eventObject);
+		// console.log("reqqqqqqqqqqqqq", request.body.eventObject);
 		registration.eventObject = request.body.eventObject;
 		registration.no_of_participants = request.body.no_of_participants;
 		registration.team_leader = request.body.team_leader;
@@ -236,7 +236,10 @@ var registrationController = function (Registration) {
 			month: 'long',
 			day: 'numeric'
 		});
-		if (registration.do_payment) {
+		console.log("1");
+		console.log(registration.do_payment);
+		if (request.body.do_payment) {
+			console.log("2");
 			registration.serialId = rand.generate(12);
 			dataToGeneratePDF = {
 				teamId: registration.teamId,
@@ -248,6 +251,7 @@ var registrationController = function (Registration) {
 			};
 			slip = generateSlip('forPayment', registration.teamId, dataToGeneratePDF, request, response, registration);
 		} else if (request.body.late_payment) {
+			console.log("3");
 			dataToGeneratePDF = {
 				teamId: registration.teamId,
 				team_leader: registration.team_leader,
@@ -258,6 +262,7 @@ var registrationController = function (Registration) {
 			};
 			slip = generateSlip('latePayment', registration.teamId, dataToGeneratePDF, request, response, registration);
 		} else if (request.body.no_payment) {
+			console.log("4");
 			console.log("In Startup");
 			// if (request.body.receipt_to_generate == 'startup') {
 			if (request.body.project_url) {
@@ -272,14 +277,10 @@ var registrationController = function (Registration) {
 				other_participants: registration.other_participants,
 				eventObject: registration.eventObject
 			};
-
+			console.log("2");
 			slip = generateSlip(request.body.receipt_to_generate, registration.teamId, dataToGeneratePDF, request, response, registration);
 		} else {
-			dataToGeneratePDF = {
-				team_leader: registration.team_leader,
-				date: nd,
-				eventObject: registration.eventObject
-			};
+			throwError(response, error, 500, 'Internal Server error', 'Event Register');
 		}
 	}
 
