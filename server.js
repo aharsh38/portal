@@ -95,11 +95,11 @@ var Registration = require('./api/models/registrationModel');
 // var registrationController = require('./api/controllers/registrationController')(Registration);
 // registrationController.generatePDFTest();
 
-// var authRouter = require('./api/routes/authRoutes')(Faculty, Member);
-// app.use('/api/auth', authRouter);
+var authRouter = require('./api/routes/authRoutes')(Faculty, Member);
+app.use('/api/auth', authRouter);
 
-// var mobileRouter = require('./api/routes/mobileRoutes')(Registration, Events);
-// app.use('/api/mobile', mobileRouter);
+var mobileRouter = require('./api/routes/mobileRoutes')(Registration, Events);
+app.use('/api/mobile', mobileRouter);
 
 //
 var collegeRouter = require('./api/routes/collegeRoutes')(College);
@@ -108,9 +108,9 @@ app.use('/api/college', collegeRouter);
 // // var eventRouter = require('./api/routes/eventRoutes')(Events);
 // // app.use('/api/event', eventRouter);
 //
-//var memberRouter = require('./api/routes/memberRoutes')(Faculty, Member, Registration, College, Events);
-//app.use('/api/members', memberRouter);
-//app.use('/api/members', authenticate.memberAuth, memberRouter);
+var memberRouter = require('./api/routes/memberRoutes')(Faculty, Member, Registration, College, Events);
+// app.use('/api/members', memberRouter);
+app.use('/api/members', authenticate.memberAuth, memberRouter);
 //
 var facultyRouter = require('./api/routes/facultyRoutes')(Faculty, Registration);
 //app.use('/api/faculty', facultyRouter);
