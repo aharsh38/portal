@@ -56,15 +56,18 @@ var app = express();
 var port = 9000;
 app.set('x-powered-by', false);
 
-app.use(express.static('public'));
 
-app.use(cors(corsOptions));
-app.use(helmet());
+app.use(express.static('public'));
 
 app.use(function(request, response, next) {
     console.log("IP:::::   ", request.connection.remoteAddress);
     next();
 });
+
+app.use(cors(corsOptions));
+app.use(helmet());
+
+
 
 // app.use(function (req, res, next) {
 // 	res.header("Access-Control-Allow-Origin", "*");
