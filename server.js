@@ -83,9 +83,6 @@ app.use(logger('dev'));
 app.use(bodyParser.urlencoded({
     extended: true
 }));
-
-
-
 // app.post('/submit',function(req,res){
 //   // g-recaptcha-response is the key that browser will generate upon form submit.
 //   // if its blank or null means user has not selected the captcha, so return the error.
@@ -106,9 +103,6 @@ app.use(bodyParser.urlencoded({
 //     res.json({"responseCode" : 0,"responseDesc" : "Sucess"});
 //   });
 // });
-
-
-
 app.use(bodyParser.json());
 
 app.use(passport.initialize());
