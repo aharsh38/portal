@@ -6,9 +6,8 @@ var bodyParser = require('body-parser');
 var logger = require('morgan');
 var passport = require('passport');
 var config = require('./api/config/config');
-//var cors = require('cors');
-
-var cors = require('express-cors');
+var cors = require('cors');
+//var cors = require('express-cors');
 var helmet = require('helmet');
 require('./api/config/passport');
 
@@ -27,14 +26,14 @@ var dbURI = config.mongoURI;
 //var dbURI = 'mongodb://gtutest1:fdtdcdr6m@ds161039.mlab.com:61039/gtutechfesttest';
 
 //var dbURI = 'mongodb://hraw1699:fdtdcdr6m@ds161039.mlab.com:61039/gtutechfesttest';
-// var whitelist = ['http://portal.gtu.ac.in', 'http://techfest.gtu.ac.in'];
-// var corsOptions = {
-//     origin: function(origin, callback) {
-//         console.log(origin);
-//         var originIsWhitelisted = whitelist.indexOf(origin) !== -1;
-//         callback(originIsWhitelisted ? null : 'Bad Request', originIsWhitelisted);
-//     }
-// };
+var whitelist = ['http://portal.gtu.ac.in', 'http://techfest.gtu.ac.in'];
+var corsOptions = {
+    origin: function(origin, callback) {
+        console.log(origin);
+        var originIsWhitelisted = whitelist.indexOf(origin) !== -1;
+        callback(originIsWhitelisted ? null : 'Bad Request', originIsWhitelisted);
+    }
+};
 
 // var dbURI = config.testMongo;
 
@@ -67,12 +66,12 @@ app.use(function(request, response, next) {
     next();
 });
 
-app.use(cors({
-    allowedOrigins: [
-        'techfest.gtu.ac.in'
-    ]
-}))
-//app.use(cors(corsOptions));
+// app.use(cors({
+//     allowedOrigins: [
+//         'techfest.gtu.ac.in.com'
+//     ]
+// }))
+app.use(cors(corsOptions));
 app.use(helmet());
 
 app.use(express.static('public'));
