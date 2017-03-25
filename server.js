@@ -10,14 +10,14 @@ var cors = require('cors');
 var helmet = require('helmet');
 require('./api/config/passport');
 
-// var dbURI = config.mongoURI;
+var dbURI = config.mongoURI;
 
 // var dbURI = "mongodb://localhost/gtutechfest1";
 
 // var dbURI = "mongodb://localhost/gtutestingFinal";
 //var dbURI = "mongodb://localhost/gtutesting";
 
-var dbURI = 'mongodb://hraw1699:fdtdcdr6m@ds161039.mlab.com:61039/gtutechfesttest';
+//var dbURI = 'mongodb://hraw1699:fdtdcdr6m@ds161039.mlab.com:61039/gtutechfesttest';
 //var dbURI = "mongodb://localhost/gtutestingFinal";
 //var dbURI = "mongodb://localhost/gtutesting";
 
