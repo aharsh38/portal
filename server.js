@@ -25,9 +25,10 @@ var dbURI = config.mongoURI;
 //var dbURI = 'mongodb://gtutest1:fdtdcdr6m@ds161039.mlab.com:61039/gtutechfesttest';
 
 //var dbURI = 'mongodb://hraw1699:fdtdcdr6m@ds161039.mlab.com:61039/gtutechfesttest';
-var whitelist = ['http://portal.gtu.ac.in', 'http://techfest.gtu.ac.in', 'http://portal.gtu.ac.in/member/login'];
+var whitelist = ['http://portal.gtu.ac.in', 'http://techfest.gtu.ac.in'];
 var corsOptions = {
     origin: function(origin, callback) {
+        console.log(origin);
         var originIsWhitelisted = whitelist.indexOf(origin) !== -1;
         callback(originIsWhitelisted ? null : 'Bad Request', originIsWhitelisted);
     }
