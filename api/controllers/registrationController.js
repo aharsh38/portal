@@ -230,73 +230,102 @@ var registrationController = function(Registration) {
 
 
     function register(request, response) {
-        var registration = new Registration();
-        // console.log("reqqqqqqqqqqqqq", request.body.eventObject);
-        registration.eventObject = request.body.eventObject;
-        registration.no_of_participants = request.body.no_of_participants;
-        registration.team_leader = request.body.team_leader;
-        registration.other_participants = request.body.other_participants;
-        registration.total_amount = request.body.total_amount;
-        registration.do_payment = request.body.do_payment;
-        registration.late_payment = request.body.late_payment;
-        registration.teamId = request.body.eventObject.event_shortcode + rand.generateDigits(6);
-        // registration.teamId = "SC" + rand.generateDigits(6);
-        console.log("request", request.body);
-        var slip;
-        var dataToGeneratePDF;
+      if(req.body['g-recaptcha-response'] === undefined || req.body['g-recaptcha-response'] === '' || req.body['g-recaptcha-response'] === null) {
+        return res.json({"responseCode" : 1,"responseDesc" : "Please select captcha"});
+      }
+      var secretKey = "6LeHWhoUAAAAAH4qUvSHAoFMcMddJeYT5kbtgsuX";
+      var verificationUrl = "https://www.google.com/recaptcha/api/siteverify?secret=" + secretKey + "&response=" + req.body['g-recaptcha-response'] + "&remoteip=" + req.connection.remoteAddress;
 
-        var current_date = new Date();
-        var nd = current_date.toLocaleDateString('en-US', {
-            year: 'numeric',
-            month: 'long',
-            day: 'numeric'
-        });
-        console.log("1");
-        console.log(registration.do_payment);
-        if (request.body.do_payment) {
-            console.log("2");
-            registration.serialId = rand.generate(12);
-            dataToGeneratePDF = {
-                teamId: registration.teamId,
-                serialId: registration.serialId,
-                team_leader: registration.team_leader,
-                date: nd,
-                amount: registration.total_amount,
-                eventObject: registration.eventObject
-            };
-            slip = generateSlip('forPayment', registration.teamId, dataToGeneratePDF, request, response, registration);
-        } else if (request.body.late_payment) {
-            console.log("3");
-            dataToGeneratePDF = {
-                teamId: registration.teamId,
-                team_leader: registration.team_leader,
-                date: nd,
-                amount: registration.total_amount,
-                other_participants: registration.other_participants,
-                eventObject: registration.eventObject
-            };
-            slip = generateSlip('latePayment', registration.teamId, dataToGeneratePDF, request, response, registration);
-        } else if (request.body.no_payment) {
-            console.log("4");
-            console.log("In Startup");
-            // if (request.body.receipt_to_generate == 'startup') {
-            if (request.body.project_url) {
-                registration.project_url = request.body.project_url;
-                registration.project_summary = request.body.project_summary;
-            }
-
-            dataToGeneratePDF = {
-                teamId: registration.teamId,
-                team_leader: registration.team_leader,
-                date: nd,
-                other_participants: registration.other_participants,
-                eventObject: registration.eventObject
-            };
-            console.log("2");
-            slip = generateSlip(request.body.receipt_to_generate, registration.teamId, dataToGeneratePDF, request, response, registration);
-        } else {
-            throwError(response, null, 505, 'Bad Request', 'Event Register');
+      request(verificationUrl,function(error,response,body) {
+        body = JSON.parse(body);
+    	if(body.success !== undefined && !body.success) {
+          return res.json({"responseCode" : 1,"responseDesc" : "Failed captcha verification"});
         }
+        console.log("hellllo");
+      });
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+        // var registration = new Registration();
+        // // console.log("reqqqqqqqqqqqqq", request.body.eventObject);
+        // registration.eventObject = request.body.eventObject;
+        // registration.no_of_participants = request.body.no_of_participants;
+        // registration.team_leader = request.body.team_leader;
+        // registration.other_participants = request.body.other_participants;
+        // registration.total_amount = request.body.total_amount;
+        // registration.do_payment = request.body.do_payment;
+        // registration.late_payment = request.body.late_payment;
+        // registration.teamId = request.body.eventObject.event_shortcode + rand.generateDigits(6);
+        // // registration.teamId = "SC" + rand.generateDigits(6);
+        // console.log("request", request.body);
+        // var slip;
+        // var dataToGeneratePDF;
+        //
+        // var current_date = new Date();
+        // var nd = current_date.toLocaleDateString('en-US', {
+        //     year: 'numeric',
+        //     month: 'long',
+        //     day: 'numeric'
+        // });
+        // console.log("1");
+        // console.log(registration.do_payment);
+        // if (request.body.do_payment) {
+        //     console.log("2");
+        //     registration.serialId = rand.generate(12);
+        //     dataToGeneratePDF = {
+        //         teamId: registration.teamId,
+        //         serialId: registration.serialId,
+        //         team_leader: registration.team_leader,
+        //         date: nd,
+        //         amount: registration.total_amount,
+        //         eventObject: registration.eventObject
+        //     };
+        //     slip = generateSlip('forPayment', registration.teamId, dataToGeneratePDF, request, response, registration);
+        // } else if (request.body.late_payment) {
+        //     console.log("3");
+        //     dataToGeneratePDF = {
+        //         teamId: registration.teamId,
+        //         team_leader: registration.team_leader,
+        //         date: nd,
+        //         amount: registration.total_amount,
+        //         other_participants: registration.other_participants,
+        //         eventObject: registration.eventObject
+        //     };
+        //     slip = generateSlip('latePayment', registration.teamId, dataToGeneratePDF, request, response, registration);
+        // } else if (request.body.no_payment) {
+        //     console.log("4");
+        //     console.log("In Startup");
+        //     // if (request.body.receipt_to_generate == 'startup') {
+        //     if (request.body.project_url) {
+        //         registration.project_url = request.body.project_url;
+        //         registration.project_summary = request.body.project_summary;
+        //     }
+        //
+        //     dataToGeneratePDF = {
+        //         teamId: registration.teamId,
+        //         team_leader: registration.team_leader,
+        //         date: nd,
+        //         other_participants: registration.other_participants,
+        //         eventObject: registration.eventObject
+        //     };
+        //     console.log("2");
+        //     slip = generateSlip(request.body.receipt_to_generate, registration.teamId, dataToGeneratePDF, request, response, registration);
+        // } else {
+        //     throwError(response, null, 505, 'Bad Request', 'Event Register');
+        // }
     }
 
 
