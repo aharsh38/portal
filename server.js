@@ -6,16 +6,18 @@ var bodyParser = require('body-parser');
 var logger = require('morgan');
 var passport = require('passport');
 var config = require('./api/config/config');
+var cors = require('cors');
+var helmet = require('helmet');
 require('./api/config/passport');
 
-var dbURI = config.mongoURI;
+// var dbURI = config.mongoURI;
 
 // var dbURI = "mongodb://localhost/gtutechfest1";
 
 // var dbURI = "mongodb://localhost/gtutestingFinal";
 //var dbURI = "mongodb://localhost/gtutesting";
 
-// var dbURI = 'mongodb://hraw1699:fdtdcdr6m@ds161039.mlab.com:61039/gtutechfesttest';
+var dbURI = 'mongodb://hraw1699:fdtdcdr6m@ds161039.mlab.com:61039/gtutechfesttest';
 //var dbURI = "mongodb://localhost/gtutestingFinal";
 //var dbURI = "mongodb://localhost/gtutesting";
 
@@ -23,7 +25,13 @@ var dbURI = config.mongoURI;
 //var dbURI = 'mongodb://gtutest1:fdtdcdr6m@ds161039.mlab.com:61039/gtutechfesttest';
 
 //var dbURI = 'mongodb://hraw1699:fdtdcdr6m@ds161039.mlab.com:61039/gtutechfesttest';
-
+var whitelist = ['http://portal.gtu.ac.in', 'http://techfest.gtu.ac.in'];
+var corsOptions = {
+    origin: function(origin, callback) {
+        var originIsWhitelisted = whitelist.indexOf(origin) !== -1;
+        callback(originIsWhitelisted ? null : 'Bad Request', originIsWhitelisted);
+    }
+};
 
 // var dbURI = config.testMongo;
 
@@ -31,16 +39,16 @@ mongoose.Promise = global.Promise;
 
 var db = mongoose.connect(dbURI);
 
-mongoose.connection.on('connected', function () {
-	console.log('Mongoose connected to ' + dbURI);
+mongoose.connection.on('connected', function() {
+    console.log('Mongoose connected to ' + dbURI);
 });
 
-mongoose.connection.on('error', function (err) {
-	console.log('Mongoose connection error: ' + err);
+mongoose.connection.on('error', function(err) {
+    console.log('Mongoose connection error: ' + err);
 });
 
-mongoose.connection.on('disconnected', function () {
-	console.log('Mongoose disconnected');
+mongoose.connection.on('disconnected', function() {
+    console.log('Mongoose disconnected');
 });
 
 
@@ -50,15 +58,18 @@ app.set('x-powered-by', false);
 
 app.use(express.static('public'));
 
-app.use(function (req, res, next) {
-	res.header("Access-Control-Allow-Origin", "*");
-	res.header("Access-Control-Allow-Headers", "Origin, X-Requested-With, Content-Type, Accept");
-	next();
-});
+app.use(cors(corsOptions));
+app.use(helmet());
+
+// app.use(function (req, res, next) {
+// 	res.header("Access-Control-Allow-Origin", "*");
+// 	res.header("Access-Control-Allow-Headers", "Origin, X-Requested-With, Content-Type, Accept");
+// 	next();
+// });
 
 app.use(logger('dev'));
 app.use(bodyParser.urlencoded({
-	extended: true
+    extended: true
 }));
 
 app.use(bodyParser.json());
@@ -107,12 +118,12 @@ app.use('/api/registration', registrationRouter);
 
 
 
-app.get('*', function (request, response) {
-	response.sendFile(path.join(__dirname, 'public', 'index.html'));
+app.get('*', function(request, response) {
+    response.sendFile(path.join(__dirname, 'public', 'index.html'));
 });
 
-app.listen(port, function () {
-	console.log("Now Running on port" + port);
+app.listen(port, function() {
+    console.log("Now Running on port" + port);
 });
 
 module.exports = app;
