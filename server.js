@@ -6,7 +6,7 @@ var bodyParser = require('body-parser');
 var logger = require('morgan');
 var passport = require('passport');
 var config = require('./api/config/config');
-var cors = require('cors');
+//var cors = require('cors');
 //var cors = require('express-cors');
 var helmet = require('helmet');
 require('./api/config/passport');
@@ -26,14 +26,14 @@ var dbURI = config.mongoURI;
 //var dbURI = 'mongodb://gtutest1:fdtdcdr6m@ds161039.mlab.com:61039/gtutechfesttest';
 
 //var dbURI = 'mongodb://hraw1699:fdtdcdr6m@ds161039.mlab.com:61039/gtutechfesttest';
-var whitelist = ['http://portal.gtu.ac.in', 'http://techfest.gtu.ac.in'];
-var corsOptions = {
-    origin: function(origin, callback) {
-        console.log(origin);
-        var originIsWhitelisted = whitelist.indexOf(origin) !== -1;
-        callback(originIsWhitelisted ? null : 'Bad Request', originIsWhitelisted);
-    }
-};
+// var whitelist = ['http://portal.gtu.ac.in', 'http://techfest.gtu.ac.in'];
+// var corsOptions = {
+//     origin: function(origin, callback) {
+//         console.log(origin);
+//         var originIsWhitelisted = whitelist.indexOf(origin) !== -1;
+//         callback(originIsWhitelisted ? null : 'Bad Request', originIsWhitelisted);
+//     }
+// };
 
 // var dbURI = config.testMongo;
 
@@ -71,8 +71,8 @@ app.use(function(request, response, next) {
 //         'techfest.gtu.ac.in.com'
 //     ]
 // }))
-app.use(cors(corsOptions));
-app.use(helmet());
+// app.use(cors(corsOptions));
+// app.use(helmet());
 
 app.use(express.static('public'));
 
@@ -102,8 +102,8 @@ var Registration = require('./api/models/registrationModel');
 // var registrationController = require('./api/controllers/registrationController')(Registration);
 // registrationController.generatePDFTest();
 
-var authRouter = require('./api/routes/authRoutes')(Faculty, Member);
-app.use('/api/auth', authRouter);
+//var authRouter = require('./api/routes/authRoutes')(Faculty, Member);
+//app.use('/api/auth', authRouter);
 
 var mobileRouter = require('./api/routes/mobileRoutes')(Registration, Events);
 app.use('/api/mobile', mobileRouter);
@@ -115,9 +115,9 @@ app.use('/api/college', collegeRouter);
 // // var eventRouter = require('./api/routes/eventRoutes')(Events);
 // // app.use('/api/event', eventRouter);
 //
-var memberRouter = require('./api/routes/memberRoutes')(Faculty, Member, Registration, College, Events);
+//var memberRouter = require('./api/routes/memberRoutes')(Faculty, Member, Registration, College, Events);
 // app.use('/api/members', memberRouter);
-app.use('/api/members', authenticate.memberAuth, memberRouter);
+//app.use('/api/members', authenticate.memberAuth, memberRouter);
 //
 var facultyRouter = require('./api/routes/facultyRoutes')(Faculty, Registration);
 //app.use('/api/faculty', facultyRouter);
