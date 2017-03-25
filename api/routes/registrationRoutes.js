@@ -3,10 +3,15 @@ var multipart = require('connect-multiparty');
 
 var registrationRoutes = function (Registration) {
 	var registrationRouter = express.Router();
+	var multipartMiddleware = multipart({
+		autoFiles: true,
+		maxFileSize: 2000000
+	});
+
 	var registrationController = require('../controllers/registrationController')(Registration);
 	var registrationMiddleware = require('../middlewares/getParamRegistration')(Registration);
 
-	memberRouter.use('/upload/pitch', multipartMiddleware, function (request, response, next) {
+	registrationRouter.use('/upload/pitch', multipartMiddleware, function (request, response, next) {
 		console.log("Mulipart");
 		next();
 	});
