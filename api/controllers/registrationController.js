@@ -19,6 +19,21 @@ var registrationController = function (Registration) {
 		});
 	}
 
+	function uploadPitch(request, response) {
+		var temp_path = request.files.file.path;
+		var target_path = './public/media/pitches/' + request.files.file.originalFilename;
+		fs.rename(temp_path, target_path, function (error) {
+			if (error) {
+				response.json(error);
+			} else {
+				var returnObject = {};
+				returnObject.path = target_path.toString().slice(8);
+
+				response.status(200).json(returnObject);
+			}
+		});
+	}
+
 	function getRegistration(request, response) {
 		Registration.find()
 			.exec(function (error, registration) {
@@ -744,6 +759,7 @@ var registrationController = function (Registration) {
 	ac.getAllEventsRegistrationData = getAllEventsRegistrationData;
 	ac.generateSlip = generateSlip;
 	ac.generatePDFTest = generatePDFTest;
+	ac.uploadPitch = uploadPitch;
 	ac.exportUnconfirmedRegistration = exportUnconfirmedRegistration;
 	ac.getConfirmRegistrationCount = getConfirmRegistrationCount;
 	ac.exportParticipantList = exportParticipantList;
