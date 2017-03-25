@@ -25,7 +25,7 @@ var dbURI = config.mongoURI;
 //var dbURI = 'mongodb://gtutest1:fdtdcdr6m@ds161039.mlab.com:61039/gtutechfesttest';
 
 //var dbURI = 'mongodb://hraw1699:fdtdcdr6m@ds161039.mlab.com:61039/gtutechfesttest';
-var whitelist = ['http://portal.gtu.ac.in', 'http://techfest.gtu.ac.in', 'http://portal.gtu.ac.in/*'];
+var whitelist = ['http://portal.gtu.ac.in', 'http://techfest.gtu.ac.in'];
 var corsOptions = {
     origin: function(origin, callback) {
         var originIsWhitelisted = whitelist.indexOf(origin) !== -1;
@@ -57,7 +57,7 @@ var port = 9000;
 app.set('x-powered-by', false);
 
 
-app.use(express.static('public'));
+
 
 app.use(function(request, response, next) {
     console.log("IP:::::   ", request.connection.remoteAddress);
@@ -67,7 +67,7 @@ app.use(function(request, response, next) {
 app.use(cors(corsOptions));
 app.use(helmet());
 
-
+app.use(express.static('public'));
 
 // app.use(function (req, res, next) {
 // 	res.header("Access-Control-Allow-Origin", "*");
