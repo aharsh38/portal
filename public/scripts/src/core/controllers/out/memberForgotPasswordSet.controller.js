@@ -12,7 +12,7 @@
 
 
 		vm.token = Boolean($stateParams.token);
-		// console.log("token", vm.token);
+		// //console.log("token", vm.token);
 		vm.user = {};
 		vm.changePasswordButtonClicked = false;
 		vm.set = false;

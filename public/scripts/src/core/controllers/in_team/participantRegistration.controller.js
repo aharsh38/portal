@@ -57,21 +57,21 @@
 
 		function save() {
 			vm.myParticipant.do_payment = true;
-			console.log(JSON.stringify(vm.myParticipant));
+			//console.log(JSON.stringify(vm.myParticipant));
 			vm.myParticipant.team_leader = vm.myParticipant.other_participants[0];
 			vm.myParticipant.other_participants.splice(0, 1);
-			console.log(JSON.stringify(vm.myParticipant));
+			//console.log(JSON.stringify(vm.myParticipant));
 			return $http.post('/api/registration/create', vm.myParticipant)
 				.then(resolveFunc)
 				.catch(rejectFunc);
 		}
 
 		function resolveFunc(response) {
-			console.log(response);
+			//console.log(response);
 		}
 
 		function rejectFunc(error) {
-			console.log(error);
+			//console.log(error);
 		}
 	}
 })();

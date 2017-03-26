@@ -36,7 +36,7 @@ var registrationController = function (Registration) {
 	}
 
 	function generateSlip(type, teamid, data, request, response, registration) {
-		if (type) {console.log('donwload skip');
+		if (type) {//console.log('donwload skip');
 			fs.readFile('./api/slips/templates/' + type + '.hbs', function (error, file) {
 				if (!error) {
 					var source = file.toString();
@@ -55,7 +55,7 @@ var registrationController = function (Registration) {
 								format: 'Letter'
 							};
 							pdf.create(html, options).toFile('./api/slips/' + type + '/' + teamid + '.pdf', function (error, res) {
-								console.log("PDF GENERATE ERROR", error);
+								//console.log("PDF GENERATE ERROR", error);
 								if (error) {
 									return {
 										"message": "error",
@@ -95,7 +95,7 @@ var registrationController = function (Registration) {
 
 
 	function generatePDFTest() {
-		console.log("IN FUNC");
+		//console.log("IN FUNC");
 		var current_date = new Date();
 		var nd = current_date.toLocaleDateString('en-US', {
 			year: 'numeric',
@@ -118,7 +118,7 @@ var registrationController = function (Registration) {
 			}
 		};
 		slip = generateSlip('confirmPayment', 'example', dataToGeneratePDF);
-		console.log("Done");
+		//console.log("Done");
 	}
 
 
@@ -170,7 +170,7 @@ var registrationController = function (Registration) {
 		var teamId = request.params.teamId;
 		response.status(200);
 		response.download('./api/slips/' + type + '/' + teamId + '.pdf', function (error, data) {
-			console.log("Error", error);
+			//console.log("Error", error);
 			if (error) {
 				throwError(response, error, null, 'Slip Download', 'Download Failed');
 			} else {
@@ -236,7 +236,7 @@ var registrationController = function (Registration) {
 					if (fs.existsSync('./documents/' + en + '.xlsx')) {
 						response.download('./documents/' + en + '.xlsx', function (error) {
 							if (error) {
-								console.log(error);
+								//console.log(error);
 								//To Add Throwerror
 							} else {
 								response.status(200);
@@ -245,7 +245,7 @@ var registrationController = function (Registration) {
 							}
 						});
 					} else {
-						console.log('File doesn\'t exist');
+						//console.log('File doesn\'t exist');
 						//to add throw error
 					}
 				}
@@ -256,7 +256,7 @@ var registrationController = function (Registration) {
 		Registration.find({
 				"eventObject.event_name": request.body.event_name
 			})
-			.exec(function (error, registrations) {console.log(registrations);
+			.exec(function (error, registrations) {//console.log(registrations);
 				var en = request.body.event_name;
 				if (error) {
 					throwError(response, error, 500, 'Internal Server Error', 'Registration Fetch Failed');
@@ -272,13 +272,13 @@ var registrationController = function (Registration) {
 						arrayOfParticipants = _.map(arrayOfParticipants, function (e, i, l) {
 							var newElem = e.toJSON();
 							newElem.teamId = element.teamId;
-							// console.log(newElem);
+							// //console.log(newElem);
 							return newElem;
 						});
-						// console.log(arrayOfParticipants);
+						// //console.log(arrayOfParticipants);
 						participantsData = _.union(participantsData, arrayOfParticipants);
 					});
-					// console.log(participantsData);
+					// //console.log(participantsData);
 					if (participantsData) {
 						var xls = json2xls(participantsData);
 						fs.writeFileSync('./public/documents/' + en + '.xlsx', xls, 'binary');
@@ -290,14 +290,14 @@ var registrationController = function (Registration) {
 						});
 						// response.download('./documents/' + en + '.xlsx', function (error) {
 						// 	if (error) {
-						// 		console.log(error);
+						// 		//console.log(error);
 						// 		//To Add Throwerror
 						// 	} else {
 						// 		fs.unlinkSync('./documents/' + en + '.xlsx');
 						// 	}
 						// });
 					} else {
-						console.log('File doesn\'t exist');
+						//console.log('File doesn\'t exist');
 						//to add throw error
 					}
 				}
@@ -350,14 +350,14 @@ var registrationController = function (Registration) {
 					},
 				},
 				],
-				function(error, data) {console.log("dfd'");console.log(data);console.log(error);
+				function(error, data) {//console.log("dfd'");//console.log(data);//console.log(error);
 						if (error) {
 								throwError(response, "Finding all registrations according to event", error);
 						} else {
 							_.each(data, function (element, index, list) {
 								var eventName = element._id.eventName;
 										var arrayOfParticipants = _.union([element.confirmed_team_leader], element.confirmed_other_participants);
-										console.log(arrayOfParticipants);
+										//console.log(arrayOfParticipants);
 										// arrayOfParticipants = _.map(arrayOfParticipants, function (e, i, l) {
 										// 	var newElem = e;
 										// 	newElem.teamId = e.conteamId;
@@ -385,9 +385,9 @@ var registrationController = function (Registration) {
 						// 					confirmedData = _.union(confirmedData, arrayOfParticipants);
 						// 				} else {
 						// 					obj.not_confirmed_registrations++;
-						// 					console.log('before');console.log(unConfirmedData);
+						// 					//console.log('before');//console.log(unConfirmedData);
 						// 					unConfirmedData[eventName] = _.union(unConfirmedData[eventName], arrayOfParticipants);
-						// 					console.log('after');console.log(unConfirmedData);
+						// 					//console.log('after');//console.log(unConfirmedData);
 						// 				}
 						// 			}
 						// 		});
@@ -407,8 +407,8 @@ var registrationController = function (Registration) {
 						// 			newData.push(each);
 						// 		}
 						// 	});
-						// 	console.log(confirmedData);
-						// 	console.log(unConfirmedData);
+						// 	//console.log(confirmedData);
+						// 	//console.log(unConfirmedData);
 						// 	if (confirmedData) {
 						// 		var cxls = json2xls(confirmedData);
 						// 		fs.writeFileSync('./public/documents/confirmedData.xlsx', cxls, 'binary');
@@ -416,7 +416,7 @@ var registrationController = function (Registration) {
 						// 	if (fs.existsSync('./public/documents/confirmedData.xlsx')) {
 						// 		cpath = '/documents/confirmedData.xlsx';
 						// 	} else {
-						// 		console.log('File doesn\'t exist');
+						// 		//console.log('File doesn\'t exist');
 						// 	}
 						// 	if (unConfirmedData) {
 						// 		var ucxls = json2xls(unConfirmedData);
@@ -425,11 +425,11 @@ var registrationController = function (Registration) {
 						// 	if (fs.existsSync('./public/documents/unConfirmedData.xlsx')) {
 						// 		ucpath = '/documents/unConfirmedData.xlsx';
 						// 	} else {
-						// 		console.log('File doesn\'t exist');
+						// 		//console.log('File doesn\'t exist');
 						// 	}
 							// newData.confirmed_xlsx = cpath;
 							// newData.unconfirmed_xlsx = ucpath;
-							// console.log(newData);
+							// //console.log(newData);
 							response.status(200);
 							response.json("newData");
 						}
@@ -443,7 +443,7 @@ var registrationController = function (Registration) {
 				"team_leader.mobileno": request.body.mobileno
 			})
 			.exec(function (error, registration) {
-				console.log(registration);
+				//console.log(registration);
 				if (error) {
 					throwError(response, error, 500, 'Internal Server Error', 'Registration Fetch Failed');
 					return;
@@ -458,7 +458,7 @@ var registrationController = function (Registration) {
 								teamId: registration.teamId,
 								other_participants: registration.other_participants
 							};
-							console.log(data);
+							//console.log(data);
 							response.status(201);
 							response.json(data);
 						} else {
@@ -476,7 +476,7 @@ var registrationController = function (Registration) {
 		request.registration.one_time_edit = true;
 		request.registration.other_participants = request.body.other_participants;
 
-		console.log('in oneTimeEditSet ', request.registration);
+		//console.log('in oneTimeEditSet ', request.registration);
 		request.registration.save(function (error) {
 			if (error) {
 				throwError(response, error, 520, "Updating Registration", "Failed");

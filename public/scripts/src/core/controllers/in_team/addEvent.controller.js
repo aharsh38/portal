@@ -68,7 +68,7 @@
 			// vm.myEvent.rules = CKEDITOR.instances["editorRules"].getData();
 			// vm.myEvent.specification = CKEDITOR.instances["editorSpecification"].getData();
 			// vm.myEvent.judging_criteria = CKEDITOR.instances["editorJudgingCriteria"].getData();
-			console.log(vm.myEvent);
+			//console.log(vm.myEvent);
 			if (vm.myEvent.isUpdate) {
 				return eventService.updateEvent(vm.myEvent).then(registerSuccess).catch(registerFailure);
 			} else {
@@ -97,7 +97,7 @@
 					}
 				});
 				file.upload.then(function (response) {
-					console.log(response);
+					//console.log(response);
 					$timeout(function () {
 						file.result = response.data;
 						var attach = {
@@ -105,7 +105,7 @@
 							link: file.dest,
 						};
 						vm.myEvent.attachments.push(attach);
-						console.log(attach);
+						//console.log(attach);
 					});
 				}, function (response) {
 					if (response.status > 0)
@@ -131,7 +131,7 @@
 					vm.myEvent.event_image = response.data.path;
 				}, function (response) {
 					if (response.status > 0) {
-						//console.log(reponse);
+						////console.log(reponse);
 					}
 				}, function (evt) {
 					file.progress = Math.min(100, parseInt(100.0 * evt.loaded / evt.total));
@@ -152,7 +152,7 @@
 					vm.myEvent.event_icon_image = response.data.path;
 				}, function (response) {
 					if (response.status > 0) {
-						//console.log(reponse);
+						////console.log(reponse);
 					}
 				}, function (evt) {
 					file.progress = Math.min(100, parseInt(100.0 * evt.loaded / evt.total));

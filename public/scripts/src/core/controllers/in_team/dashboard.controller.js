@@ -33,14 +33,14 @@
 			return memberService.getRegistrationsByEvent()
 				.then(function (response) {
 					var array = response.data;
-					console.log(response);
+					//console.log(response);
 					var each = 0;
 					var index = 0;
 					for (index = 0; index < array.length; index++) {
 						each += parseInt(array[index].unconfirmed_registrations);
 					}
 				}).catch(function (error) {
-					// console.log(error);
+					// //console.log(error);
 				});
 		}
 
@@ -49,10 +49,10 @@
 				.then(function (response) {
 					vm.VFSPath = response.data.path;
 					// $window.open(response.data.path);
-					//console.log(response);
+					////console.log(response);
 				})
 				.catch(function (error) {
-					//console.log(error);
+					////console.log(error);
 				});
 		}
 
@@ -61,10 +61,10 @@
 				.then(function (response) {
 					vm.UVFPath = response.data.path;
 					// $window.open(response.data.path);
-					//console.log(response);
+					////console.log(response);
 				})
 				.catch(function (error) {
-					//console.log(error);
+					////console.log(error);
 				});
 		}
 
@@ -75,20 +75,20 @@
 					vm.unConfirmedCount = response.data.unConfirmedCount;
 					vm.totalConfirmedParticipants = response.data.totalConfirmedParticipants;
 					vm.totalAmountCollected = response.data.totalAmountCollected;
-					console.log(response);
+					//console.log(response);
 				})
 				.catch(function (error) {
-					console.log(error);
+					//console.log(error);
 				});
 		}
 
 		function exportParticipantList() {
 			return memberService.exportParticipantList()
 				.then(function (response) {
-					console.log(response);
+					//console.log(response);
 				})
 				.catch(function (error) {
-					console.log(error);
+					//console.log(error);
 				});
 		}
 	}
@@ -137,10 +137,10 @@
 //                 .then(function(response) {
 //                     vm.VFSPath = response.data.path;
 //                     // $window.open(response.data.path);
-//                     //console.log(response);
+//                     ////console.log(response);
 //                 })
 //                 .catch(function(error) {
-//                     //console.log(error);
+//                     ////console.log(error);
 //                 });
 //         }
 //
@@ -149,10 +149,10 @@
 //                 .then(function(response) {
 //                     vm.UVFPath = response.data.path;
 //                     // $window.open(response.data.path);
-//                     //console.log(response);
+//                     ////console.log(response);
 //                 })
 //                 .catch(function(error) {
-//                     //console.log(error);
+//                     ////console.log(error);
 //                 });
 //         }
 //
@@ -163,20 +163,20 @@
 //               vm.unConfirmedCount = response.data.unConfirmedCount;
 //               vm.totalConfirmedParticipants = response.data.totalConfirmedParticipants;
 //               vm.totalAmountCollected = response.data.totalAmountCollected;
-//               console.log(response);
+//               //console.log(response);
 //             })
 //             .catch(function(error) {
-//               console.log(error);
+//               //console.log(error);
 //             });
 //         }
 //
 //         function exportParticipantList() {
 //           return memberService.exportParticipantList()
 //             .then(function(response) {
-//                 console.log(response);
+//                 //console.log(response);
 //             })
 //             .catch(function(error) {
-//                 console.log(error);
+//                 //console.log(error);
 //             });
 //           }
 //     }

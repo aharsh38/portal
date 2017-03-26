@@ -40,7 +40,7 @@
 
 		function loginFailure(event, error) {
 			var msg = error.data.error.message.message.toString();
-			// console.log(error);
+			// //console.log(error);
 			vm.loginButtonClicked = false;
 			fctToast.showToast(msg);
 			resetLogin(error);

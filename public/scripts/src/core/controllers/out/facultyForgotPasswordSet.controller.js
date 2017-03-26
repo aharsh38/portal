@@ -9,7 +9,7 @@
 
 	function FacultyForgotPasswordSetController($scope, fctToast, facultyAuthService, $state, $rootScope, $stateParams, $location) {
 		var vm = this;
-		console.log("URL", $location.url());
+		//console.log("URL", $location.url());
 		var uriLi = $location.url();
 		uriLi = uriLi.replace('#x3D;', '=');
 		uriLi = uriLi.replace('&%23x3D;', '=');
@@ -20,13 +20,13 @@
 		foi = uriLi.length;
 
 		var utoken = uriLi.substring(fi + 1, si);
-		// console.log("utoken", utoken);
+		// //console.log("utoken", utoken);
 
 		var userid = uriLi.substring(ti + 1, foi);
-		// console.log("uid", userid);
+		// //console.log("uid", userid);
 
 		vm.token = Boolean($stateParams.token);
-		// console.log("token", vm.token);
+		// //console.log("token", vm.token);
 		vm.user = {};
 		vm.changePasswordButtonClicked = false;
 		vm.set = false;

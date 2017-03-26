@@ -20,7 +20,7 @@
 		});
 
 		function submit(event) {
-			console.log("HIII");
+			//console.log("HIII");
 			if (vm.submitButtonClicked) {
 				event.preventDefault();
 			} else {

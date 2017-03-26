@@ -31,7 +31,7 @@
 		}
 
 		function confirmRegistrationSuccess(response) {
-			console.log(response);
+			//console.log(response);
 			hide(response);
 		}
 

@@ -68,7 +68,7 @@
 		}
 
 		function onEventGetSuccess(eventData) {
-			console.log(eventData);
+			//console.log(eventData);
 			vm.myEvent = eventData.data;
 			vm.myEvent.event = "Update";
 			vm.myEvent.totalManager = vm.myEvent.managers.length;
@@ -79,7 +79,7 @@
 		}
 
 		function onEventGetFailure(error) {
-			console.log(error);
+			//console.log(error);
 
 		}
 
@@ -124,7 +124,7 @@
 					}
 				});
 				file.upload.then(function (response) {
-					// console.log(response);
+					// //console.log(response);
 					var attach = {
 						doc_name: file.name,
 						link: response.data.path,
@@ -148,13 +148,13 @@
 					}
 				});
 				file.upload.then(function (response) {
-					// console.log(response);
+					// //console.log(response);
 					$timeout(function () {
 						vm.myEvent.event_image = response.data.path;
 					});
 				}, function (response) {
 					if (response.status > 0) {
-						//console.log(reponse);
+						////console.log(reponse);
 					}
 				}, function (evt) {
 					file.progress = Math.min(100, parseInt(100.0 * evt.loaded / evt.total));
@@ -172,11 +172,11 @@
 					}
 				});
 				file.upload.then(function (response) {
-					// console.log(response);
+					// //console.log(response);
 					vm.myEvent.event_icon = response.data.path;
 				}, function (response) {
 					if (response.status > 0) {
-						//console.log(reponse);
+						////console.log(reponse);
 					}
 				}, function (evt) {
 					file.progress = Math.min(100, parseInt(100.0 * evt.loaded / evt.total));

@@ -19,10 +19,10 @@
 			submit: submit
 		});
 
-		console.log("HHHIII");
+		//console.log("HHHIII");
 
 		function submit(event) {
-			console.log("222");
+			//console.log("222");
 			if (vm.submitButtonClicked) {
 				event.preventDefault();
 			} else {

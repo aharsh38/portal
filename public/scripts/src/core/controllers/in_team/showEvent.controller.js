@@ -27,12 +27,12 @@
         }
 
         function getEventSuccess(response) {
-          console.log(response);
+          //console.log(response);
           vm.dummyEvents = response.data;
         }
 
         function getEventFailure(error) {
-          console.log(error);
+          //console.log(error);
         }
     }
 })();

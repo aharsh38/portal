@@ -75,7 +75,7 @@
 		function querySearch(query) {
 			var results = query ? vm.colleges.filter(createFilterFor(query)) : vm.colleges;
 			var deferred = $q.defer();
-			console.log(results);
+			//console.log(results);
 			$timeout(function () {
 				deferred.resolve(results);
 			}, Math.random() * 1000, false);

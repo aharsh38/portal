@@ -40,7 +40,7 @@
 		}
 
 		function getStudentCoordinatorFailure(error) {
-			// console.log(error);
+			// //console.log(error);
 		}
 
 		function update(event) {

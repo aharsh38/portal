@@ -26,11 +26,11 @@
 
 		function success(response) {
 			vm.eventDetails = response.data;
-			console.log(response);
+			//console.log(response);
 		}
 
 		function failure(error) {
-			console.log(error);
+			//console.log(error);
 		}
 
 		function getExcel(event_name, confirmed) {

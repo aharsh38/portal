@@ -43,13 +43,13 @@
         }
 
         function deleteEventSuccess(response) {
-          console.log(response);
+          //console.log(response);
           $scope.reload();
           // vm.reload();
         }
 
         function deleteEventFailure(error) {
-          console.log(error);
+          //console.log(error);
           //redirect
         }
     }

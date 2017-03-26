@@ -132,7 +132,7 @@
 		}
 
 		function changePasswordFailure(error) {
-			console.log(error);
+			//console.log(error);
 			$rootScope.$broadcast('MemberChangePasswordFailure', error);
 		}
 

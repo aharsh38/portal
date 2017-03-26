@@ -29,9 +29,9 @@
 		}
 
 
-		function getAllFacultyCoordinatorsSuccess(response) {console.log(response);
+		function getAllFacultyCoordinatorsSuccess(response) {//console.log(response);
 			vm.faculties = response.data;
-			// console.log(vm.faculties);
+			// //console.log(vm.faculties);
 			if (vm.limitFaculty <= vm.faculties.length) {
 				vm.nomoreFaculty = false;
 			}
@@ -40,7 +40,7 @@
 		function getAllFacultyCoordinatorsFailure(error) {
 			//State go to Add Events
 			//Dashboard
-			// console.log(error);
+			// //console.log(error);
 		}
 
 		function verifyFaculty(id, index, event) {
@@ -92,12 +92,12 @@
 		function rejectFacultySuccess(response) {
 			vm.faculties[vm.rejectionIndex].rejected = true;
 			vm.faculties.splice(vm.rejectionIndex, 1);
-			console.log(response);
+			//console.log(response);
 		}
 
 		function rejectFacultyFailure(error) {
 			//fctToast.show('FAilure');
-			console.log(error);
+			//console.log(error);
 		}
 
 		function loadmore() {

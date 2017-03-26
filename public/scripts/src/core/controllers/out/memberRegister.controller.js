@@ -29,7 +29,7 @@
 				vm.registerButtonClicked = true;
 			}
 			var newUser = angular.copy(vm.user);
-			console.log(newUser);
+			//console.log(newUser);
 			memberAuthService.memberRegister(newUser);
 		}
 

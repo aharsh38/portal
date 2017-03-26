@@ -29,7 +29,7 @@
 
 
 		function confirmRegistrationSuccess(response) {
-			console.log(response);
+			//console.log(response);
 			vm.registrationButtonClicked = false;
 
 
@@ -92,7 +92,7 @@
 		}
 
 		function getRegistrationDataSuccess(response) {
-			// console.log(response);
+			// //console.log(response);
 			if (response.status == 200) {
 				vm.registration.teamId = response.data.teamId;
 				vm.registration.email = response.data.email;

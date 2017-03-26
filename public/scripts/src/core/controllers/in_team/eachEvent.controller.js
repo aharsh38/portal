@@ -26,7 +26,7 @@
         }
 
         function getEventSuccess(response) {
-          console.log(response);
+          //console.log(response);
           vm.myEvent = response.data;
           vm.rules = $sce.trustAsHtml(vm.myEvent.rules);
           vm.judging_criteria = $sce.trustAsHtml(vm.myEvent.judging_criteria);
@@ -34,7 +34,7 @@
         }
 
         function getEventFailure(error) {
-          console.log(error);
+          //console.log(error);
         }
     }
 })();

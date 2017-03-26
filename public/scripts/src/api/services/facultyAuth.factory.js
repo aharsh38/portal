@@ -44,7 +44,7 @@
 					// $rootScope.faculty.collected_amount = payload.collected_amount;
 					// $rootScope.faculty.student_coordinator = payload.student_coordinator;
 					return (payload.exp > Date.now() / 1000);
-					// console.log($rootScope.faculty);
+					// //console.log($rootScope.faculty);
 				} else {
 					return false;
 				}
@@ -179,19 +179,19 @@
 		}
 
 		function checkVerified() {
-			console.log($rootScope.faculty);
+			//console.log($rootScope.faculty);
 			$http.get('/api/faculty/check')
 				.then(checkVerifiedSuccess)
 				.catch(checkVerifiedFailure);
 		}
 
 		function checkVerifiedSuccess(response) {
-			console.log(response);
+			//console.log(response);
 			replaceToken(response.data.token);
 		}
 
 		function checkVerifiedFailure(error) {
-			console.log(error);
+			//console.log(error);
 		}
 
 

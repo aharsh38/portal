@@ -54,7 +54,7 @@
 		}
 
 		function confirmRegistrationSuccess(response) {
-			console.log(response);
+			//console.log(response);
 			vm.registrationButtonClicked = false;
 			vm.registration = {};
 			$scope.confirmRegistrationForm.$setPristine();

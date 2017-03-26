@@ -29,13 +29,13 @@
 		function getEachFaculty() {
 			return facultyService.getEachFaculty()
 			.then(function (response) {
-				console.log(response);
+				//console.log(response);
 				vm.userDetail.email = response.data.email;
 				vm.userDetail.mobileno = parseInt(response.data.mobileno);
 				vm.userDetail.name = response.data.name;
 				vm.preInfo = true;
 			}).catch(function (error) {
-				console.log(error);
+				//console.log(error);
 			});
 		}
 
@@ -52,12 +52,12 @@
 					vm.updating = false;
 					vm.editInfo = false;
 					getEachFaculty();
-					console.log(response);
+					//console.log(response);
 				})
 				.catch(function (error) {
 					vm.updateButtonClicked = false;
 					vm.updating = false;
-					console.log(error);
+					//console.log(error);
 				});
 			}
 		}

@@ -31,22 +31,22 @@
 				var authHead = 'Bearer ' + token;
 				config.headers['Authorization'] = authHead;
 			}
-			// console.log(config);
+			// //console.log(config);
 			return config;
 		}
 
 		function requestError(rejection) {
-			// console.log("Request Rejection",rejection);
+			// //console.log("Request Rejection",rejection);
 			return $q.reject(rejection);
 		}
 
 		function response(response) {
-			// console.log("response",response);
+			// //console.log("response",response);
 			return response || $q.when(response);
 		}
 
 		function responseError(rejection) {
-			// console.log("response rejection", rejection);
+			// //console.log("response rejection", rejection);
 			if (rejection.status == 403) {
 				$location.path('/login');
 			}
