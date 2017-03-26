@@ -11,14 +11,14 @@ var config = require('./api/config/config');
 var request = require('request');
 require('./api/config/passport');
 
-// var dbURI = config.mongoURI;
+var dbURI = config.mongoURI;
 
 // var dbURI = "mongodb://localhost/gtutechfest1";
 
 // var dbURI = "mongodb://localhost/gtutestingFinal";
 //var dbURI = "mongodb://localhost/gtutesting";
 
-var dbURI = 'mongodb://hraw1699:fdtdcdr6m@ds161039.mlab.com:61039/gtutechfesttest';
+// var dbURI = 'mongodb://hraw1699:fdtdcdr6m@ds161039.mlab.com:61039/gtutechfesttest';
 //var dbURI = "mongodb://localhost/gtutestingFinal";
 //var dbURI = "mongodb://localhost/gtutesting";
 
@@ -41,16 +41,16 @@ mongoose.Promise = global.Promise;
 
 var db = mongoose.connect(dbURI);
 
-mongoose.connection.on('connected', function() {
-    console.log('Mongoose connected to ' + dbURI);
+mongoose.connection.on('connected', function () {
+	console.log('Mongoose connected to ' + dbURI);
 });
 
-mongoose.connection.on('error', function(err) {
-    console.log('Mongoose connection error: ' + err);
+mongoose.connection.on('error', function (err) {
+	console.log('Mongoose connection error: ' + err);
 });
 
-mongoose.connection.on('disconnected', function() {
-    console.log('Mongoose disconnected');
+mongoose.connection.on('disconnected', function () {
+	console.log('Mongoose disconnected');
 });
 
 
@@ -58,9 +58,9 @@ var app = express();
 var port = 9000;
 app.set('x-powered-by', false);
 
-app.use(function(request, response, next) {
-    console.log("IP:::::   ", request.connection.remoteAddress);
-    next();
+app.use(function (request, response, next) {
+	console.log("IP:::::   ", request.connection.remoteAddress);
+	next();
 });
 
 // app.use(cors({
@@ -81,7 +81,7 @@ app.use(express.static('public'));
 
 app.use(logger('dev'));
 app.use(bodyParser.urlencoded({
-    extended: true
+	extended: true
 }));
 // app.post('/submit',function(req,res){
 //   // g-recaptcha-response is the key that browser will generate upon form submit.
@@ -149,12 +149,12 @@ app.use('/api/registration', registrationRouter);
 
 
 
-app.get('*', function(request, response) {
-    response.sendFile(path.join(__dirname, 'public', 'index.html'));
+app.get('*', function (request, response) {
+	response.sendFile(path.join(__dirname, 'public', 'index.html'));
 });
 
-app.listen(port, function() {
-    console.log("Now Running on port" + port);
+app.listen(port, function () {
+	console.log("Now Running on port" + port);
 });
 
 module.exports = app;
