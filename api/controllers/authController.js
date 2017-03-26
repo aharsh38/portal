@@ -138,40 +138,40 @@ var authController = function (Faculty, Member) {
 	}
 
 	function memberLogin(request, response) {
-		if(req.body['g-recaptcha-response'] === undefined || req.body['g-recaptcha-response'] === '' || req.body['g-recaptcha-response'] === null) {
-			return res.json({"responseCode" : 1,"responseDesc" : "Please select captcha"});
-		}
-		var secretKey = "6LeHWhoUAAAAAH4qUvSHAoFMcMddJeYT5kbtgsuX";
-		var verificationUrl = "https://www.google.com/recaptcha/api/siteverify?secret=" + secretKey + "&response=" + req.body['g-recaptcha-response'] + "&remoteip=" + req.connection.remoteAddress;
+		// if(req.body['g-recaptcha-response'] === undefined || req.body['g-recaptcha-response'] === '' || req.body['g-recaptcha-response'] === null) {
+		// 	return res.json({"responseCode" : 1,"responseDesc" : "Please select captcha"});
+		// }
+		// var secretKey = "6LeHWhoUAAAAAH4qUvSHAoFMcMddJeYT5kbtgsuX";
+		// var verificationUrl = "https://www.google.com/recaptcha/api/siteverify?secret=" + secretKey + "&response=" + req.body['g-recaptcha-response'] + "&remoteip=" + req.connection.remoteAddress;
+		//
+		// request(verificationUrl,function(error,response,body) {
+		// 	body = JSON.parse(body);
+		// if(body.success !== undefined && !body.success) {
+		// 		return res.json({"responseCode" : 1,"responseDesc" : "Failed captcha verification"});
+		// 	}
+		//
+		// 	console.log("hello");
 
-		request(verificationUrl,function(error,response,body) {
-			body = JSON.parse(body);
-		if(body.success !== undefined && !body.success) {
-				return res.json({"responseCode" : 1,"responseDesc" : "Failed captcha verification"});
+		passport.authenticate('member-local', function (error, member, info) {
+			var token;
+			if (error) {
+				throwError(response, error, 500, 'Internal Server Error', 'Member login');
+				return;
 			}
 
-			console.log("hello");
-
-			passport.authenticate('member-local', function (error, member, info) {
-				var token;
-				if (error) {
-					throwError(response, error, 500, 'Internal Server Error', 'Member login');
-					return;
-				}
-
-				if (member) {
-					token = member.generateJwt();
-					response.status(200);
-					response.json({
-						"token": token
-					});
-				} else {
-					throwError(response, error, 401, info, 'Not Found');
-				}
-			})(request, response);
+			if (member) {
+				token = member.generateJwt();
+				response.status(200);
+				response.json({
+					"token": token
+				});
+			} else {
+				throwError(response, error, 401, info, 'Not Found');
+			}
+		})(request, response);
 
 
-		});
+		// });
 	}
 
 	function memberRegister(request, response) {

@@ -248,7 +248,9 @@ var registrationController = function (Registration) {
 					"responseCode": 1,
 					"responseDesc": "Failed captcha verification"
 				});
-			} else {
+			} else if (request.body.eventObject.event_name !== 'Tremor terror' || request.body.eventObject.event_name.toLowerCase() !== 'beat around the loom') {
+
+
 				var registration = new Registration();
 				// console.log("reqqqqqqqqqqqqq", request.body.eventObject);
 				registration.eventObject = request.body.eventObject;
@@ -259,6 +261,8 @@ var registrationController = function (Registration) {
 				registration.do_payment = request.body.do_payment;
 				registration.late_payment = request.body.late_payment;
 				registration.teamId = request.body.eventObject.event_shortcode + rand.generateDigits(6);
+
+
 				// registration.teamId = "SC" + rand.generateDigits(6);
 				console.log("request", request.body);
 				var slip;
@@ -298,7 +302,7 @@ var registrationController = function (Registration) {
 				} else if (request.body.no_payment) {
 					console.log("4");
 					console.log("In Startup");
-					// if (request.body.receipt_to_generate == 'startup') {
+
 					if (request.body.project_url) {
 						registration.project_url = request.body.project_url;
 						registration.project_summary = request.body.project_summary;
@@ -316,6 +320,8 @@ var registrationController = function (Registration) {
 				} else {
 					throwError(response, null, 505, 'Bad Request', 'Event Register');
 				}
+			} else {
+				throwError(response, null, 505, 'Bad Request', 'Event Register');
 			}
 
 		});
