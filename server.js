@@ -131,9 +131,9 @@ app.use('/api/college', collegeRouter);
 // // var eventRouter = require('./api/routes/eventRoutes')(Events);
 // // app.use('/api/event', eventRouter);
 //
-//var memberRouter = require('./api/routes/memberRoutes')(Faculty, Member, Registration, College, Events);
+var memberRouter = require('./api/routes/memberRoutes')(Faculty, Member, Registration, College, Events);
 // app.use('/api/members', memberRouter);
-//app.use('/api/members', authenticate.memberAuth, memberRouter);
+app.use('/api/members', authenticate.memberAuth, memberRouter);
 //
 var facultyRouter = require('./api/routes/facultyRoutes')(Faculty, Registration);
 //app.use('/api/faculty', facultyRouter);
