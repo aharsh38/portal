@@ -240,7 +240,7 @@ var registrationController = function (Registration) {
 		var secretKey = "6LfIWRoUAAAAAFuDOh_TqTJQAFWzdfuXZ_ivfPsK";
 		var verificationUrl = "https://www.google.com/recaptcha/api/siteverify?secret=" + secretKey + "&response=" + request.body['g-recaptcha-response'] + "&remoteip=" + request.connection.remoteAddress;
 
-		request_gc(verificationUrl, function (error, response, body) {
+		request_gc(verificationUrl, function (error, resp, body) {
 			body = JSON.parse(body);
 			if (body.success !== undefined && !body.success) {
 				response.status(400);
