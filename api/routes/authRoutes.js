@@ -11,15 +11,15 @@ var authRoutes = function (Faculty, Member) {
 	authRouter.param('memberId', memberMiddleware);
 	authRouter.param('facultyId', facultyMiddleware);
 
-	authRouter.post('/faculty/register', authController.facultyRegister);
+	// authRouter.post('/faculty/register', authController.facultyRegister);
 	authRouter.post('/faculty/login', authController.facultyLogin);
-	authRouter.post('/faculty/forgotPasswordApply', authController.facultyForgotPasswordApply);
-	authRouter.post('/faculty/:facultyId/forgotPasswordSet', authController.facultyForgotPasswordSet);
+	// authRouter.post('/faculty/forgotPasswordApply', authController.facultyForgotPasswordApply);
+	// authRouter.post('/faculty/:facultyId/forgotPasswordSet', authController.facultyForgotPasswordSet);
 
-	authRouter.post('/member/register', authController.memberRegister);
+	// authRouter.post('/member/register', authController.memberRegister);
 	authRouter.post('/member/login', authController.memberLogin);
-	authRouter.post('/member/forgotPasswordApply', authController.memberForgotPasswordApply);
-	authRouter.post('/member/:memberId/forgotPasswordSet', authController.memberForgotPasswordSet);
+	// authRouter.post('/member/forgotPasswordApply', authController.memberForgotPasswordApply);
+	// authRouter.post('/member/:memberId/forgotPasswordSet', authController.memberForgotPasswordSet);
 
 
 	return authRouter;

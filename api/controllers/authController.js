@@ -38,30 +38,30 @@ var authController = function (Faculty, Member) {
 		})(request, response);
 	}
 
-	function facultyRegister(request, response) {
-		var faculty = new Faculty();
-		faculty.name = request.body.name;
-		faculty.email = request.body.email;
-		faculty.mobileno = request.body.mobileno;
-		// faculty.city = request.body.city;
-		faculty.collegeId = request.body.college._id;
-		console.log("College", request.body.college);
-		faculty.setPassword(request.body.password);
-		faculty.save(function (error) {
-			if (error) {
-				throwError(response, error, 500, 'Internal Server error', 'Faculty Register');
-			} else {
-				var token;
-				token = faculty.generateJwt();
-				response.status(200);
-				response.json({
-					"token": token,
-
-
-				});
-			}
-		});
-	}
+	// function facultyRegister(request, response) {
+	// 	var faculty = new Faculty();
+	// 	faculty.name = request.body.name;
+	// 	faculty.email = request.body.email;
+	// 	faculty.mobileno = request.body.mobileno;
+	// 	// faculty.city = request.body.city;
+	// 	faculty.collegeId = request.body.college._id;
+	// 	console.log("College", request.body.college);
+	// 	faculty.setPassword(request.body.password);
+	// 	faculty.save(function (error) {
+	// 		if (error) {
+	// 			throwError(response, error, 500, 'Internal Server error', 'Faculty Register');
+	// 		} else {
+	// 			var token;
+	// 			token = faculty.generateJwt();
+	// 			response.status(200);
+	// 			response.json({
+	// 				"token": token,
+	//
+	//
+	// 			});
+	// 		}
+	// 	});
+	// }
 
 	function facultyForgotPasswordApply(request, response) {
 		Faculty.findOne({
@@ -138,20 +138,6 @@ var authController = function (Faculty, Member) {
 	}
 
 	function memberLogin(request, response) {
-		// if(req.body['g-recaptcha-response'] === undefined || req.body['g-recaptcha-response'] === '' || req.body['g-recaptcha-response'] === null) {
-		// 	return res.json({"responseCode" : 1,"responseDesc" : "Please select captcha"});
-		// }
-		// var secretKey = "6LeHWhoUAAAAAH4qUvSHAoFMcMddJeYT5kbtgsuX";
-		// var verificationUrl = "https://www.google.com/recaptcha/api/siteverify?secret=" + secretKey + "&response=" + req.body['g-recaptcha-response'] + "&remoteip=" + req.connection.remoteAddress;
-		//
-		// request(verificationUrl,function(error,response,body) {
-		// 	body = JSON.parse(body);
-		// if(body.success !== undefined && !body.success) {
-		// 		return res.json({"responseCode" : 1,"responseDesc" : "Failed captcha verification"});
-		// 	}
-		//
-		// 	console.log("hello");
-
 		passport.authenticate('member-local', function (error, member, info) {
 			var token;
 			if (error) {
@@ -169,34 +155,31 @@ var authController = function (Faculty, Member) {
 				throwError(response, error, 401, info, 'Not Found');
 			}
 		})(request, response);
-
-
-		// });
 	}
 
-	function memberRegister(request, response) {
-		if (request.body.secret == config.member_register_secret) {
-			var member = new Member();
-			member.name = request.body.name;
-			member.email = request.body.email;
-			member.mobileno = request.body.mobileno;
-			member.setPassword(request.body.password);
-			member.save(function (error) {
-				if (error) {
-					throwError(response, error, 500, 'Internal Server error', 'Member Register');
-				} else {
-					var token;
-					token = member.generateJwt();
-					response.status(200);
-					response.json({
-						"token": token
-					});
-				}
-			});
-		} else {
-			throwError(response, error, 498, 'Invalid Token', 'Member Registeration invalid secret provided');
-		}
-	}
+	// function memberRegister(request, response) {
+	// 	if (request.body.secret == config.member_register_secret) {
+	// 		var member = new Member();
+	// 		member.name = request.body.name;
+	// 		member.email = request.body.email;
+	// 		member.mobileno = request.body.mobileno;
+	// 		member.setPassword(request.body.password);
+	// 		member.save(function (error) {
+	// 			if (error) {
+	// 				throwError(response, error, 500, 'Internal Server error', 'Member Register');
+	// 			} else {
+	// 				var token;
+	// 				token = member.generateJwt();
+	// 				response.status(200);
+	// 				response.json({
+	// 					"token": token
+	// 				});
+	// 			}
+	// 		});
+	// 	} else {
+	// 		throwError(response, error, 498, 'Invalid Token', 'Member Registeration invalid secret provided');
+	// 	}
+	// }
 
 	function memberForgotPasswordApply(request, response) {
 		Member.findOne({
@@ -264,12 +247,12 @@ var authController = function (Faculty, Member) {
 
 	var ac = {};
 	ac.facultyLogin = facultyLogin;
-	ac.facultyRegister = facultyRegister;
+	// ac.facultyRegister = facultyRegister;
 	ac.facultyForgotPasswordApply = facultyForgotPasswordApply;
 	ac.facultyForgotPasswordSet = facultyForgotPasswordSet;
 
 	ac.memberLogin = memberLogin;
-	ac.memberRegister = memberRegister;
+	// ac.memberRegister = memberRegister;
 	ac.memberForgotPasswordApply = memberForgotPasswordApply;
 	ac.memberForgotPasswordSet = memberForgotPasswordSet;
 	return ac;
