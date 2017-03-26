@@ -248,7 +248,7 @@ var registrationController = function (Registration) {
 					"responseCode": 1,
 					"responseDesc": "Failed captcha verification"
 				});
-			} else if (request.body.eventObject.event_name !== 'Tremor terror' || request.body.eventObject.event_name.toLowerCase() !== 'beat around the loom') {
+			} else if (request.body.eventObject.event_name !== 'Tremor terror' || request.body.eventObject.event_name !== 'Beat Around the Loom') {
 
 
 				var registration = new Registration();
