@@ -237,7 +237,7 @@ var registrationController = function (Registration) {
 				"responseDesc": "Please select captcha"
 			});
 		}
-		var secretKey = "6LfeWxoUAAAAADrXsLf1hteXTiGrUaAE_WckaU0p";
+		var secretKey = "6LfIWRoUAAAAAFuDOh_TqTJQAFWzdfuXZ_ivfPsK";
 		var verificationUrl = "https://www.google.com/recaptcha/api/siteverify?secret=" + secretKey + "&response=" + request.body['g-recaptcha-response'] + "&remoteip=" + request.connection.remoteAddress;
 
 		request_gc(verificationUrl, function (error, response, body) {
