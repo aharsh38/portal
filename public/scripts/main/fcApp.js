@@ -419,22 +419,22 @@
 				var authHead = 'Bearer ' + token;
 				config.headers['Authorization'] = authHead;
 			}
-			// console.log(config);
+			// //console.log(config);
 			return config;
 		}
 
 		function requestError(rejection) {
-			// console.log("Request Rejection",rejection);
+			// //console.log("Request Rejection",rejection);
 			return $q.reject(rejection);
 		}
 
 		function response(response) {
-			// console.log("response",response);
+			// //console.log("response",response);
 			return response || $q.when(response);
 		}
 
 		function responseError(rejection) {
-			// console.log("response rejection", rejection);
+			// //console.log("response rejection", rejection);
 			if (rejection.status == 403) {
 				$location.path('/login');
 			}
@@ -652,7 +652,7 @@
 					// $rootScope.faculty.collected_amount = payload.collected_amount;
 					// $rootScope.faculty.student_coordinator = payload.student_coordinator;
 					return (payload.exp > Date.now() / 1000);
-					// console.log($rootScope.faculty);
+					// //console.log($rootScope.faculty);
 				} else {
 					return false;
 				}
@@ -787,19 +787,19 @@
 		}
 
 		function checkVerified() {
-			console.log($rootScope.faculty);
+			//console.log($rootScope.faculty);
 			$http.get('/api/faculty/check')
 				.then(checkVerifiedSuccess)
 				.catch(checkVerifiedFailure);
 		}
 
 		function checkVerifiedSuccess(response) {
-			console.log(response);
+			//console.log(response);
 			replaceToken(response.data.token);
 		}
 
 		function checkVerifiedFailure(error) {
-			console.log(error);
+			//console.log(error);
 		}
 
 
@@ -1057,7 +1057,7 @@
 		}
 
 		function changePasswordFailure(error) {
-			console.log(error);
+			//console.log(error);
 			$rootScope.$broadcast('MemberChangePasswordFailure', error);
 		}
 
@@ -1381,7 +1381,7 @@
 		}
 
 		function getStudentCoordinatorFailure(error) {
-			// console.log(error);
+			// //console.log(error);
 		}
 
 		function update(event) {
@@ -1461,7 +1461,7 @@
 		}
 
 		function confirmRegistrationSuccess(response) {
-			console.log(response);
+			//console.log(response);
 			hide(response);
 		}
 
@@ -1536,7 +1536,7 @@
 		}
 
 		function confirmRegistrationSuccess(response) {
-			console.log(response);
+			//console.log(response);
 			vm.registrationButtonClicked = false;
 			vm.registration = {};
 			$scope.confirmRegistrationForm.$setPristine();
@@ -1602,7 +1602,7 @@
 
 
 		function confirmRegistrationSuccess(response) {
-			console.log(response);
+			//console.log(response);
 			vm.registrationButtonClicked = false;
 
 
@@ -1665,7 +1665,7 @@
 		}
 
 		function getRegistrationDataSuccess(response) {
-			// console.log(response);
+			// //console.log(response);
 			if (response.status == 200) {
 				vm.registration.teamId = response.data.teamId;
 				vm.registration.email = response.data.email;
@@ -1728,13 +1728,13 @@
 		function getEachFaculty() {
 			return facultyService.getEachFaculty()
 			.then(function (response) {
-				console.log(response);
+				//console.log(response);
 				vm.userDetail.email = response.data.email;
 				vm.userDetail.mobileno = parseInt(response.data.mobileno);
 				vm.userDetail.name = response.data.name;
 				vm.preInfo = true;
 			}).catch(function (error) {
-				console.log(error);
+				//console.log(error);
 			});
 		}
 
@@ -1751,12 +1751,12 @@
 					vm.updating = false;
 					vm.editInfo = false;
 					getEachFaculty();
-					console.log(response);
+					//console.log(response);
 				})
 				.catch(function (error) {
 					vm.updateButtonClicked = false;
 					vm.updating = false;
-					console.log(error);
+					//console.log(error);
 				});
 			}
 		}
@@ -1866,9 +1866,9 @@
 		}
 
 
-		function getAllFacultyCoordinatorsSuccess(response) {console.log(response);
+		function getAllFacultyCoordinatorsSuccess(response) {//console.log(response);
 			vm.faculties = response.data;
-			// console.log(vm.faculties);
+			// //console.log(vm.faculties);
 			if (vm.limitFaculty <= vm.faculties.length) {
 				vm.nomoreFaculty = false;
 			}
@@ -1877,7 +1877,7 @@
 		function getAllFacultyCoordinatorsFailure(error) {
 			//State go to Add Events
 			//Dashboard
-			// console.log(error);
+			// //console.log(error);
 		}
 
 		function verifyFaculty(id, index, event) {
@@ -1929,12 +1929,12 @@
 		function rejectFacultySuccess(response) {
 			vm.faculties[vm.rejectionIndex].rejected = true;
 			vm.faculties.splice(vm.rejectionIndex, 1);
-			console.log(response);
+			//console.log(response);
 		}
 
 		function rejectFacultyFailure(error) {
 			//fctToast.show('FAilure');
-			console.log(error);
+			//console.log(error);
 		}
 
 		function loadmore() {
@@ -2016,7 +2016,7 @@
 			// vm.myEvent.rules = CKEDITOR.instances["editorRules"].getData();
 			// vm.myEvent.specification = CKEDITOR.instances["editorSpecification"].getData();
 			// vm.myEvent.judging_criteria = CKEDITOR.instances["editorJudgingCriteria"].getData();
-			console.log(vm.myEvent);
+			//console.log(vm.myEvent);
 			if (vm.myEvent.isUpdate) {
 				return eventService.updateEvent(vm.myEvent).then(registerSuccess).catch(registerFailure);
 			} else {
@@ -2045,7 +2045,7 @@
 					}
 				});
 				file.upload.then(function (response) {
-					console.log(response);
+					//console.log(response);
 					$timeout(function () {
 						file.result = response.data;
 						var attach = {
@@ -2053,7 +2053,7 @@
 							link: file.dest,
 						};
 						vm.myEvent.attachments.push(attach);
-						console.log(attach);
+						//console.log(attach);
 					});
 				}, function (response) {
 					if (response.status > 0)
@@ -2079,7 +2079,7 @@
 					vm.myEvent.event_image = response.data.path;
 				}, function (response) {
 					if (response.status > 0) {
-						//console.log(reponse);
+						////console.log(reponse);
 					}
 				}, function (evt) {
 					file.progress = Math.min(100, parseInt(100.0 * evt.loaded / evt.total));
@@ -2100,7 +2100,7 @@
 					vm.myEvent.event_icon_image = response.data.path;
 				}, function (response) {
 					if (response.status > 0) {
-						//console.log(reponse);
+						////console.log(reponse);
 					}
 				}, function (evt) {
 					file.progress = Math.min(100, parseInt(100.0 * evt.loaded / evt.total));
@@ -2145,14 +2145,14 @@
 			return memberService.getRegistrationsByEvent()
 				.then(function (response) {
 					var array = response.data;
-					console.log(response);
+					//console.log(response);
 					var each = 0;
 					var index = 0;
 					for (index = 0; index < array.length; index++) {
 						each += parseInt(array[index].unconfirmed_registrations);
 					}
 				}).catch(function (error) {
-					// console.log(error);
+					// //console.log(error);
 				});
 		}
 
@@ -2161,10 +2161,10 @@
 				.then(function (response) {
 					vm.VFSPath = response.data.path;
 					// $window.open(response.data.path);
-					//console.log(response);
+					////console.log(response);
 				})
 				.catch(function (error) {
-					//console.log(error);
+					////console.log(error);
 				});
 		}
 
@@ -2173,10 +2173,10 @@
 				.then(function (response) {
 					vm.UVFPath = response.data.path;
 					// $window.open(response.data.path);
-					//console.log(response);
+					////console.log(response);
 				})
 				.catch(function (error) {
-					//console.log(error);
+					////console.log(error);
 				});
 		}
 
@@ -2187,20 +2187,20 @@
 					vm.unConfirmedCount = response.data.unConfirmedCount;
 					vm.totalConfirmedParticipants = response.data.totalConfirmedParticipants;
 					vm.totalAmountCollected = response.data.totalAmountCollected;
-					console.log(response);
+					//console.log(response);
 				})
 				.catch(function (error) {
-					console.log(error);
+					//console.log(error);
 				});
 		}
 
 		function exportParticipantList() {
 			return memberService.exportParticipantList()
 				.then(function (response) {
-					console.log(response);
+					//console.log(response);
 				})
 				.catch(function (error) {
-					console.log(error);
+					//console.log(error);
 				});
 		}
 	}
@@ -2249,10 +2249,10 @@
 //                 .then(function(response) {
 //                     vm.VFSPath = response.data.path;
 //                     // $window.open(response.data.path);
-//                     //console.log(response);
+//                     ////console.log(response);
 //                 })
 //                 .catch(function(error) {
-//                     //console.log(error);
+//                     ////console.log(error);
 //                 });
 //         }
 //
@@ -2261,10 +2261,10 @@
 //                 .then(function(response) {
 //                     vm.UVFPath = response.data.path;
 //                     // $window.open(response.data.path);
-//                     //console.log(response);
+//                     ////console.log(response);
 //                 })
 //                 .catch(function(error) {
-//                     //console.log(error);
+//                     ////console.log(error);
 //                 });
 //         }
 //
@@ -2275,20 +2275,20 @@
 //               vm.unConfirmedCount = response.data.unConfirmedCount;
 //               vm.totalConfirmedParticipants = response.data.totalConfirmedParticipants;
 //               vm.totalAmountCollected = response.data.totalAmountCollected;
-//               console.log(response);
+//               //console.log(response);
 //             })
 //             .catch(function(error) {
-//               console.log(error);
+//               //console.log(error);
 //             });
 //         }
 //
 //         function exportParticipantList() {
 //           return memberService.exportParticipantList()
 //             .then(function(response) {
-//                 console.log(response);
+//                 //console.log(response);
 //             })
 //             .catch(function(error) {
-//                 console.log(error);
+//                 //console.log(error);
 //             });
 //           }
 //     }
@@ -2322,7 +2322,7 @@
         }
 
         function getEventSuccess(response) {
-          console.log(response);
+          //console.log(response);
           vm.myEvent = response.data;
           vm.rules = $sce.trustAsHtml(vm.myEvent.rules);
           vm.judging_criteria = $sce.trustAsHtml(vm.myEvent.judging_criteria);
@@ -2330,7 +2330,7 @@
         }
 
         function getEventFailure(error) {
-          console.log(error);
+          //console.log(error);
         }
     }
 })();
@@ -2380,13 +2380,13 @@
         }
 
         function deleteEventSuccess(response) {
-          console.log(response);
+          //console.log(response);
           $scope.reload();
           // vm.reload();
         }
 
         function deleteEventFailure(error) {
-          console.log(error);
+          //console.log(error);
           //redirect
         }
     }
@@ -2420,11 +2420,11 @@
 
 		function success(response) {
 			vm.eventDetails = response.data;
-			console.log(response);
+			//console.log(response);
 		}
 
 		function failure(error) {
-			console.log(error);
+			//console.log(error);
 		}
 
 		function getExcel(event_name, confirmed) {
@@ -2563,21 +2563,21 @@
 
 		function save() {
 			vm.myParticipant.do_payment = true;
-			console.log(JSON.stringify(vm.myParticipant));
+			//console.log(JSON.stringify(vm.myParticipant));
 			vm.myParticipant.team_leader = vm.myParticipant.other_participants[0];
 			vm.myParticipant.other_participants.splice(0, 1);
-			console.log(JSON.stringify(vm.myParticipant));
+			//console.log(JSON.stringify(vm.myParticipant));
 			return $http.post('/api/registration/create', vm.myParticipant)
 				.then(resolveFunc)
 				.catch(rejectFunc);
 		}
 
 		function resolveFunc(response) {
-			console.log(response);
+			//console.log(response);
 		}
 
 		function rejectFunc(error) {
-			console.log(error);
+			//console.log(error);
 		}
 	}
 })();
@@ -2611,12 +2611,12 @@
         }
 
         function getEventSuccess(response) {
-          console.log(response);
+          //console.log(response);
           vm.dummyEvents = response.data;
         }
 
         function getEventFailure(error) {
-          console.log(error);
+          //console.log(error);
         }
     }
 })();
@@ -2692,7 +2692,7 @@
 		}
 
 		function onEventGetSuccess(eventData) {
-			console.log(eventData);
+			//console.log(eventData);
 			vm.myEvent = eventData.data;
 			vm.myEvent.event = "Update";
 			vm.myEvent.totalManager = vm.myEvent.managers.length;
@@ -2703,7 +2703,7 @@
 		}
 
 		function onEventGetFailure(error) {
-			console.log(error);
+			//console.log(error);
 
 		}
 
@@ -2748,7 +2748,7 @@
 					}
 				});
 				file.upload.then(function (response) {
-					// console.log(response);
+					// //console.log(response);
 					var attach = {
 						doc_name: file.name,
 						link: response.data.path,
@@ -2772,13 +2772,13 @@
 					}
 				});
 				file.upload.then(function (response) {
-					// console.log(response);
+					// //console.log(response);
 					$timeout(function () {
 						vm.myEvent.event_image = response.data.path;
 					});
 				}, function (response) {
 					if (response.status > 0) {
-						//console.log(reponse);
+						////console.log(reponse);
 					}
 				}, function (evt) {
 					file.progress = Math.min(100, parseInt(100.0 * evt.loaded / evt.total));
@@ -2796,11 +2796,11 @@
 					}
 				});
 				file.upload.then(function (response) {
-					// console.log(response);
+					// //console.log(response);
 					vm.myEvent.event_icon = response.data.path;
 				}, function (response) {
 					if (response.status > 0) {
-						//console.log(reponse);
+						////console.log(reponse);
 					}
 				}, function (evt) {
 					file.progress = Math.min(100, parseInt(100.0 * evt.loaded / evt.total));
@@ -2831,10 +2831,10 @@
 			submit: submit
 		});
 
-		console.log("HHHIII");
+		//console.log("HHHIII");
 
 		function submit(event) {
-			console.log("222");
+			//console.log("222");
 			if (vm.submitButtonClicked) {
 				event.preventDefault();
 			} else {
@@ -2883,7 +2883,7 @@
 
 	function FacultyForgotPasswordSetController($scope, fctToast, facultyAuthService, $state, $rootScope, $stateParams, $location) {
 		var vm = this;
-		console.log("URL", $location.url());
+		//console.log("URL", $location.url());
 		var uriLi = $location.url();
 		uriLi = uriLi.replace('#x3D;', '=');
 		uriLi = uriLi.replace('&%23x3D;', '=');
@@ -2894,13 +2894,13 @@
 		foi = uriLi.length;
 
 		var utoken = uriLi.substring(fi + 1, si);
-		// console.log("utoken", utoken);
+		// //console.log("utoken", utoken);
 
 		var userid = uriLi.substring(ti + 1, foi);
-		// console.log("uid", userid);
+		// //console.log("uid", userid);
 
 		vm.token = Boolean($stateParams.token);
-		// console.log("token", vm.token);
+		// //console.log("token", vm.token);
 		vm.user = {};
 		vm.changePasswordButtonClicked = false;
 		vm.set = false;
@@ -3095,7 +3095,7 @@
 		function querySearch(query) {
 			var results = query ? vm.colleges.filter(createFilterFor(query)) : vm.colleges;
 			var deferred = $q.defer();
-			console.log(results);
+			//console.log(results);
 			$timeout(function () {
 				deferred.resolve(results);
 			}, Math.random() * 1000, false);
@@ -3149,7 +3149,7 @@
 		});
 
 		function submit(event) {
-			console.log("HIII");
+			//console.log("HIII");
 			if (vm.submitButtonClicked) {
 				event.preventDefault();
 			} else {
@@ -3199,7 +3199,7 @@
 
 
 		vm.token = Boolean($stateParams.token);
-		// console.log("token", vm.token);
+		// //console.log("token", vm.token);
 		vm.user = {};
 		vm.changePasswordButtonClicked = false;
 		vm.set = false;
@@ -3291,8 +3291,9 @@
 		}
 
 		function loginFailure(event, error) {
-			var msg = error.data.error.message.message.toString();
-			// console.log(error);
+			console.log(error);
+			var msg = error.data.error.message.toString();
+			// //console.log(error);
 			vm.loginButtonClicked = false;
 			fctToast.showToast(msg);
 			resetLogin(error);
@@ -3349,7 +3350,7 @@
 				vm.registerButtonClicked = true;
 			}
 			var newUser = angular.copy(vm.user);
-			console.log(newUser);
+			//console.log(newUser);
 			memberAuthService.memberRegister(newUser);
 		}
 

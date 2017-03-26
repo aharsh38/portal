@@ -118,8 +118,8 @@ var Registration = require('./api/models/registrationModel');
 // var registrationController = require('./api/controllers/registrationController')(Registration);
 // registrationController.generatePDFTest();
 
-//var authRouter = require('./api/routes/authRoutes')(Faculty, Member);
-//app.use('/api/auth', authRouter);
+var authRouter = require('./api/routes/authRoutes')(Faculty, Member);
+app.use('/api/auth', authRouter);
 
 var mobileRouter = require('./api/routes/mobileRoutes')(Registration, Events);
 app.use('/api/mobile', mobileRouter);
