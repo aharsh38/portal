@@ -56,78 +56,78 @@ var facultyController = function (Faculty, Registration) {
 	}
 
 	function confirmRegistration(request, response) {
-		Registration.findOne({
-				serialId: request.body.serialId
-			})
-			.exec(function (error, registration) {
-				if (error) {
-					throwError(response, error, 500, 'Internal Server Error', 'Registration Fetch Failed');
-					console.log("1");
-					return;
-				}
-				if (!registration) {
-					throwError(response, error, 404, 'Not Found', 'Registration not found');
-					console.log("2");
-					return;
-
-				} else {
-					if (registration.confirmation === false) {
-
-						var confirmedTime = new Date();
-						var nd = confirmedTime.toLocaleDateString('en-US', {
-							year: 'numeric',
-							month: 'long',
-							day: 'numeric'
-						});
-						var data = {
-							teamId: registration.teamId,
-							team_leader: registration.team_leader,
-							other_participants: registration.other_participants,
-							event_section: registration.eventObject.event_section,
-							event_name: registration.eventObject.event_name,
-							faculty_name: request.faculty.name,
-							time: confirmedTime,
-							downloadLink: 'http://portal.gtu.ac.in/api/registration/confirm/downloadSlip/' + registration.teamId
-						};
-
-						var mailData = [{
-							email: registration.team_leader.email,
-							data: data
-						}];
-
-						registration.confirmation = true;
-						registration.confirmation_date = new Date();
-						registration.facultyId = request.faculty._id;
-						request.faculty.registrations_count = parseInt(request.faculty.registrations_count) + 1;
-						request.faculty.collected_amount = parseInt(registration.total_amount) + parseInt(request.faculty.collected_amount);
-
-						request.faculty.registrations_count = parseInt(request.faculty.registrations_count);
-
-						request.faculty.collected_amount = parseInt(request.faculty.collected_amount);
-
-						mailController.sendMails(mailData, 'Confirmation of your registration', 'mailpreconfirmation');
-
-						registration.save(function (error) {
-							if (error) {
-								throwError(response, error, 500, "Confirming Registration", "Failed");
-							} else {
-								// console.log("8");
-								request.faculty.save(function (error) {
-									if (error) {
-										throwError(response, error, 500, "Confirming Registration", "Failed");
-									} else {
-										response.status(200).json({
-											"message": "Registration has been Confirmed!"
-										});
-									}
-								});
-							}
-						});
-					} else {
-						throwError(response, error, 405, 'Forbidden', 'Registration confirmed already!');
-					}
-				}
-			});
+		// Registration.findOne({
+		// 		serialId: request.body.serialId
+		// 	})
+		// 	.exec(function (error, registration) {
+		// 		if (error) {
+		// 			throwError(response, error, 500, 'Internal Server Error', 'Registration Fetch Failed');
+		// 			console.log("1");
+		// 			return;
+		// 		}
+		// 		if (!registration) {
+		// 			throwError(response, error, 404, 'Not Found', 'Registration not found');
+		// 			console.log("2");
+		// 			return;
+		//
+		// 		} else {
+		// 			if (registration.confirmation === false) {
+		//
+		// 				var confirmedTime = new Date();
+		// 				var nd = confirmedTime.toLocaleDateString('en-US', {
+		// 					year: 'numeric',
+		// 					month: 'long',
+		// 					day: 'numeric'
+		// 				});
+		// 				var data = {
+		// 					teamId: registration.teamId,
+		// 					team_leader: registration.team_leader,
+		// 					other_participants: registration.other_participants,
+		// 					event_section: registration.eventObject.event_section,
+		// 					event_name: registration.eventObject.event_name,
+		// 					faculty_name: request.faculty.name,
+		// 					time: confirmedTime,
+		// 					downloadLink: 'http://portal.gtu.ac.in/api/registration/confirm/downloadSlip/' + registration.teamId
+		// 				};
+		//
+		// 				var mailData = [{
+		// 					email: registration.team_leader.email,
+		// 					data: data
+		// 				}];
+		//
+		// 				registration.confirmation = true;
+		// 				registration.confirmation_date = new Date();
+		// 				registration.facultyId = request.faculty._id;
+		// 				request.faculty.registrations_count = parseInt(request.faculty.registrations_count) + 1;
+		// 				request.faculty.collected_amount = parseInt(registration.total_amount) + parseInt(request.faculty.collected_amount);
+		//
+		// 				request.faculty.registrations_count = parseInt(request.faculty.registrations_count);
+		//
+		// 				request.faculty.collected_amount = parseInt(request.faculty.collected_amount);
+		//
+		// 				mailController.sendMails(mailData, 'Confirmation of your registration', 'mailpreconfirmation');
+		//
+		// 				registration.save(function (error) {
+		// 					if (error) {
+		// 						throwError(response, error, 500, "Confirming Registration", "Failed");
+		// 					} else {
+		// 						// console.log("8");
+		// 						request.faculty.save(function (error) {
+		// 							if (error) {
+		// 								throwError(response, error, 500, "Confirming Registration", "Failed");
+		// 							} else {
+		// 								response.status(200).json({
+		// 									"message": "Registration has been Confirmed!"
+		// 								});
+		// 							}
+		// 						});
+		// 					}
+		// 				});
+		// 			} else {
+		// 				throwError(response, error, 405, 'Forbidden', 'Registration confirmed already!');
+		// 			}
+		// 		}
+		// 	});
 	}
 
 
